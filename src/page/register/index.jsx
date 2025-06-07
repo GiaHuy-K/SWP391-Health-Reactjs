@@ -83,13 +83,23 @@ const RegisterPage = () => {
         else delete newErrors.terms;
         break;
       case "password":
-        if (!value) newErrors.password = "Mật khẩu là bắt buộc";
-        else if (value.length < 8)
+        if (!value) {
+          newErrors.password = "Mật khẩu là bắt buộc";
+        } else if (value.length < 8) {
           newErrors.password = "Mật khẩu phải có ít nhất 8 ký tự";
-        else if (!/(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])/.test(value))
+          // Thêm điều kiện mới tại đây
+        } else if (
+          /[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i.test(
+            value
+          )
+        ) {
+          newErrors.password = "Mật khẩu không được chứa dấu";
+        } else if (!/(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])/.test(value)) {
           newErrors.password =
             "Mật khẩu phải chứa ít nhất một chữ hoa, một chữ thường và một số";
-        else delete newErrors.password;
+        } else {
+          delete newErrors.password;
+        }
         break;
       case "confirmPassword":
         if (!value) newErrors.confirmPassword = "Xác nhận mật khẩu là bắt buộc";
