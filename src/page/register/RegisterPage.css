@@ -1,0 +1,119 @@
+.register-container {
+    min-height: 100vh;
+    background: linear-gradient(to bottom right, #eff6ff, #c7d2fe);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+  
+  .register-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    max-width: 420px;
+    width: 100%;
+  }
+  
+  .register-form h2 {
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  
+  .form-group {
+    margin-bottom: 1rem;
+  }
+  
+  .form-group label {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+  
+  .input-wrapper {
+    position: relative;
+  }
+  
+  .input-wrapper input {
+    width: 100%;
+    padding: 0.5rem 2.5rem 0.5rem 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+  }
+  
+  .input-wrapper input.error {
+    border-color: red;
+  }
+  
+  .eye-icon {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+  }
+  
+  .error-text {
+    color: red;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+  }
+  
+  .strength-bar {
+    background: #eee;
+    border-radius: 1rem;
+    height: 0.5rem;
+    width: 100%;
+    overflow: hidden;
+  }
+  
+  .strength-fill {
+    height: 100%;
+    transition: width 0.3s ease-in-out;
+  }
+  
+  .register-form button {
+    width: 100%;
+    padding: 0.75rem;
+    background: #6366f1;
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  
+  .register-form button:disabled {
+    background: #a5b4fc;
+    cursor: not-allowed;
+  }
+  
+  .register-form button:hover:not(:disabled) {
+    background: #4f46e5;
+  }
+  
+  .login-link {
+    text-align: center;
+    margin-top: 1rem;
+  }
+  
+  .login-link button {
+    background: none;
+    border: none;
+    color: #6366f1;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  
+  .register-success {
+    text-align: center;
+  }
+  
+  .register-icon.success {
+    color: green;
+    font-size: 2rem;
+  }
+  
