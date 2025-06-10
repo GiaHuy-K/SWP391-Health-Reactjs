@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import "./RegisterPage.css";
 
+// formdata các giá trị phải giống với BE để trả về
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
     fullName: "",
@@ -19,7 +20,8 @@ const RegisterPage = () => {
     phoneNumber: "",
     terms: false,
   });
-  const [apiError, setApiError] = useState(null);
+
+  // const [apiError, setApiError] = useState(null);
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -117,7 +119,7 @@ const RegisterPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    setApiError(null);
+    // setApiError(null);
     try {
       await api.post("auth/register/parent", formData);
       toast.success(
@@ -134,8 +136,8 @@ const RegisterPage = () => {
 
       // Lấy message ra một biến riêng để dễ sử dụng
       const errorMessage = err.response?.data?.message || "Đăng ký thất bại";
-      setApiError(errorMessage);
-      // In ra đúng message mà bạn muốn xem!!!
+      // setApiError(errorMessage);
+      // In ra message lỗi
       console.log("Message lỗi từ server:", errorMessage);
 
       // Hiển thị message này cho người dùng qua toast
@@ -174,12 +176,12 @@ const RegisterPage = () => {
         ) : (
           <form className="register-form" onSubmit={handleSubmit}>
             <h2>Tạo tài khoản của bạn</h2>
-            {apiError && (
+            {/* {apiError && (
               <div className="form-group api-error-container">
                 <FaTimesCircle className="error-icon" />
                 <p className="error-text">{apiError}</p>
               </div>
-            )}
+            )} */}
 
             {["fullName", "email", "phoneNumber", "password", "confirmPassword"].map(
               (field) => (

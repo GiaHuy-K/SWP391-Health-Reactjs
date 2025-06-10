@@ -5,6 +5,7 @@ import { RouterProvider } from "react-router";
 import LoginPage from "./page/login/index.jsx";
 import RegisterPage from "./page/register/index.jsx";
 import HomePage from "./page/home/HomePage.jsx";
+import { ToastContainer } from "react-toastify";
 
 const router = createBrowserRouter([
   {
@@ -22,6 +23,8 @@ const router = createBrowserRouter([
 ]);
 
 createRoot(document.getElementById("root")).render(
+  <>
   <RouterProvider router={router} />
-  // <App></App>
+  <ToastContainer></ToastContainer>
+  </>
 );
