@@ -16,10 +16,10 @@ const RegisterPage = () => {
     email: "",
     password: "",
     confirmPassword: "",
-    phone: "",
+    phoneNumber: "",
     terms: false,
   });
-
+  const [apiError, setApiError] = useState(null);
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -69,12 +69,12 @@ const RegisterPage = () => {
           newErrors.email = "Định dạng email không hợp lệ";
         else delete newErrors.email;
         break;
-      case "phone":
-        if (!value) newErrors.phone = "Số điện thoại là bắt buộc";
+      case "phoneNumber":
+        if (!value) newErrors.phoneNumber = "Số điện thoại là bắt buộc";
         else if (!/^0(3|5|7|8|9)[0-9]{8}$/.test(value))
-          newErrors.phone =
+          newErrors.phoneNumber =
             "Số điện thoại không hợp lệ, phải bắt đầu bằng 0 và theo đầu số Việt Nam";
-        else delete newErrors.phone;
+        else delete newErrors.phoneNumber;
         break;
 
       case "terms":
@@ -117,14 +117,29 @@ const RegisterPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    setApiError(null);
     try {
       await api.post("auth/register/parent", formData);
-      toast.success("Tạo tài khoản thành công!");
+      toast.success(
+        "Tạo tài khoản thành công! Đang chuyển đến trang đăng nhập..."
+      );
       setIsSuccess(true);
-      navigate("/login");
+
+      // Chờ 2 giây rồi mới điều hướng qua login
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000);
     } catch (err) {
-      toast.error(err.response?.data || "Đăng ký thất bại");
-    } finally {
+      console.error("Chi tiết lỗi API:", err);
+
+      // Lấy message ra một biến riêng để dễ sử dụng
+      const errorMessage = err.response?.data?.message || "Đăng ký thất bại";
+      setApiError(errorMessage);
+      // In ra đúng message mà bạn muốn xem!!!
+      console.log("Message lỗi từ server:", errorMessage);
+
+      // Hiển thị message này cho người dùng qua toast
+      toast.error(errorMessage);
       setIsLoading(false);
     }
   };
@@ -159,8 +174,14 @@ const RegisterPage = () => {
         ) : (
           <form className="register-form" onSubmit={handleSubmit}>
             <h2>Tạo tài khoản của bạn</h2>
+            {apiError && (
+              <div className="form-group api-error-container">
+                <FaTimesCircle className="error-icon" />
+                <p className="error-text">{apiError}</p>
+              </div>
+            )}
 
-            {["fullName", "email", "phone", "password", "confirmPassword"].map(
+            {["fullName", "email", "phoneNumber", "password", "confirmPassword"].map(
               (field) => (
                 <div key={field} className="form-group">
                   <label htmlFor={field}>
@@ -168,7 +189,7 @@ const RegisterPage = () => {
                       {
                         fullName: "Họ và tên",
                         email: "Email",
-                        phone: "Số điện thoại",
+                        phoneNumber: "Số điện thoại",
                         password: "Mật khẩu",
                         confirmPassword: "Xác nhận mật khẩu",
                       }[field]
