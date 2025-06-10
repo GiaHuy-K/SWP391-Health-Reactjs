@@ -48,7 +48,7 @@ const LoginPage = () => {
           toast.error("Định dạng phản hồi không hợp lệ");
         }
       } catch (err) {
-        toast.error(err.response?.data || "Đăng nhập thất bại");
+        toast.error(err.response?.data?.message || "Đăng nhập thất bại");
       } finally {
         setIsLoading(false);
       }
