@@ -115,7 +115,7 @@ const RegisterPage = () => {
     try {
       await api.post("auth/register/parent", formData);
       toast.success(
-        "Tạo tài khoản thành công! Đang chuyển đến trang đăng nhập..."
+        "Tạo tài khoản thành công!"
       );
 
       setTimeout(() => {
