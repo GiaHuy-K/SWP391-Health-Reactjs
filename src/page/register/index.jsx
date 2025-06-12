@@ -119,9 +119,16 @@ const RegisterPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    // setApiError(null);
     try {
-      await api.post("auth/register/parent", formData);
+      const response = await api.post("auth/register/parent", formData);
+
+      // --- BẮT ĐẦU PHẦN CẬP NHẬT ---
+      // Kiểm tra nếu API trả về token và lưu vào localStorage
+      if (response.data && response.data.token) {
+        localStorage.setItem('token', response.data.token);
+      }
+      // --- KẾT THÚC PHẦN CẬP NHẬT ---
+
       toast.success(
         "Tạo tài khoản thành công! Đang chuyển đến trang đăng nhập..."
       );
@@ -133,14 +140,17 @@ const RegisterPage = () => {
       }, 2000);
     } catch (err) {
       console.error("Chi tiết lỗi API:", err);
-
+    
       // Lấy message ra một biến riêng để dễ sử dụng
+
       const errorMessage = err.response?.data?.message || "Đăng ký thất bại";
-      // setApiError(errorMessage);
-      // In ra message lỗi
+            // setApiError(errorMessage);
+           // In ra message lỗi
+
       console.log("Message lỗi từ server:", errorMessage);
 
       // Hiển thị message này cho người dùng qua toast
+
       toast.error(errorMessage);
       setIsLoading(false);
     }
