@@ -2,6 +2,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash, FaLock, FaEnvelope } from "react-icons/fa";
+import { useAuth } from "../../config/AuthContext";
 import api from "../../config/axios";
 import "./LoginPage.css";
 
@@ -15,6 +16,7 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const validateForm = () => {
     const newErrors = {};
@@ -42,6 +44,7 @@ const LoginPage = () => {
       try {
         const response = await api.post("auth/login", formData);
         if (response.data) {
+
           // lưu token
           const { accessToken, user } = response.data;
           localStorage.setItem("token", accessToken);
@@ -52,6 +55,9 @@ const LoginPage = () => {
 
           // lưu full name
           const fullName = user.fullName;
+          
+          login(user)
+
           localStorage.setItem("userFullname",fullName);
           if (role === "Admin") {
             toast.success(`cha`);
@@ -59,6 +65,7 @@ const LoginPage = () => {
           }
           if (role === "Parent") 
             toast.success(`Phụ huynh ${fullName} đăng nhập thành công!`);
+
           navigate("/");
         } else {
           toast.error("Định dạng phản hồi không hợp lệ");

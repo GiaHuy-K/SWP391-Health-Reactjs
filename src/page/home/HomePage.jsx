@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import './HomePage.css';
 import { Navigate, useNavigate } from 'react-router-dom';
+import { FaUserCircle } from 'react-icons/fa';
+import { useAuth } from '../../config/AuthContext';
 
 const HomePage = () => {
   const [formData, setFormData] = useState({
@@ -8,6 +10,9 @@ const HomePage = () => {
     email: '',
     message: ''
   });
+  const [showDropdown, setShowDropdown] = useState(false);
+  const { isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -28,11 +33,22 @@ const HomePage = () => {
       message: ''
     });
   };
-    const navigate = useNavigate();
 
   const handleLogin = () => {
     navigate("/login");
   };
+
+  const handleProfileClick = () => {
+    navigate('/profile');
+    setShowDropdown(false);
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+    setShowDropdown(false);
+  };
+
   return (
     <div className="homepage">
       {/* Header Section */}
@@ -47,7 +63,24 @@ const HomePage = () => {
             <li><a href="#features">Tính năng</a></li>
             <li><a href="#contact">Liên hệ</a></li>
           </ul>
-        <button className="login-btn" onClick={handleLogin}>Đăng nhập</button>
+          <div className="auth-section">
+            {!isAuthenticated ? (
+              <button className="login-btn" onClick={handleLogin}>Đăng nhập</button>
+            ) : (
+              <div className="profile-section">
+                <FaUserCircle 
+                  className="profile-icon" 
+                  onClick={() => setShowDropdown(!showDropdown)}
+                />
+                {showDropdown && (
+                  <div className="dropdown-menu">
+                    <button onClick={handleProfileClick}>Hồ sơ</button>
+                    <button onClick={handleLogout}>Đăng xuất</button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </nav>
       </header>
 

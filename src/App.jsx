@@ -6,6 +6,13 @@ import './App.css'
 function App() {
   const [count, setCount] = useState(0)
 
+  const handleLogout = () => {
+    localStorage.removeItem('currentUser'); // Remove current user from localStorage
+    // Force re-render of App after logout by navigating, which triggers re-render
+    // Also, the state is derived on every render.
+    navigate('/');
+  };
+
   return (
     <>
       <div>
