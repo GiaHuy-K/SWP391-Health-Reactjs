@@ -4,13 +4,13 @@ import { useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash, FaLock, FaEnvelope } from "react-icons/fa";
 import { useAuth } from "../../config/AuthContext";
 import api from "../../config/axios";
-import "./LoginPage.css"; 
+import "./LoginPage.css";
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    rememberMe: false
+    rememberMe: false,
   });
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
@@ -37,21 +37,41 @@ const LoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (validateForm()) {
       setIsLoading(true);
+
       try {
         const response = await api.post("auth/login", formData);
         if (response.data) {
+
+          // lưu token
           const { accessToken, user } = response.data;
           localStorage.setItem("token", accessToken);
-          login(user);
-          toast.success("Đăng nhập thành công!");
+
+          //lưu role
+          const role = user.role;
+          localStorage.setItem("userRole", role);
+
+          // lưu full name
+          const fullName = user.fullName;
+          
+          login(user)
+
+          localStorage.setItem("userFullname",fullName);
+          if (role === "Admin") {
+            toast.success(`cha`);
+            navigate("/dashboard");
+          }
+          if (role === "Parent") 
+            toast.success(`Phụ huynh ${fullName} đăng nhập thành công!`);
+
           navigate("/");
         } else {
           toast.error("Định dạng phản hồi không hợp lệ");
         }
       } catch (err) {
-        toast.error(err.response?.data || "Đăng nhập thất bại");
+        toast.error(err.response?.data?.message || "Đăng nhập thất bại");
       } finally {
         setIsLoading(false);
       }
@@ -62,7 +82,7 @@ const LoginPage = () => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : value
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
@@ -118,7 +138,9 @@ const LoginPage = () => {
               />
               Ghi nhớ tôi
             </label>
-            <a href="#" className="forgot-password">Quên mật khẩu?</a>
+            <a href="#" className="forgot-password">
+              Quên mật khẩu?
+            </a>
           </div>
 
           <button type="submit" className="login-button" disabled={isLoading}>

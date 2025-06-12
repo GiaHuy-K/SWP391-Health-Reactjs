@@ -1,10 +1,5 @@
 import React, { useState } from "react";
-import {
-  FaEye,
-  FaEyeSlash,
-  FaCheckCircle,
-  FaTimesCircle,
-} from "react-icons/fa";
+import { FaEye, FaEyeSlash, FaTimesCircle } from "react-icons/fa"; 
 import api from "../../config/axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
@@ -21,11 +16,9 @@ const RegisterPage = () => {
     terms: false,
   });
 
-  // const [apiError, setApiError] = useState(null);
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(0);
   const navigate = useNavigate();
 
@@ -130,21 +123,18 @@ const RegisterPage = () => {
       // --- KẾT THÚC PHẦN CẬP NHẬT ---
 
       toast.success(
-        "Tạo tài khoản thành công! Đang chuyển đến trang đăng nhập..."
+        "Tạo tài khoản thành công!"
       );
-      setIsSuccess(true);
 
-      // Chờ 2 giây rồi mới điều hướng qua login
       setTimeout(() => {
         navigate("/login");
-      }, 2000);
+      }, 200);
     } catch (err) {
       console.error("Chi tiết lỗi API:", err);
     
       // Lấy message ra một biến riêng để dễ sử dụng
 
       const errorMessage = err.response?.data?.message || "Đăng ký thất bại";
-            // setApiError(errorMessage);
            // In ra message lỗi
 
       console.log("Message lỗi từ server:", errorMessage);
@@ -174,98 +164,83 @@ const RegisterPage = () => {
   return (
     <div className="register-container">
       <div className="register-card">
-        {isSuccess ? (
-          <div className="register-success">
-            <FaCheckCircle className="register-icon success" />
-            <h2>Đăng ký thành công!</h2>
-            <p>Cảm ơn bạn đã đăng ký với chúng tôi.</p>
-            <button onClick={() => setIsSuccess(false)}>
-              Đăng ký tài khoản khác
+        <form className="register-form" onSubmit={handleSubmit}>
+          <h2>Tạo tài khoản của bạn</h2>
+
+          {[
+            "fullName",
+            "email",
+            "phoneNumber",
+            "password",
+            "confirmPassword",
+          ].map((field) => (
+            <div key={field} className="form-group">
+              <label htmlFor={field}>
+                {
+                  {
+                    fullName: "Họ và tên",
+                    email: "Email",
+                    phoneNumber: "Số điện thoại",
+                    password: "Mật khẩu",
+                    confirmPassword: "Xác nhận mật khẩu",
+                  }[field]
+                }
+              </label>
+              <div className="input-wrapper">
+                <input
+                  type={
+                    field === "password" || field === "confirmPassword"
+                      ? showPassword
+                        ? "text"
+                        : "password"
+                      : field === "email"
+                      ? "email"
+                      : "text"
+                  }
+                  id={field}
+                  name={field}
+                  value={formData[field]}
+                  onChange={handleChange}
+                  placeholder={field === "email" ? "you@example.com" : ""}
+                  className={errors[field] ? "error" : ""}
+                />
+                {(field === "password" || field === "confirmPassword") && (
+                  <span
+                    className="eye-icon"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                  </span>
+                )}
+              </div>
+              {errors[field] && <p className="error-text">{errors[field]}</p>}
+            </div>
+          ))}
+
+          <div className="form-group">
+            <label>Độ mạnh của mật khẩu:</label>
+            <div className="strength-bar">
+              <div
+                className="strength-fill"
+                style={{
+                  width: `${(passwordStrength / 4) * 100}%`,
+                  backgroundColor: getStrengthColor(),
+                }}
+              ></div>
+            </div>
+          </div>
+
+          <button type="submit" disabled={isLoading}>
+            {isLoading ? "Đang xử lý..." : "Đăng ký"}
+          </button>
+
+          <div className="login-link">
+            <span>Đã có tài khoản? </span>
+            <button type="button" onClick={() => navigate("/login")}>
+              Đăng nhập
             </button>
           </div>
-        ) : (
-          <form className="register-form" onSubmit={handleSubmit}>
-            <h2>Tạo tài khoản của bạn</h2>
-            {/* {apiError && (
-              <div className="form-group api-error-container">
-                <FaTimesCircle className="error-icon" />
-                <p className="error-text">{apiError}</p>
-              </div>
-            )} */}
-
-            {["fullName", "email", "phoneNumber", "password", "confirmPassword"].map(
-              (field) => (
-                <div key={field} className="form-group">
-                  <label htmlFor={field}>
-                    {
-                      {
-                        fullName: "Họ và tên",
-                        email: "Email",
-                        phoneNumber: "Số điện thoại",
-                        password: "Mật khẩu",
-                        confirmPassword: "Xác nhận mật khẩu",
-                      }[field]
-                    }
-                  </label>
-                  <div className="input-wrapper">
-                    <input
-                      type={
-                        field === "password" || field === "confirmPassword"
-                          ? showPassword
-                            ? "text"
-                            : "password"
-                          : field === "email"
-                          ? "email"
-                          : "text"
-                      }
-                      id={field}
-                      name={field}
-                      value={formData[field]}
-                      onChange={handleChange}
-                      placeholder={field === "email" ? "you@example.com" : ""}
-                      className={errors[field] ? "error" : ""}
-                    />
-                    {(field === "password" || field === "confirmPassword") && (
-                      <span
-                        className="eye-icon"
-                        onClick={() => setShowPassword(!showPassword)}
-                      >
-                        {showPassword ? <FaEyeSlash /> : <FaEye />}
-                      </span>
-                    )}
-                  </div>
-                  {errors[field] && (
-                    <p className="error-text">{errors[field]}</p>
-                  )}
-                </div>
-              )
-            )}
-
-            <div className="form-group">
-              <label>Độ mạnh của mật khẩu:</label>
-              <div className="strength-bar">
-                <div
-                  className="strength-fill"
-                  style={{
-                    width: `${(passwordStrength / 4) * 100}%`,
-                    backgroundColor: getStrengthColor(),
-                  }}
-                ></div>
-              </div>
-            </div>
-
-            <button type="submit" disabled={isLoading}>
-              {isLoading ? "Đang xử lý..." : "Đăng ký"}
-            </button>
-
-            <div className="login-link">
-              <span>Đã có tài khoản? </span>
-              <button type="button" onClick={() => navigate("/login")}>
-                Đăng nhập
-              </button>
-            </div>
-          </form>
-        )}
+        </form>
       </div>
     </div>
   );
