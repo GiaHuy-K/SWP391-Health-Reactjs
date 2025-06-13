@@ -13,6 +13,7 @@ import AdminLayout from "./components/layouts/adminLayout.jsx";
 import ManageStaff from "./page/admin/manage-staff.jsx";
 import ManageParent from "./page/admin/manage-parent.jsx";
 import ManageNurse from "./page/admin/manage-nurse.jsx";
+import AddAccount from "./page/admin/add-account.jsx";
 
 // Component để bảo vệ các route yêu cầu đăng nhập
 const PrivateRoute = ({ children }) => {
@@ -48,6 +49,10 @@ const router = createBrowserRouter([
       {
         path : "/dashboard/nurse",
         element: <ManageNurse></ManageNurse>
+      },
+      {
+        path: "/dashboard/add-account",
+        element: <AddAccount />,
       }
     ]
   },

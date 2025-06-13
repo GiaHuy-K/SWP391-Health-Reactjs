@@ -6,6 +6,7 @@ import {
   MedicineBoxOutlined,
   SolutionOutlined,
   UserSwitchOutlined,
+  PlusOutlined,
 } from "@ant-design/icons";
 import {
   Layout,
@@ -30,9 +31,11 @@ function getItem(label, key, icon, children) {
 }
 
 const items = [
+  
   getItem("Quản Lí", "staff", <SolutionOutlined />),
   getItem("Y Tá", "nurse", <MedicineBoxOutlined />),
   getItem("Phụ Huynh", "parent", <UserSwitchOutlined />),
+  getItem("Tạo tài khoản", "add-account", <PlusOutlined />),
 ];
 
 const AdminLayout = () => {
