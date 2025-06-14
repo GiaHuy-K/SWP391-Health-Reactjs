@@ -1,23 +1,17 @@
 import React, { useState } from "react";
 import {
-  TeamOutlined,
   UserOutlined,
   LogoutOutlined,
   MedicineBoxOutlined,
   SolutionOutlined,
   UserSwitchOutlined,
   PlusOutlined,
+  PieChartOutlined,
 } from "@ant-design/icons";
-import {
-  Layout,
-  Menu,
-  theme,
-  Avatar,
-  Dropdown,
-  Space,
-  message,
-} from "antd";
+import { Layout, Menu, theme, Avatar, Dropdown, Space, message } from "antd";
 import { Link, Outlet, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -31,14 +25,15 @@ function getItem(label, key, icon, children) {
 }
 
 const items = [
-  
-  getItem("Quản Lí", "staff", <SolutionOutlined />),
+  getItem("Tổng quan", "overview", <PieChartOutlined />),
+  getItem("Quản Lý", "staff", <SolutionOutlined />),
   getItem("Y Tá", "nurse", <MedicineBoxOutlined />),
   getItem("Phụ Huynh", "parent", <UserSwitchOutlined />),
   getItem("Tạo tài khoản", "add-account", <PlusOutlined />),
 ];
 
 const AdminLayout = () => {
+  const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
   const {
@@ -54,13 +49,17 @@ const AdminLayout = () => {
     }
   };
 
-  const userMenu = (
-    <Menu onClick={handleMenuClick}>
-      <Menu.Item key="logout" icon={<LogoutOutlined />} danger>
-        Đăng xuất
-      </Menu.Item>
-    </Menu>
-  );
+  const userMenu = {
+    items: [
+      {
+        key: "logout",
+        label: "Đăng xuất",
+        icon: <LogoutOutlined />,
+        danger: true,
+      },
+    ],
+    onClick: handleMenuClick,
+  };
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
@@ -82,7 +81,7 @@ const AdminLayout = () => {
         </div>
         <Menu
           theme="dark"
-          defaultSelectedKeys={["staff"]}
+          selectedKeys={[location.pathname.split("/")[2] || "staff"]}
           mode="inline"
           items={items}
         />
@@ -112,9 +111,12 @@ const AdminLayout = () => {
             <strong>Admin</strong>
           </div>
 
-          <Dropdown overlay={userMenu} placement="bottomRight">
+          <Dropdown menu={userMenu} placement="bottomRight">
             <Space style={{ cursor: "pointer" }}>
-              <Avatar style={{ backgroundColor: "#1890ff" }} icon={<UserOutlined />} />
+              <Avatar
+                style={{ backgroundColor: "#1890ff" }}
+                icon={<UserOutlined />}
+              />
               <span style={{ fontWeight: 500 }}>Admin</span>
             </Space>
           </Dropdown>

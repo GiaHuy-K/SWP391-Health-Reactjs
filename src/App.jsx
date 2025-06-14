@@ -1,42 +1,77 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from "react";
+import {
+  createBrowserRouter,
+  Navigate,
+  RouterProvider,
+} from "react-router-dom";
+import LoginPage from "./page/login/index.jsx";
+import RegisterPage from "./page/register/index.jsx";
+import HomePage from "./page/home/HomePage.jsx";
+import UserProfile from "./page/userprofile/UserProfile.jsx";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-function App() {
-  const [count, setCount] = useState(0)
+import { AuthProvider, useAuth } from "./config/AuthContext";
+import AdminLayout from "./components/layouts/adminLayout.jsx";
+import ManageStaff from "./page/admin/manage-staff.jsx";
+import ManageParent from "./page/admin/manage-parent.jsx";
+import ManageNurse from "./page/admin/manage-nurse.jsx";
+import AddAccount from "./page/admin/add-account.jsx";
+import Unauthorized from "./page/error/Unauthorized.jsx";
+import DashboardOverview from "./page/admin/dashboard-overview.jsx";
 
-  const handleLogout = () => {
-    localStorage.removeItem('currentUser'); // Remove current user from localStorage
-    // Force re-render of App after logout by navigating, which triggers re-render
-    // Also, the state is derived on every render.
-    navigate('/');
-  };
+// Component bảo vệ route yêu cầu đăng nhập
+const PrivateRoute = ({ children }) => {
+  const { isAuthenticated } = useAuth();
+  return isAuthenticated ? children : <Navigate to="/login" />;
+};
+const AdminRoute = ({ children }) => {
+  const { isAuthenticated, user } = useAuth();
 
+  if (!isAuthenticated) return <Navigate to="/login" />;
+  if (user?.role !== "SchoolAdmin") return <Navigate to="/unauthorized" />;
+  return children;
+};
+
+const router = createBrowserRouter([
+  { path: "/", element: <HomePage /> },
+  { path: "/login", element: <LoginPage /> },
+  { path: "/register", element: <RegisterPage /> },
+  { path: "/unauthorized", element: <Unauthorized /> },
+
+  {
+    path: "/dashboard",
+    element: (
+      <AdminRoute>
+        <AdminLayout />
+      </AdminRoute>
+    ),
+    children: [
+      { index: true, element: <Navigate to="overview" replace /> },
+
+      // 👇 Trang tổng quan chuyển thành path rõ ràng
+      { path: "overview", element: <DashboardOverview /> },
+      { path: "/dashboard/staff", element: <ManageStaff /> },
+      { path: "/dashboard/parent", element: <ManageParent /> },
+      { path: "/dashboard/nurse", element: <ManageNurse /> },
+      { path: "/dashboard/add-account", element: <AddAccount /> },
+    ],
+  },
+  {
+    path: "/profile",
+    element: (
+      <PrivateRoute>
+        <UserProfile />
+      </PrivateRoute>
+    ),
+  },
+]);
+
+export default function App() {
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <AuthProvider>
+      <RouterProvider router={router} />
+      <ToastContainer />
+    </AuthProvider>
+  );
 }
-
-export default App

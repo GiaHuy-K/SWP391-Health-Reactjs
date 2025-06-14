@@ -62,7 +62,7 @@ const LoginPage = () => {
 
           localStorage.setItem("userFullname",fullName);
           if (role === "SchoolAdmin") {
-            toast.success(`cha`);
+            toast.success(`Admin đăng nhập thành công`);
             navigate("/dashboard");
           }
           if (role === "Parent") {

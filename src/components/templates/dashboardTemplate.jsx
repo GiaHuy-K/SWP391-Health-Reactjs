@@ -82,6 +82,7 @@ function DashboardTemplate({columns, uri }) {
         columns={newColumns}
         dataSource={data}
         rowKey="userId" // rất quan trọng để tránh warning "each child should have a unique key"
+        pagination={{ pageSize: 10 }}
       />
     </div>
   );
