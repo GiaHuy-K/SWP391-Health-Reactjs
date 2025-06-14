@@ -1,5 +1,5 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
-import api from './axios';
+import React, { createContext, useState, useContext, useEffect } from "react";
+import api from "./axios";
 
 const AuthContext = createContext(null);
 
@@ -10,27 +10,30 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (token) {
         try {
           // Kiểm tra tính hợp lệ của token bằng cách gọi API
-          const response = await api.get('/auth/verify-token');
+          const response = await api.get("/auth/verify-token");
           if (response.data) {
             // Nếu token hợp lệ, lấy thông tin profile đầy đủ của user
-            const profileResponse = await api.get('/users/profile');
+            const profileResponse = await api.get("/user/profile/me");
             setUser(profileResponse.data);
             setIsAuthenticated(true);
           } else {
             // Nếu token không hợp lệ, xóa nó và thông tin user
-            localStorage.removeItem('token');
-            localStorage.removeItem('user'); // Xóa thông tin user cũ nếu có
+            localStorage.removeItem("token");
+            localStorage.removeItem("user"); // Xóa thông tin user cũ nếu có
             setIsAuthenticated(false);
           }
         } catch (error) {
           // Nếu có lỗi, xóa token và thông tin user
-          console.error('Error during token verification or profile fetch:', error);
-          localStorage.removeItem('token');
-          localStorage.removeItem('user'); // Xóa thông tin user cũ nếu có
+          console.error(
+            "Error during token verification or profile fetch:",
+            error
+          );
+          localStorage.removeItem("token");
+          localStorage.removeItem("user"); // Xóa thông tin user cũ nếu có
           setIsAuthenticated(false);
         }
       }
@@ -41,24 +44,28 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (userData) => {
-    try {
-      // Sau khi đăng nhập, lấy thông tin profile đầy đủ của user
-      const profileResponse = await api.get('/users/profile');
-      setUser(profileResponse.data);
-      setIsAuthenticated(true);
-    } catch (error) {
-      console.error('Error fetching user profile after login:', error);
-      // Nếu không lấy được profile, vẫn set user data cơ bản từ login response (tùy chọn)
-      setUser(userData); // Giữ lại dòng này nếu bạn muốn hiển thị dữ liệu cơ bản từ login
-      setIsAuthenticated(true);
+    const role = userData?.role;
+    let profileData = userData;
+
+    if (role === "Parent") {
+      try {
+        const response = await api.get("/user/profile/me");
+        profileData = response.data;
+      } catch (error) {
+        console.warn("Không thể lấy profile Parent:", error);
+      }
     }
+
+    // Admin hoặc role khác: dùng luôn userData trả về từ login
+    setUser(profileData);
+    setIsAuthenticated(true);
   };
 
   const logout = () => {
     setUser(null);
     setIsAuthenticated(false);
-    localStorage.removeItem('token');
-    localStorage.removeItem('user'); // Đảm bảo xóa thông tin user khi đăng xuất
+    localStorage.removeItem("token");
+    localStorage.removeItem("user"); // Đảm bảo xóa thông tin user khi đăng xuất
   };
 
   if (isLoading) {
@@ -72,4 +79,4 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-export const useAuth = () => useContext(AuthContext); 
+export const useAuth = () => useContext(AuthContext);

@@ -43,6 +43,8 @@ const LoginPage = () => {
 
       try {
         const response = await api.post("auth/login", formData);
+        console.log("Dữ liệu FE nhận từ BE:", response.data);
+        
         if (response.data) {
 
           // lưu token
@@ -59,14 +61,16 @@ const LoginPage = () => {
           login(user)
 
           localStorage.setItem("userFullname",fullName);
-          if (role === "Admin") {
-            toast.success(`cha`);
+          if (role === "SchoolAdmin") {
+            toast.success(`Admin đăng nhập thành công`);
             navigate("/dashboard");
           }
-          if (role === "Parent") 
+          if (role === "Parent") {
             toast.success(`Phụ huynh ${fullName} đăng nhập thành công!`);
 
           navigate("/");
+          }
+            
         } else {
           toast.error("Định dạng phản hồi không hợp lệ");
         }
