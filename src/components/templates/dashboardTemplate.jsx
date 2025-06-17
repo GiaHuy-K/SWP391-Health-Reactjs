@@ -1,19 +1,21 @@
 import {
-  Button,
-  Form,
   Table,
   message,
   Switch,
-
+  Tag,
+  Button
 } from "antd";
 import React, { useEffect, useState } from "react";
 import api from "../../config/axios";
+import UserDetailModal from "../admin/user-detail-modal";
 
-function DashboardTemplate({columns, uri }) {
-
+function DashboardTemplate({ columns, uri }) {
   const [newColumns, setNewColumns] = useState();
   const [data, setData] = useState([]);
-  
+
+  const [selectedUserId, setSelectedUserId] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const handleToggleActivation = async (userId, newStatus) => {
     try {
       await api.put(
@@ -36,9 +38,42 @@ function DashboardTemplate({columns, uri }) {
     }
   };
 
+  const formatRole = (role) => {
+    let color = "gray";
+    let label = role;
+
+    switch (role) {
+      case "MedicalStaff":
+        color = "green";
+        label = "Y tá";
+        break;
+      case "Parent":
+        color = "purple";
+        label = "Phụ huynh";
+        break;
+      case "StaffManager":
+        color = "volcano";
+        label = "Quản Lý";
+        break;
+    }
+
+    return <Tag color={color}>{label}</Tag>;
+  };
+
+  const handleViewDetail = (userId) => {
+    setSelectedUserId(userId);
+    setIsModalOpen(true);
+  };
+
   useEffect(() => {
+    const formattedColumns = columns.map((col) =>
+      col.dataIndex === "role"
+        ? { ...col, render: formatRole }
+        : col
+    );
+
     const tableColumns = [
-      ...columns,
+      ...formattedColumns,
       {
         title: "Trạng thái",
         dataIndex: "isActive",
@@ -48,8 +83,19 @@ function DashboardTemplate({columns, uri }) {
             checked={isActive}
             checkedChildren="Đang hoạt động"
             unCheckedChildren="Bị khóa"
-            onChange={() => handleToggleActivation(record.userId, !isActive)}
+            onChange={() =>
+              handleToggleActivation(record.userId, !isActive)
+            }
           />
+        ),
+      },
+      {
+        title: "Xem",
+        key: "action",
+        render: (_, record) => (
+          <Button type="link" onClick={() => handleViewDetail(record.userId)}>
+            Xem chi tiết
+          </Button>
         ),
       },
     ];
@@ -61,14 +107,13 @@ function DashboardTemplate({columns, uri }) {
       const response = await api.get(uri);
       console.log("Dữ liệu từ API:", response.data);
 
-      // Vì BE trả về kiểu: { content: [...] }
       const raw = response.data;
       const content = Array.isArray(raw.content) ? raw.content : [];
 
       setData(content);
     } catch (error) {
       console.error("Lỗi khi fetch dữ liệu:", error);
-      setData([]); // tránh lỗi render
+      setData([]);
     }
   };
 
@@ -81,8 +126,14 @@ function DashboardTemplate({columns, uri }) {
       <Table
         columns={newColumns}
         dataSource={data}
-        rowKey="userId" // rất quan trọng để tránh warning "each child should have a unique key"
+        rowKey="userId"
         pagination={{ pageSize: 10 }}
+      />
+
+      <UserDetailModal
+        userId={selectedUserId}
+        open={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
       />
     </div>
   );

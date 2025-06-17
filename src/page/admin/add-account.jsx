@@ -124,7 +124,7 @@ const AddAccount = () => {
   return (
     <Card
       title="Tạo Tài Khoản Nhân Viên"
-      bordered={false}
+       variant="borderless"
       style={{ maxWidth: 600, margin: "auto" }}
     >
       <Form layout="vertical">

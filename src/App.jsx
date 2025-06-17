@@ -19,6 +19,9 @@ import ManageNurse from "./page/admin/manage-nurse.jsx";
 import AddAccount from "./page/admin/add-account.jsx";
 import Unauthorized from "./page/error/Unauthorized.jsx";
 import DashboardOverview from "./page/admin/dashboard-overview.jsx";
+import ForgotPassword from "./page/forgot-password/forgot-password.jsx";
+import ResetPassword from "./page/forgot-password/reset-password.jsx";
+import ManageStudent from "./page/admin/manage-student.jsx";
 
 // Component bảo vệ route yêu cầu đăng nhập
 const PrivateRoute = ({ children }) => {
@@ -38,6 +41,8 @@ const router = createBrowserRouter([
   { path: "/login", element: <LoginPage /> },
   { path: "/register", element: <RegisterPage /> },
   { path: "/unauthorized", element: <Unauthorized /> },
+  { path: "/forgot-password", element: <ForgotPassword /> },
+  { path : "/reset-password", element: <ResetPassword/>},
 
   {
     path: "/dashboard",
@@ -48,13 +53,12 @@ const router = createBrowserRouter([
     ),
     children: [
       { index: true, element: <Navigate to="overview" replace /> },
-
-      // 👇 Trang tổng quan chuyển thành path rõ ràng
       { path: "overview", element: <DashboardOverview /> },
-      { path: "/dashboard/staff", element: <ManageStaff /> },
-      { path: "/dashboard/parent", element: <ManageParent /> },
-      { path: "/dashboard/nurse", element: <ManageNurse /> },
-      { path: "/dashboard/add-account", element: <AddAccount /> },
+      { path: "staff", element: <ManageStaff /> },
+      { path: "parent", element: <ManageParent /> },
+      { path: "nurse", element: <ManageNurse /> },
+      { path: "student", element: <ManageStudent/>},
+      { path: "add-account", element: <AddAccount /> },
     ],
   },
   {

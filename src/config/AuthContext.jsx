@@ -11,32 +11,36 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const checkAuth = async () => {
       const token = localStorage.getItem("token");
-      if (token) {
-        try {
-          // Kiểm tra tính hợp lệ của token bằng cách gọi API
-          const response = await api.get("/auth/verify-token");
-          if (response.data) {
-            // Nếu token hợp lệ, lấy thông tin profile đầy đủ của user
-            const profileResponse = await api.get("/user/profile/me");
-            setUser(profileResponse.data);
+      if (!token) {
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        const profileResponse = await api.get("/user/profile/me");
+        setUser(profileResponse.data);
+        setIsAuthenticated(true);
+      } catch (error) {
+        console.warn("Không lấy được profile:", error);
+
+        // Trường hợp Parent chưa liên kết học sinh
+        if (error.response?.status === 403) {
+          const savedRole = localStorage.getItem("userRole");
+          const savedFullName = localStorage.getItem("userFullname");
+
+          if (savedRole && savedFullName) {
+            setUser({ role: savedRole, fullName: savedFullName });
             setIsAuthenticated(true);
           } else {
-            // Nếu token không hợp lệ, xóa nó và thông tin user
             localStorage.removeItem("token");
-            localStorage.removeItem("user"); // Xóa thông tin user cũ nếu có
             setIsAuthenticated(false);
           }
-        } catch (error) {
-          // Nếu có lỗi, xóa token và thông tin user
-          console.error(
-            "Error during token verification or profile fetch:",
-            error
-          );
+        } else {
           localStorage.removeItem("token");
-          localStorage.removeItem("user"); // Xóa thông tin user cũ nếu có
           setIsAuthenticated(false);
         }
       }
+
       setIsLoading(false);
     };
 
@@ -53,10 +57,13 @@ export const AuthProvider = ({ children }) => {
         profileData = response.data;
       } catch (error) {
         console.warn("Không thể lấy profile Parent:", error);
+        // vẫn lưu role và fullname nếu có
+        localStorage.setItem("userRole", role);
+        localStorage.setItem("userFullname", userData?.fullName || "Phụ huynh");
       }
     }
 
-    // Admin hoặc role khác: dùng luôn userData trả về từ login
+    console.log("Dữ liệu người dùng sau login:", profileData);
     setUser(profileData);
     setIsAuthenticated(true);
   };
@@ -65,11 +72,12 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     setIsAuthenticated(false);
     localStorage.removeItem("token");
-    localStorage.removeItem("user"); // Đảm bảo xóa thông tin user khi đăng xuất
+    localStorage.removeItem("userRole");
+    localStorage.removeItem("userFullname");
   };
 
   if (isLoading) {
-    return <div>Loading...</div>; // Hoặc một component loading khác
+    return <div>Loading...</div>;
   }
 
   return (
