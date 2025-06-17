@@ -66,7 +66,7 @@ const LoginPage = () => {
             navigate("/dashboard");
           }
           if (role === "Parent") {
-            toast.success(`Phụ huynh ${fullName} đăng nhập thành công!`);
+            toast.success(`đăng nhập thành công!`);
 
           navigate("/");
           }
@@ -142,7 +142,7 @@ const LoginPage = () => {
               />
               Ghi nhớ tôi
             </label>
-            <a href="#" className="forgot-password">
+            <a href="/forgot-password" className="forgot-password">
               Quên mật khẩu?
             </a>
           </div>
