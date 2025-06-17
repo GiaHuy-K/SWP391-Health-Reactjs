@@ -11,9 +11,10 @@ import {
   Select,
   message,
 } from "antd";
-import { getStudent } from "../../services/api.student";
-import api from "../../config/axios";
 import dayjs from "dayjs";
+import api from "../../config/axios";
+import { getStudent } from "../../services/api.student";
+import StudentDetailModal from "../../components/admin/student-detail-modal";
 
 const { Option } = Select;
 
@@ -22,7 +23,10 @@ function ManageStudent() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [form] = Form.useForm();
 
-  // Lấy danh sách student
+  // Modal chi tiết
+  const [selectedStudentId, setSelectedStudentId] = useState(null);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+
   const fetchStudent = async () => {
     const data = await getStudent();
     setStudentList(data);
@@ -51,6 +55,11 @@ function ManageStudent() {
     }
   };
 
+  const handleRowClick = (record) => {
+    setSelectedStudentId(record.studentId);
+    setIsDetailModalOpen(true);
+  };
+
   const columns = [
     {
       title: "Mã học sinh",
@@ -77,7 +86,7 @@ function ManageStudent() {
       dataIndex: "gender",
       key: "gender",
       render: (gender) => {
-        const color = gender === "Nam" ? "blue" : "magenta";
+        const color = gender === "Nam" || gender === "MALE" ? "blue" : "magenta";
         return <Tag color={color}>{gender}</Tag>;
       },
     },
@@ -98,7 +107,15 @@ function ManageStudent() {
         Tạo mới học sinh
       </Button>
 
-      <Table dataSource={studentList} columns={columns} rowKey="studentId" />
+      <Table
+        dataSource={studentList}
+        columns={columns}
+        rowKey="studentId"
+        onRow={(record) => ({
+          onClick: () => handleRowClick(record),
+          style: { cursor: "pointer" },
+        })}
+      />
 
       {/* Modal tạo mới student */}
       <Modal
@@ -157,6 +174,13 @@ function ManageStudent() {
           </Form.Item>
         </Form>
       </Modal>
+
+      {/* Modal xem chi tiết student */}
+      <StudentDetailModal
+        open={isDetailModalOpen}
+        onClose={() => setIsDetailModalOpen(false)}
+        studentId={selectedStudentId}
+      />
     </div>
   );
 }

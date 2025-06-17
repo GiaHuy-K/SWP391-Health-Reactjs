@@ -1,105 +1,134 @@
 import React, { useEffect, useState } from "react";
-import { Card, Spin } from "antd";
+import { Card, Spin, Row, Col } from "antd";
 import {
   PieChart,
   Pie,
   Cell,
   Tooltip,
   Legend,
+  BarChart,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Bar,
   ResponsiveContainer,
 } from "recharts";
 import api from "../../config/axios";
 
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28"];
+// Xanh lá cho hoạt động, đỏ cho vô hiệu hóa
+const STATUS_COLORS = ["#4caf50", "#f44336"];
 
 const DashboardOverview = () => {
-  const [data, setData] = useState([]);
+  const [userStatusData, setUserStatusData] = useState([]);
+  const [roleData, setRoleData] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchStats = async () => {
+    const fetchData = async () => {
       try {
-        const [staffManagersRes, medicalStaffRes, parentsRes] =
-          await Promise.all([
-            api.get("admin/users/staff-managers"),
-            api.get("admin/users/medical-staff"),
-            api.get("admin/users/parents"),
-          ]);
+        const [staffRes, medicalRes, parentRes] = await Promise.all([
+          api.get("admin/users/staff-managers"),
+          api.get("admin/users/medical-staff"),
+          api.get("admin/users/parents"),
+        ]);
 
-        const data = [
-          {
-            name: "Quản lý",
-            value: staffManagersRes.data.totalElements || 0,
-          },
-          {
-            name: "Y tá",
-            value: medicalStaffRes.data.totalElements || 0,
-          },
-          {
-            name: "Phụ huynh",
-            value: parentsRes.data.totalElements || 0,
-          },
+        const allUsers = [
+          ...staffRes.data.content,
+          ...medicalRes.data.content,
+          ...parentRes.data.content,
         ];
 
-        setData(data);
-      } catch (error) {
-        console.error("Lỗi khi lấy thống kê người dùng:", error);
+        const activeCount = allUsers.filter((u) => u.isActive).length;
+        const inactiveCount = allUsers.length - activeCount;
+
+        setUserStatusData([
+          { name: "Hoạt động", value: activeCount },
+          { name: "Vô hiệu hóa", value: inactiveCount },
+        ]);
+
+        setRoleData([
+          { role: "Quản lý", value: staffRes.data.totalElements || 0 },
+          { role: "Y tá", value: medicalRes.data.totalElements || 0 },
+          { role: "Phụ huynh", value: parentRes.data.totalElements || 0 },
+        ]);
+      } catch (err) {
+        console.error("Lỗi khi fetch dữ liệu dashboard:", err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchStats();
+    fetchData();
   }, []);
 
+  const renderPieChart = (title, data) => (
+    <Card title={title} style={{ width: "100%" }}>
+      <ResponsiveContainer width="100%" height={250}>
+        <PieChart>
+          <Pie
+            data={data}
+            dataKey="value"
+            nameKey="name"
+            cx="50%"
+            cy="50%"
+            outerRadius={80}
+            label={({ name, value }) => `${name}: ${value}`}
+            labelLine={false}
+          >
+            {data.map((entry, index) => (
+              <Cell
+                key={`cell-${index}`}
+                fill={STATUS_COLORS[index % STATUS_COLORS.length]}
+              />
+            ))}
+          </Pie>
+          <Tooltip />
+          <Legend />
+        </PieChart>
+      </ResponsiveContainer>
+    </Card>
+  );
+
   return (
-    <div style={{ display: "flex", justifyContent: "center", padding: 24 }}>
-      <Card
-        title="Tổng quan người dùng"
-        style={{ width: "100%", maxWidth: 600 }}
-      >
-        {loading ? (
-          <div style={{ textAlign: "center", padding: "50px 0" }}>
-            <Spin size="large" />
-          </div>
-        ) : (
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-              <Pie
-                data={data}
-                dataKey="value"
-                nameKey="name"
-                cx="50%"
-                cy="50%"
-                outerRadius={100}
-                fill="#8884d8"
-                labelLine={false} // ẩn đường line
-                label={({ value, x, y, index }) => (
-                  <text
-                    x={x}
-                    y={y}
-                    fill={COLORS[index % COLORS.length]}
-                    textAnchor="middle"
-                    dominantBaseline="central"
-                    fontSize={14}
-                  >
-                    {value}
-                  </text>
-                )}
-              >
-                {data.map((entry, index) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={COLORS[index % COLORS.length]}
-                  />
-                ))}
-              </Pie>
-              <Tooltip />
-              <Legend />
-            </PieChart>
-          </ResponsiveContainer>
-        )}
-      </Card>
+    <div style={{ padding: 24 }}>
+      {loading ? (
+        <Spin size="large" style={{ display: "block", margin: "100px auto" }} />
+      ) : (
+        <>
+          <Row gutter={[16, 16]}>
+            <Col xs={24} md={12}>
+              {renderPieChart("Trạng thái người dùng", userStatusData)}
+            </Col>
+          </Row>
+
+          <Card title="Người dùng theo vai trò" style={{ marginTop: 24 }}>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={roleData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="role" />
+                <YAxis allowDecimals={false} />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="value" name="Số lượng">
+                  {roleData.map((entry, index) => {
+                    const colors = {
+                      "Quản lý": "#4caf50",
+                      "Y tá": "#2196f3",
+                      "Phụ huynh": "#ff9800",
+                    };
+                    return (
+                      <Cell
+                        key={index}
+                        fill={colors[entry.role] || "#8884d8"}
+                      />
+                    );
+                  })}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </Card>
+        </>
+      )}
     </div>
   );
 };

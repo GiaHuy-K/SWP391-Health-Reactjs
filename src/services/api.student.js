@@ -15,5 +15,14 @@ export const getStudent = async () => {
   }
 };
 
-
+export const getStudentById = async (id) => {
+    try {
+      const res = await api.get(`/students/${id}`);
+      return res.data;
+    } catch (error) {
+      toast.error("Không thể lấy chi tiết học sinh");
+      throw error;
+    }
+  };
+  
 
