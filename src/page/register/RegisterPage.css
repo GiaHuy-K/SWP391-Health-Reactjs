@@ -1,7 +1,7 @@
 /* Nền + căn giữa giống reset */
 .register-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #74ebd5, #9face6);
+  background: linear-gradient(135deg, #a18cd1, #fbc2eb);
   display: flex;
   justify-content: center;
   align-items: center;
