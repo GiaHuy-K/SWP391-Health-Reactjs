@@ -18,6 +18,11 @@ function ManageNurse() {
       dataIndex: "phoneNumber",
       key: "phoneNumber",
     },
+    {
+      title: "Vai trò",
+      dataIndex: "role",
+      key: "role",
+    },
   ];
 
   return (

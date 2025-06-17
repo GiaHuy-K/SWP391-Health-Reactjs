@@ -1,119 +1,144 @@
+/* Nền + căn giữa giống reset */
 .register-container {
-    min-height: 100vh;
-    background: linear-gradient(to bottom right, #eff6ff, #c7d2fe);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-  }
-  
-  .register-card {
-    background: white;
-    padding: 2rem;
-    border-radius: 1rem;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    max-width: 420px;
-    width: 100%;
-  }
-  
-  .register-form h2 {
-    text-align: center;
-    margin-bottom: 1rem;
-  }
-  
-  .form-group {
-    margin-bottom: 1rem;
-  }
-  
-  .form-group label {
-    font-weight: 600;
-    display: block;
-    margin-bottom: 0.25rem;
-  }
-  
-  .input-wrapper {
-    position: relative;
-  }
-  
-  .input-wrapper input {
-    width: 100%;
-    padding: 0.5rem 2.5rem 0.5rem 0.75rem;
-    border: 1px solid #ccc;
-    border-radius: 0.375rem;
-    font-size: 0.875rem;
-  }
-  
-  .input-wrapper input.error {
-    border-color: red;
-  }
-  
-  .eye-icon {
-    position: absolute;
-    right: 0.75rem;
-    top: 50%;
-    transform: translateY(-50%);
-    cursor: pointer;
-  }
-  
-  .error-text {
-    color: red;
-    font-size: 0.8rem;
-    margin-top: 0.25rem;
-  }
-  
-  .strength-bar {
-    background: #eee;
-    border-radius: 1rem;
-    height: 0.5rem;
-    width: 100%;
-    overflow: hidden;
-  }
-  
-  .strength-fill {
-    height: 100%;
-    transition: width 0.3s ease-in-out;
-  }
-  
-  .register-form button {
-    width: 100%;
-    padding: 0.75rem;
-    background: #6366f1;
-    color: white;
-    font-weight: bold;
-    border: none;
-    border-radius: 0.375rem;
-    cursor: pointer;
-    transition: background 0.3s;
-  }
-  
-  .register-form button:disabled {
-    background: #a5b4fc;
-    cursor: not-allowed;
-  }
-  
-  .register-form button:hover:not(:disabled) {
-    background: #4f46e5;
-  }
-  
-  .login-link {
-    text-align: center;
-    margin-top: 1rem;
-  }
-  
-  .login-link button {
-    background: none;
-    border: none;
-    color: #6366f1;
-    cursor: pointer;
-    font-weight: 500;
-  }
-  
-  .register-success {
-    text-align: center;
-  }
-  
-  .register-icon.success {
-    color: green;
-    font-size: 2rem;
-  }
-  
+  min-height: 100vh;
+  background: linear-gradient(135deg, #74ebd5, #9face6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Segoe UI', sans-serif;
+  padding: 2rem;
+}
+
+/* Form box đẹp */
+.register-card {
+  background: white;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  max-width: 420px;
+  width: 100%;
+}
+
+/* Title */
+.register-form h2 {
+  text-align: center;
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 24px;
+}
+
+/* Form group spacing */
+.form-group {
+  margin-bottom: 1rem;
+}
+
+/* Label */
+.form-group label {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 0.25rem;
+  color: #555;
+}
+
+/* Input wrapper (for eye icon) */
+.input-wrapper {
+  position: relative;
+}
+
+/* Input style */
+.input-wrapper input {
+  width: 100%;
+  padding: 12px 40px 12px 14px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: border-color 0.3s ease;
+}
+
+.input-wrapper input:focus {
+  border-color: #1890ff;
+  outline: none;
+}
+
+/* Input khi lỗi */
+.input-wrapper input.error {
+  border-color: red;
+}
+
+/* Icon con mắt */
+.eye-icon {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #555;
+}
+
+/* Error text */
+.error-text {
+  color: red;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+}
+
+/* Strength bar */
+.strength-bar {
+  background: #eee;
+  border-radius: 1rem;
+  height: 0.5rem;
+  width: 100%;
+  overflow: hidden;
+}
+
+.strength-fill {
+  height: 100%;
+  transition: width 0.3s ease-in-out;
+}
+
+/* Submit button */
+.register-form button {
+  width: 100%;
+  padding: 12px 16px;
+  background: #1890ff;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.register-form button:disabled {
+  background: #a5b4fc;
+  cursor: not-allowed;
+}
+
+.register-form button:hover:not(:disabled) {
+  background: #40a9ff;
+}
+
+/* Login link */
+.login-link {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.login-link button {
+  background: none;
+  border: none;
+  color: #1890ff;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+/* Success icon */
+.register-success {
+  text-align: center;
+}
+
+.register-icon.success {
+  color: green;
+  font-size: 2rem;
+}

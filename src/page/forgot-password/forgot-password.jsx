@@ -22,24 +22,27 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="forgot-container">
-      <h2 className="forgot-title">Quên mật khẩu</h2>
-      <form onSubmit={handleSubmit}>
-        <label className="forgot-label">Email:</label>
-        <input
-          type="email"
-          className="forgot-input"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="Nhập email đã đăng ký"
-          required
-        />
-        <button type="submit" className="forgot-button">
-          Gửi OTP
-        </button>
-      </form>
+    <div className="forgot-wrapper">
+      <div className="forgot-container">
+        <h2 className="forgot-title">🔐 Quên mật khẩu</h2>
+        <form onSubmit={handleSubmit}>
+          <label className="forgot-label">Email</label>
+          <input
+            type="email"
+            className="forgot-input"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Nhập email đã đăng ký"
+            required
+          />
+          <button type="submit" className="forgot-button">
+            Gửi OTP
+          </button>
+        </form>
+      </div>
     </div>
   );
+  
 };
 
 export default ForgotPassword;

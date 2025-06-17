@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from "react";
-import api from "../../config/axios";
+// import React, { useEffect, useState } from "react";
+// import api from "../../config/axios";
 import DashboardTemplate from "../../components/templates/dashboardTemplate";
 //"StaffManager"
 function ManageStaff() {
-  // tao mang
-  const [staffs, setStaffs] = useState([]);
+  // // tao mang
+  // const [staffs, setStaffs] = useState([]);
 
-  //CRUD
-  const fetchStaff = async () => {
-    const data = await api.get("admin/users/staff-managers");
-    setStaffs(data);
-    console.log(data);
-  };
+  // //CRUD
+  // const fetchStaff = async () => {
+  //   const data = await api.get("admin/users/staff-managers");
+  //   setStaffs(data);
+  //   console.log(data);
+  // };
   const columns = [
     {
       title: "Họ tên",
@@ -28,11 +28,16 @@ function ManageStaff() {
       dataIndex: "phoneNumber",
       key: "phoneNumber",
     },
+    {
+      title: "Vai trò",
+      dataIndex: "role",
+      key: "role",
+    },
   ];
-  //get staff
-  useEffect(() => {
-    fetchStaff();
-  }, []);
+  // //get staff
+  // useEffect(() => {
+  //   fetchStaff();
+  // }, []);
 
   return (
     <div>

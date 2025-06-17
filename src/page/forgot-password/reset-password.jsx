@@ -29,40 +29,42 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="reset-container">
-      <h2 className="reset-title">Đặt lại mật khẩu</h2>
-      <form onSubmit={handleSubmit}>
-        <label className="reset-label">Email:</label>
-        <input
-          type="email"
-          className="reset-input"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+    <div className="reset-wrapper">
+      <div className="reset-container">
+        <h2 className="reset-title">Đặt lại mật khẩu</h2>
+        <form onSubmit={handleSubmit}>
+          <label className="reset-label">Email:</label>
+          <input
+            type="email"
+            className="reset-input"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
 
-        <label className="reset-label">OTP:</label>
-        <input
-          type="text"
-          className="reset-input"
-          value={otp}
-          onChange={(e) => setOtp(e.target.value)}
-          required
-        />
+          <label className="reset-label">OTP:</label>
+          <input
+            type="text"
+            className="reset-input"
+            value={otp}
+            onChange={(e) => setOtp(e.target.value)}
+            required
+          />
 
-        <label className="reset-label">Mật khẩu mới:</label>
-        <input
-          type="password"
-          className="reset-input"
-          value={newPassword}
-          onChange={(e) => setNewPassword(e.target.value)}
-          required
-        />
+          <label className="reset-label">Mật khẩu mới:</label>
+          <input
+            type="password"
+            className="reset-input"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            required
+          />
 
-        <button type="submit" className="reset-button">
-          Đặt lại mật khẩu
-        </button>
-      </form>
+          <button type="submit" className="reset-button">
+            Đặt lại mật khẩu
+          </button>
+        </form>
+      </div>
     </div>
   );
 };
