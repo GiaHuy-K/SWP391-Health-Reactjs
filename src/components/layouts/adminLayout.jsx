@@ -5,6 +5,7 @@ import {
   MedicineBoxOutlined,
   SolutionOutlined,
   UserSwitchOutlined,
+  TeamOutlined ,
   PlusOutlined,
   PieChartOutlined,
 } from "@ant-design/icons";
@@ -15,21 +16,25 @@ import { useLocation } from "react-router-dom";
 
 const { Header, Content, Footer, Sider } = Layout;
 
-function getItem(label, key, icon, children) {
+function getItem(label, key, icon, children, link = true) {
   return {
     key,
     icon,
     children,
-    label: <Link to={`/dashboard/${key}`}>{label}</Link>,
+    label: link ? <Link to={`/dashboard/${key}`}>{label}</Link> : label,
   };
 }
 
+
 const items = [
   getItem("Tổng quan", "overview", <PieChartOutlined />),
-  getItem("Quản Lý", "staff", <SolutionOutlined />),
-  getItem("Y Tá", "nurse", <MedicineBoxOutlined />),
-  getItem("Phụ Huynh", "parent", <UserSwitchOutlined />),
-  getItem("Tạo tài khoản", "add-account", <PlusOutlined />),
+  getItem("Người dùng", "users", <SolutionOutlined />, [
+    getItem("Quản Lý", "staff", <TeamOutlined  />),
+    getItem("Y Tá", "nurse", <MedicineBoxOutlined />),
+    getItem("Phụ Huynh", "parent", <UserSwitchOutlined />),
+    getItem("Tạo tài khoản", "add-account", <PlusOutlined />),
+  ],false),
+  getItem("Học Sinh", "student", <UserSwitchOutlined />),
 ];
 
 const AdminLayout = () => {

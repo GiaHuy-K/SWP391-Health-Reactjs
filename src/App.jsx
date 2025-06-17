@@ -21,6 +21,7 @@ import Unauthorized from "./page/error/Unauthorized.jsx";
 import DashboardOverview from "./page/admin/dashboard-overview.jsx";
 import ForgotPassword from "./page/forgot-password/forgot-password.jsx";
 import ResetPassword from "./page/forgot-password/reset-password.jsx";
+import ManageStudent from "./page/admin/manage-student.jsx";
 
 // Component bảo vệ route yêu cầu đăng nhập
 const PrivateRoute = ({ children }) => {
@@ -56,6 +57,7 @@ const router = createBrowserRouter([
       { path: "staff", element: <ManageStaff /> },
       { path: "parent", element: <ManageParent /> },
       { path: "nurse", element: <ManageNurse /> },
+      { path: "student", element: <ManageStudent/>},
       { path: "add-account", element: <AddAccount /> },
     ],
   },
