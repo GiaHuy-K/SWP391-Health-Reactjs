@@ -65,11 +65,17 @@ const LoginPage = () => {
             toast.success(`Admin đăng nhập thành công`);
             navigate("/dashboard");
           }
+          if (role === "StaffManager") {
+            toast.success(`đăng nhập thành công!`);
+
+          navigate("/dashboardManager");
+          }
           if (role === "Parent") {
             toast.success(`đăng nhập thành công!`);
 
           navigate("/");
           }
+          
             
         } else {
           toast.error("Định dạng phản hồi không hợp lệ");
