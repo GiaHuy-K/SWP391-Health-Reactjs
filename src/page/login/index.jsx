@@ -6,6 +6,7 @@ import { useAuth } from "../../config/AuthContext";
 import api from "../../config/axios";
 import "./LoginPage.css";
 
+// form theo api post 
 const LoginPage = () => {
   const [formData, setFormData] = useState({
     email: "",
@@ -61,6 +62,7 @@ const LoginPage = () => {
           login(user)
 
           localStorage.setItem("userFullname",fullName);
+          // theo role để vào các trang khác nhau 
           if (role === "SchoolAdmin") {
             toast.success(`Admin đăng nhập thành công`);
             navigate("/dashboard");

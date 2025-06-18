@@ -16,6 +16,7 @@ function DashboardTemplate({ columns, uri }) {
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // hàm vô hiệu hóa người dùng theo id khi clich vào 
   const handleToggleActivation = async (userId, newStatus) => {
     try {
       await api.put(
@@ -37,7 +38,7 @@ function DashboardTemplate({ columns, uri }) {
       message.error("Thay đổi trạng thái thất bại");
     }
   };
-
+  // màu cho 3 role 
   const formatRole = (role) => {
     let color = "gray";
     let label = role;
@@ -129,7 +130,7 @@ function DashboardTemplate({ columns, uri }) {
         rowKey="userId"
         pagination={{ pageSize: 10 }}
       />
-
+      {/* Modal xem chi tiết */}
       <UserDetailModal
         userId={selectedUserId}
         open={isModalOpen}
