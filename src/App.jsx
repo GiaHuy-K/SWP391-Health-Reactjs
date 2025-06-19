@@ -22,12 +22,15 @@ import DashboardOverview from "./page/admin/dashboard-overview.jsx";
 import ForgotPassword from "./page/forgot-password/forgot-password.jsx";
 import ResetPassword from "./page/forgot-password/reset-password.jsx";
 import ManageStudent from "./page/admin/manage-student.jsx";
+import ManagerLayout from "./components/layouts/managerLayout.jsx";
+import NurseLayout from "./components/layouts/nurseLayout.jsx";
 
 // Component bảo vệ route yêu cầu đăng nhập
 const PrivateRoute = ({ children }) => {
   const { isAuthenticated } = useAuth();
   return isAuthenticated ? children : <Navigate to="/login" />;
 };
+// bảo vệ trang dashboard của admin 
 const AdminRoute = ({ children }) => {
   const { isAuthenticated, user } = useAuth();
 
@@ -43,6 +46,8 @@ const router = createBrowserRouter([
   { path: "/unauthorized", element: <Unauthorized /> },
   { path: "/forgot-password", element: <ForgotPassword /> },
   { path : "/reset-password", element: <ResetPassword/>},
+  { path :"/dashboardManager", element:<ManagerLayout/>},
+  {path: "/dashboardNurse", element:<NurseLayout/>},
 
   {
     path: "/dashboard",
@@ -52,7 +57,7 @@ const router = createBrowserRouter([
       </AdminRoute>
     ),
     children: [
-      { index: true, element: <Navigate to="overview" replace /> },
+      { index: true, element: <Navigate to="overview" replace /> }, // lần đầu vào trang sẽ cho coi overview
       { path: "overview", element: <DashboardOverview /> },
       { path: "staff", element: <ManageStaff /> },
       { path: "parent", element: <ManageParent /> },

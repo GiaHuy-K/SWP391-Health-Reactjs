@@ -6,6 +6,7 @@ import { useAuth } from "../../config/AuthContext";
 import api from "../../config/axios";
 import "./LoginPage.css";
 
+// form theo api post 
 const LoginPage = () => {
   const [formData, setFormData] = useState({
     email: "",
@@ -49,27 +50,44 @@ const LoginPage = () => {
 
           // lưu token
           const { accessToken, user } = response.data;
-          localStorage.setItem("token", accessToken);
+          
 
           //lưu role
           const role = user.role;
-          localStorage.setItem("userRole", role);
+          
 
           // lưu full name
           const fullName = user.fullName;
           
           login(user)
-
+          localStorage.setItem("token", accessToken);
+          localStorage.setItem("userRole", role);
           localStorage.setItem("userFullname",fullName);
+          // theo role để vào các trang khác nhau 
+          // role admin SchoolAdmin
           if (role === "SchoolAdmin") {
             toast.success(`Admin đăng nhập thành công`);
             navigate("/dashboard");
           }
+          // role quản lý StaffManager
+          if (role === "StaffManager") {
+            toast.success(`Quản lý đăng nhập thành công!`);
+
+          navigate("/dashboardManager");
+          }
+          // role y tá MedicalStaff
+          if (role === "MedicalStaff") {
+            toast.success(`Y tá đăng nhập thành công!`);
+
+          navigate("/dashboardNurse");
+          }
+          // role parent qua thẳng homepage
           if (role === "Parent") {
             toast.success(`đăng nhập thành công!`);
 
           navigate("/");
           }
+          
             
         } else {
           toast.error("Định dạng phản hồi không hợp lệ");

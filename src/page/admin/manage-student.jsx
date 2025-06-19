@@ -23,10 +23,11 @@ function ManageStudent() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [form] = Form.useForm();
 
-  // Modal chi tiết
+  // Modal xem chi tiết thông tin student
   const [selectedStudentId, setSelectedStudentId] = useState(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
+  // lấy dữ liệu học sinh 
   const fetchStudent = async () => {
     const data = await getStudent();
     setStudentList(data);
@@ -36,6 +37,7 @@ function ManageStudent() {
     fetchStudent();
   }, []);
 
+  // hàm tạo mới học sinh 
   const handleCreateStudent = async () => {
     try {
       const values = await form.validateFields();
@@ -86,7 +88,7 @@ function ManageStudent() {
       dataIndex: "gender",
       key: "gender",
       render: (gender) => {
-        const color = gender === "Nam" || gender === "MALE" ? "blue" : "magenta";
+        const color = gender === "Nam" || gender === "MALE" ? "blue" : "magenta";// màu cho 2 giới tính
         return <Tag color={color}>{gender}</Tag>;
       },
     },

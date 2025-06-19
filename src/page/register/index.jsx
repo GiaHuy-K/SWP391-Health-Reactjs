@@ -21,13 +21,14 @@ const RegisterPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(0);
   const navigate = useNavigate();
-
+  
+  //hàm validate password 
   const validatePassword = (password) => {
     let strength = 0;
-    if (password.length >= 8) strength++;
-    if (/[A-Z]/.test(password)) strength++;
+    if (password.length >= 8) strength++; // lớn hơn hoặc bằng 8
+    if (/[A-Z]/.test(password)) strength++; // in hoa hay thường đều được
     if (/[a-z]/.test(password)) strength++;
-    if (/[0-9]/.test(password)) strength++;
+    if (/[0-9]/.test(password)) strength++; // phải có chữ số
     if (/[^A-Za-z0-9]/.test(password)) strength++;
     return strength;
   };
@@ -54,7 +55,7 @@ const RegisterPage = () => {
         if (!value) newErrors.fullName = "Họ và tên là bắt buộc";
         else if (value.length < 2)
           newErrors.fullName = "Tên phải có ít nhất 2 ký tự";
-        else if (!/^[\p{L}\s]+$/u.test(value))
+        else if (!/^[\p{L}\s]+$/u.test(value)) // cho phép nhập tiếng việt có dấu
           newErrors.fullName = "Chỉ cho phép chữ cái và khoảng trắng (có dấu)";
         else delete newErrors.fullName;
         break;
@@ -82,7 +83,7 @@ const RegisterPage = () => {
           newErrors.password = "Mật khẩu là bắt buộc";
         } else if (value.length < 8) {
           newErrors.password = "Mật khẩu phải có ít nhất 8 ký tự";
-          // Thêm điều kiện mới tại đây
+          // không cho phép mật khẩu dùng có dấu
         } else if (
           /[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i.test(
             value
@@ -133,19 +134,17 @@ const RegisterPage = () => {
       console.error("Chi tiết lỗi API:", err);
     
       // Lấy message ra một biến riêng để dễ sử dụng
-
       const errorMessage = err.response?.data?.message || "Đăng ký thất bại";
-           // In ra message lỗi
-
+      
+      // In ra message lỗi
       console.log("Message lỗi từ server:", errorMessage);
 
       // Hiển thị message này cho người dùng qua toast
-
       toast.error(errorMessage);
       setIsLoading(false);
     }
   };
-
+  // hàm độ mạnh mật khẩu 
   const getStrengthColor = () => {
     switch (passwordStrength) {
       case 1:

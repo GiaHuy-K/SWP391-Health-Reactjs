@@ -6,6 +6,7 @@ export const getStudent = async () => {
   try {
     const response = await api.get("students");
     const raw = response.data;
+    // vì kiểu trả về là content array nên cần hàm này 
     const content = Array.isArray(raw.content) ? raw.content : [];
     //console.log(raw);
     console.log(content);
@@ -15,6 +16,7 @@ export const getStudent = async () => {
   }
 };
 
+// lấy thông tin student theo id (dùng trong xem chi tiết ở dashboard admin, nurse, parent)
 export const getStudentById = async (id) => {
     try {
       const res = await api.get(`/students/${id}`);
