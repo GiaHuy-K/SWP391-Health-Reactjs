@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import { Table, Button, Tag, Modal } from "antd";
-import MedicalSupplyDetailModal from "../medicalSupply/medical-supply-detail";
-import MedicalSupplyTransaction from "../medicalSupply/medicalSupplyTransaction";
+import { Table, Button, Tag } from "antd";
+import MedicalSupplyDrawer from "../medicalSupply/medicalSupplyDrawer";
 
 const MedicalSupplyTableTemplate = ({
   data,
@@ -11,17 +10,11 @@ const MedicalSupplyTableTemplate = ({
   canView = true,
 }) => {
   const [selectedId, setSelectedId] = useState(null);
-  const [detailModalOpen, setDetailModalOpen] = useState(false);
-  const [transactionModalOpen, setTransactionModalOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
-  const handleViewDetail = (id) => {
+  const handleView = (id) => {
     setSelectedId(id);
-    setDetailModalOpen(true);
-  };
-
-  const handleViewTransaction = (id) => {
-    setSelectedId(id);
-    setTransactionModalOpen(true);
+    setDrawerOpen(true);
   };
 
   const columns = [
@@ -62,20 +55,9 @@ const MedicalSupplyTableTemplate = ({
       render: (_, record) => (
         <>
           {canView && (
-            <>
-              <Button
-                type="link"
-                onClick={() => handleViewDetail(record.supplyId)}
-              >
-                Xem chi tiết
-              </Button>
-              <Button
-                type="link"
-                onClick={() => handleViewTransaction(record.supplyId)}
-              >
-                Xem giao dịch
-              </Button>
-            </>
+            <Button type="link" onClick={() => handleView(record.supplyId)}>
+              Xem
+            </Button>
           )}
           {canDelete && (
             <Button
@@ -100,23 +82,11 @@ const MedicalSupplyTableTemplate = ({
         loading={loading}
       />
 
-      {/* Modal chi tiết vật tư */}
-      <MedicalSupplyDetailModal
+      <MedicalSupplyDrawer
         supplyId={selectedId}
-        open={detailModalOpen}
-        onClose={() => setDetailModalOpen(false)}
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
       />
-
-      {/* Modal lịch sử giao dịch */}
-      <Modal
-        title="Lịch sử giao dịch vật tư"
-        open={transactionModalOpen}
-        onCancel={() => setTransactionModalOpen(false)}
-        footer={null}
-        width={800}
-      >
-        <MedicalSupplyTransaction supplyId={selectedId} />
-      </Modal>
     </>
   );
 };
