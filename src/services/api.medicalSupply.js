@@ -2,10 +2,15 @@ import api from "../config/axios";
 import { toast } from "react-toastify";
 
 //  Lấy danh sách tất cả vật tư y tế (phân trang)
-export const getMedicalSupplies = async (params) => {
+export const getMedicalSupplies = async () => {
   try {
-    const res = await api.get("/api/medical-supplies", { params });
-    return res.data;
+    const response = await api.get("medical-supplies");
+    const raw = response.data;
+    // vì kiểu trả về là content array nên cần hàm này 
+    const content = Array.isArray(raw.content) ? raw.content : [];
+    //console.log(raw);
+    console.log(content);
+    return content;
   } catch (error) {
     toast.error("Không thể tải danh sách vật tư y tế");
     throw error;
@@ -15,13 +20,25 @@ export const getMedicalSupplies = async (params) => {
 //  Lấy thông tin vật tư y tế theo ID
 export const getMedicalSupplyById = async (id) => {
   try {
-    const res = await api.get(`/api/medical-supplies/${id}`);
+    const res = await api.get(`medical-supplies/${id}`);
     return res.data;
   } catch (error) {
     toast.error("Không thể lấy thông tin vật tư");
     throw error;
   }
 };
+
+// Lấy lịch sử giao dịch của một vật tư y tế
+export const getMedicalSupplyTransactions = async (supplyId) => {
+  try {
+    const res = await api.get(`medical-supplies/${supplyId}/transactions`);
+    return res.data.content || [];
+  } catch (error) {
+    toast.error("Không thể tải lịch sử giao dịch");
+    throw error;
+  }
+};
+
 
 // Tạo mới một vật tư y tế
 export const createMedicalSupply = async (data) => {

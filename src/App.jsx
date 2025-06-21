@@ -24,13 +24,16 @@ import ResetPassword from "./page/forgot-password/reset-password.jsx";
 import ManageStudent from "./page/admin/manage-student.jsx";
 import ManagerLayout from "./components/layouts/managerLayout.jsx";
 import NurseLayout from "./components/layouts/nurseLayout.jsx";
+import ManageEvent from "./page/schoolnurse/manage-event.jsx";
+
+import ManageMedicalSupply from "./page/schoolnurse/manage-medicalSupply.jsx";
 
 // Component bảo vệ route yêu cầu đăng nhập
 const PrivateRoute = ({ children }) => {
   const { isAuthenticated } = useAuth();
   return isAuthenticated ? children : <Navigate to="/login" />;
 };
-// bảo vệ trang dashboard của admin 
+// bảo vệ trang dashboard của admin
 const AdminRoute = ({ children }) => {
   const { isAuthenticated, user } = useAuth();
 
@@ -45,9 +48,13 @@ const router = createBrowserRouter([
   { path: "/register", element: <RegisterPage /> },
   { path: "/unauthorized", element: <Unauthorized /> },
   { path: "/forgot-password", element: <ForgotPassword /> },
-  { path : "/reset-password", element: <ResetPassword/>},
-  { path :"/dashboardManager", element:<ManagerLayout/>},
-  {path: "/dashboardNurse", element:<NurseLayout/>},
+  { path: "/reset-password", element: <ResetPassword /> },
+  { path: "/dashboardManager", element: <ManagerLayout /> },
+  { path: "/dashboardNurse", element: <NurseLayout />, children: [
+
+    {path:"event-Nurse", element:<ManageEvent/>},
+    {path :"medicalSupply-Nurse", element: <ManageMedicalSupply/>}
+  ] },
 
   {
     path: "/dashboard",
@@ -62,7 +69,7 @@ const router = createBrowserRouter([
       { path: "staff", element: <ManageStaff /> },
       { path: "parent", element: <ManageParent /> },
       { path: "nurse", element: <ManageNurse /> },
-      { path: "student", element: <ManageStudent/>},
+      { path: "student", element: <ManageStudent /> },
       { path: "add-account", element: <AddAccount /> },
     ],
   },
