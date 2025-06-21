@@ -27,7 +27,7 @@ const MedicalSupplyDrawer = ({ open, onClose, supplyId }) => {
         title="Chi tiết vật tư y tế"
         open={open}
         onClose={onClose}
-        width={800}
+        width={750}
       >
         {loading ? (
           <Spin />

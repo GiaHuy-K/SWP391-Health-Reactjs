@@ -27,6 +27,7 @@ import NurseLayout from "./components/layouts/nurseLayout.jsx";
 import ManageEvent from "./page/schoolnurse/manage-event.jsx";
 
 import ManageMedicalSupply from "./page/schoolnurse/manage-medicalSupply.jsx";
+import ManageEventM from "./page/manager/manage-event.jsx";
 
 // Component bảo vệ route yêu cầu đăng nhập
 const PrivateRoute = ({ children }) => {
@@ -49,7 +50,11 @@ const router = createBrowserRouter([
   { path: "/unauthorized", element: <Unauthorized /> },
   { path: "/forgot-password", element: <ForgotPassword /> },
   { path: "/reset-password", element: <ResetPassword /> },
-  { path: "/dashboardManager", element: <ManagerLayout /> },
+
+  { path: "/dashboardManager", element: <ManagerLayout />, children: [
+    {path: "event-Manager", element: <ManageEventM/>},
+  ] },
+
   { path: "/dashboardNurse", element: <NurseLayout />, children: [
 
     {path:"event-Nurse", element:<ManageEvent/>},
