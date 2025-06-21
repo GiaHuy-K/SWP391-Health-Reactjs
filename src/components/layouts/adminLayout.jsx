@@ -5,14 +5,14 @@ import {
   MedicineBoxOutlined,
   SolutionOutlined,
   UserSwitchOutlined,
-  TeamOutlined ,
+  TeamOutlined,
   PlusOutlined,
   PieChartOutlined,
 } from "@ant-design/icons";
 import { Layout, Menu, theme, Avatar, Dropdown, Space, message } from "antd";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
-
+import { useAuth } from "../../config/AuthContext";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -21,37 +21,40 @@ function getItem(label, key, icon, children, link = true) {
     key,
     icon,
     children,
-    label: link ? <Link to={`/dashboard/${key}`}>{label}</Link> : label, // lấy thông tin để chuyển trang khi nhấn vào 
+    label: link ? <Link to={`/dashboard/${key}`}>{label}</Link> : label, // lấy thông tin để chuyển trang khi nhấn vào
     // item bên dưới (key quan trọng)
   };
 }
 
-
 const items = [
   getItem("Tổng quan", "overview", <PieChartOutlined />),
-  getItem("Người dùng", "users", <SolutionOutlined />, [
-    getItem("Quản Lý", "staff", <TeamOutlined  />),
-    getItem("Y Tá", "nurse", <MedicineBoxOutlined />),
-    getItem("Phụ Huynh", "parent", <UserSwitchOutlined />),
-    getItem("Tạo tài khoản", "add-account", <PlusOutlined />),
-  ],false), // dùng false để chữ người dùng không phải là một trang liên kết hay chuyển trang
+  getItem(
+    "Người dùng",
+    "users",
+    <SolutionOutlined />,
+    [
+      getItem("Quản Lý", "staff", <TeamOutlined />),
+      getItem("Y Tá", "nurse", <MedicineBoxOutlined />),
+      getItem("Phụ Huynh", "parent", <UserSwitchOutlined />),
+      getItem("Tạo tài khoản", "add-account", <PlusOutlined />),
+    ],
+    false
+  ), // dùng false để chữ người dùng không phải là một trang liên kết hay chuyển trang
   getItem("Học Sinh", "student", <UserSwitchOutlined />),
 ];
 
 const AdminLayout = () => {
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
-  const navigate = useNavigate();
+
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
-
+  const { isAuthenticated, logout } = useAuth();
   const handleMenuClick = ({ key }) => {
     if (key === "logout") {
-      localStorage.removeItem("token");
-      localStorage.removeItem("username");
+      logout();
       message.success("Đã đăng xuất");
-      navigate("/login");
     }
   };
 
