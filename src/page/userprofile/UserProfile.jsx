@@ -9,7 +9,10 @@ const RELATIONSHIP_OPTIONS = [
   { value: "FATHER", label: "Bố" },
   { value: "MOTHER", label: "Mẹ" },
   { value: "GUARDIAN", label: "Người giám hộ" },
+  { value: "GRANDFATHER", label: "Ông" },
+  { value: "GRANDMOTHER", label: "Bà" },
   { value: "OTHER", label: "Khác" },
+     
 ];
 
 const UserProfile = () => {
@@ -310,6 +313,7 @@ const UserProfile = () => {
       )}
       {user.linkedToStudent && Array.isArray(studentInfo) && studentInfo.length > 0 && (
   <div className="userprofile-section student-info-section">
+  
     <h2>Linked Student</h2>
     <div className="student-info-list">
       <div><strong>Full Name:</strong> {studentInfo[0].fullName}</div>
