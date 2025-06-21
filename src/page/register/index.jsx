@@ -1,11 +1,10 @@
 import React, { useState } from "react";
-import { FaEye, FaEyeSlash, FaTimesCircle } from "react-icons/fa"; 
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import api from "../../config/axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import "./RegisterPage.css";
+import styles from "./RegisterPage.module.css";
 
-// formdata các giá trị phải giống với BE để trả về
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
     fullName: "",
@@ -21,41 +20,33 @@ const RegisterPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(0);
   const navigate = useNavigate();
-  
-  //hàm validate password 
+
   const validatePassword = (password) => {
     let strength = 0;
-    if (password.length >= 8) strength++; // lớn hơn hoặc bằng 8
-    if (/[A-Z]/.test(password)) strength++; // in hoa hay thường đều được
+    if (password.length >= 8) strength++;
+    if (/[A-Z]/.test(password)) strength++;
     if (/[a-z]/.test(password)) strength++;
-    if (/[0-9]/.test(password)) strength++; // phải có chữ số
+    if (/[0-9]/.test(password)) strength++;
     if (/[^A-Za-z0-9]/.test(password)) strength++;
     return strength;
   };
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-
-    if (name === "password") {
-      setPasswordStrength(validatePassword(value));
-    }
-
-    validateField(name, type === "checkbox" ? checked : value);
+    const newValue = type === "checkbox" ? checked : value;
+    setFormData((prev) => ({ ...prev, [name]: newValue }));
+    if (name === "password") setPasswordStrength(validatePassword(value));
+    validateField(name, newValue);
   };
 
   const validateField = (name, value) => {
     let newErrors = { ...errors };
-
     switch (name) {
       case "fullName":
         if (!value) newErrors.fullName = "Họ và tên là bắt buộc";
         else if (value.length < 2)
           newErrors.fullName = "Tên phải có ít nhất 2 ký tự";
-        else if (!/^[\p{L}\s]+$/u.test(value)) // cho phép nhập tiếng việt có dấu
+        else if (!/^[\p{L}\s]+$/u.test(value))
           newErrors.fullName = "Chỉ cho phép chữ cái và khoảng trắng (có dấu)";
         else delete newErrors.fullName;
         break;
@@ -72,30 +63,19 @@ const RegisterPage = () => {
             "Số điện thoại không hợp lệ, phải bắt đầu bằng 0 và theo đầu số Việt Nam";
         else delete newErrors.phoneNumber;
         break;
-
       case "terms":
-        if (!value)
-          newErrors.terms = "Bạn phải chấp nhận các điều khoản và điều kiện";
+        if (!value) newErrors.terms = "Bạn phải chấp nhận các điều khoản và điều kiện";
         else delete newErrors.terms;
         break;
       case "password":
-        if (!value) {
-          newErrors.password = "Mật khẩu là bắt buộc";
-        } else if (value.length < 8) {
+        if (!value) newErrors.password = "Mật khẩu là bắt buộc";
+        else if (value.length < 8)
           newErrors.password = "Mật khẩu phải có ít nhất 8 ký tự";
-          // không cho phép mật khẩu dùng có dấu
-        } else if (
-          /[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i.test(
-            value
-          )
-        ) {
+        else if (/[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i.test(value))
           newErrors.password = "Mật khẩu không được chứa dấu";
-        } else if (!/(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])/.test(value)) {
-          newErrors.password =
-            "Mật khẩu phải chứa ít nhất một chữ hoa, một chữ thường và một số";
-        } else {
-          delete newErrors.password;
-        }
+        else if (!/(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])/.test(value))
+          newErrors.password = "Mật khẩu phải chứa ít nhất một chữ hoa, một chữ thường và một số";
+        else delete newErrors.password;
         break;
       case "confirmPassword":
         if (!value) newErrors.confirmPassword = "Xác nhận mật khẩu là bắt buộc";
@@ -106,7 +86,6 @@ const RegisterPage = () => {
       default:
         break;
     }
-
     setErrors(newErrors);
   };
 
@@ -115,83 +94,47 @@ const RegisterPage = () => {
     setIsLoading(true);
     try {
       const response = await api.post("auth/register/parent", formData);
-
-      // --- BẮT ĐẦU PHẦN CẬP NHẬT ---
-      // Kiểm tra nếu API trả về token và lưu vào localStorage
-      if (response.data && response.data.token) {
-        localStorage.setItem('token', response.data.token);
-      }
-      // --- KẾT THÚC PHẦN CẬP NHẬT ---
-
-      toast.success(
-        "Tạo tài khoản thành công!"
-      );
-
-      setTimeout(() => {
-        navigate("/login");
-      }, 200);
+      if (response.data?.token) localStorage.setItem("token", response.data.token);
+      toast.success("Tạo tài khoản thành công!");
+      setTimeout(() => navigate("/login"), 200);
     } catch (err) {
-      console.error("Chi tiết lỗi API:", err);
-    
-      // Lấy message ra một biến riêng để dễ sử dụng
       const errorMessage = err.response?.data?.message || "Đăng ký thất bại";
-      
-      // In ra message lỗi
-      console.log("Message lỗi từ server:", errorMessage);
-
-      // Hiển thị message này cho người dùng qua toast
       toast.error(errorMessage);
       setIsLoading(false);
     }
   };
-  // hàm độ mạnh mật khẩu 
+
   const getStrengthColor = () => {
     switch (passwordStrength) {
-      case 1:
-        return "red";
-      case 2:
-        return "orange";
-      case 3:
-        return "yellowgreen";
-      case 4:
-        return "green";
-      default:
-        return "gray";
+      case 1: return "red";
+      case 2: return "orange";
+      case 3: return "yellowgreen";
+      case 4: return "green";
+      default: return "gray";
     }
   };
 
   return (
-    <div className="register-container">
-      <div className="register-card">
-        <form className="register-form" onSubmit={handleSubmit}>
+    <div className={styles.registerContainer}>
+      <div className={styles.registerCard}>
+        <form className={styles.registerForm} onSubmit={handleSubmit}>
           <h2>Tạo tài khoản của bạn</h2>
-
-          {[
-            "fullName",
-            "email",
-            "phoneNumber",
-            "password",
-            "confirmPassword",
-          ].map((field) => (
-            <div key={field} className="form-group">
+          {["fullName", "email", "phoneNumber", "password", "confirmPassword"].map((field) => (
+            <div key={field} className={styles.formGroup}>
               <label htmlFor={field}>
-                {
-                  {
-                    fullName: "Họ và tên",
-                    email: "Email",
-                    phoneNumber: "Số điện thoại",
-                    password: "Mật khẩu",
-                    confirmPassword: "Xác nhận mật khẩu",
-                  }[field]
-                }
+                {{
+                  fullName: "Họ và tên",
+                  email: "Email",
+                  phoneNumber: "Số điện thoại",
+                  password: "Mật khẩu",
+                  confirmPassword: "Xác nhận mật khẩu",
+                }[field]}
               </label>
-              <div className="input-wrapper">
+              <div className={styles.inputWrapper}>
                 <input
                   type={
-                    field === "password" || field === "confirmPassword"
-                      ? showPassword
-                        ? "text"
-                        : "password"
+                    ["password", "confirmPassword"].includes(field)
+                      ? showPassword ? "text" : "password"
                       : field === "email"
                       ? "email"
                       : "text"
@@ -200,27 +143,27 @@ const RegisterPage = () => {
                   name={field}
                   value={formData[field]}
                   onChange={handleChange}
-                  placeholder={field === "email" ? "you@example.com" : ""}
-                  className={errors[field] ? "error" : ""}
+                  autoComplete={field.includes("password") ? "new-password" : "off"}
+                  placeholder=""
+                  className={errors[field] ? styles.error : ""}
                 />
-                {(field === "password" || field === "confirmPassword") && (
+                {["password", "confirmPassword"].includes(field) && (
                   <span
-                    className="eye-icon"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
+                    className={styles.eyeIcon}
+                    onClick={() => setShowPassword(!showPassword)}>
                     {showPassword ? <FaEyeSlash /> : <FaEye />}
                   </span>
                 )}
               </div>
-              {errors[field] && <p className="error-text">{errors[field]}</p>}
+              {errors[field] && <p className={styles.errorText}>{errors[field]}</p>}
             </div>
           ))}
 
-          <div className="form-group">
+          <div className={styles.formGroup}>
             <label>Độ mạnh của mật khẩu:</label>
-            <div className="strength-bar">
+            <div className={styles.strengthBar}>
               <div
-                className="strength-fill"
+                className={styles.strengthFill}
                 style={{
                   width: `${(passwordStrength / 4) * 100}%`,
                   backgroundColor: getStrengthColor(),
@@ -233,7 +176,7 @@ const RegisterPage = () => {
             {isLoading ? "Đang xử lý..." : "Đăng ký"}
           </button>
 
-          <div className="login-link">
+          <div className={styles.loginLink}>
             <span>Đã có tài khoản? </span>
             <button type="button" onClick={() => navigate("/login")}>
               Đăng nhập

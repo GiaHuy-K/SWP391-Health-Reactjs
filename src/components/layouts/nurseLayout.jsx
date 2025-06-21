@@ -18,6 +18,7 @@ import {
   theme,
 } from "antd";
 import { Link, Outlet, useNavigate } from "react-router-dom";
+import { useAuth } from "../../config/AuthContext";
 const { Header, Content, Footer, Sider } = Layout;
 function getItem(label, key, icon, children) {
   return {
@@ -34,13 +35,12 @@ const items = [
 
 const NurseLayout = () => {
   const navigate = useNavigate();
-
+  const { isAuthenticated, logout } = useAuth();
   const handleMenuClick = ({ key }) => {
     if (key === "logout") {
-      localStorage.removeItem("token");
-      localStorage.removeItem("username");
+      logout();
       message.success("Đã đăng xuất");
-      navigate("/login");
+      navigate("/");
     }
   };
 

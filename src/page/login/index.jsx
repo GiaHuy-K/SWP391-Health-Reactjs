@@ -4,9 +4,9 @@ import { useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash, FaLock, FaEnvelope } from "react-icons/fa";
 import { useAuth } from "../../config/AuthContext";
 import api from "../../config/axios";
-import "./LoginPage.css";
+import styles from "./LoginPage.module.css"; // chuyển sang module CSS
 
-// form theo api post 
+// form theo api post
 const LoginPage = () => {
   const [formData, setFormData] = useState({
     email: "",
@@ -45,25 +45,23 @@ const LoginPage = () => {
       try {
         const response = await api.post("auth/login", formData);
         console.log("Dữ liệu FE nhận từ BE:", response.data);
-        
-        if (response.data) {
 
+        if (response.data) {
           // lưu token
           const { accessToken, user } = response.data;
-          
 
           //lưu role
           const role = user.role;
-          
 
           // lưu full name
           const fullName = user.fullName;
-          
-          login(user)
+
+          login(user);
           localStorage.setItem("token", accessToken);
           localStorage.setItem("userRole", role);
-          localStorage.setItem("userFullname",fullName);
-          // theo role để vào các trang khác nhau 
+          localStorage.setItem("userFullname", fullName);
+
+          // theo role để vào các trang khác nhau
           // role admin SchoolAdmin
           if (role === "SchoolAdmin") {
             toast.success(`Admin đăng nhập thành công`);
@@ -72,23 +70,18 @@ const LoginPage = () => {
           // role quản lý StaffManager
           if (role === "StaffManager") {
             toast.success(`Quản lý đăng nhập thành công!`);
-
-          navigate("/dashboardManager");
+            navigate("/dashboardManager");
           }
           // role y tá MedicalStaff
           if (role === "MedicalStaff") {
             toast.success(`Y tá đăng nhập thành công!`);
-
-          navigate("/dashboardNurse");
+            navigate("/dashboardNurse");
           }
           // role parent qua thẳng homepage
           if (role === "Parent") {
-            toast.success(`đăng nhập thành công!`);
-
-          navigate("/");
+            toast.success(`Đăng nhập thành công!`);
+            navigate("/");
           }
-          
-            
         } else {
           toast.error("Định dạng phản hồi không hợp lệ");
         }
@@ -109,12 +102,13 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="login-container">
-      <div className="login-box">
-        <h2 className="login-title">Đăng nhập vào tài khoản của bạn</h2>
-        <form onSubmit={handleSubmit} className="login-form">
-          <div className="input-group">
-            <div className="input-icon">
+    <div className={styles.loginContainer}>
+      <div className={styles.loginBox}>
+        <h2 className={styles.loginTitle}>Đăng nhập vào tài khoản của bạn</h2>
+        <form onSubmit={handleSubmit} className={styles.loginForm}>
+          {/* Email input */}
+          <div className={styles.inputGroup}>
+            <div className={styles.inputIcon}>
               <FaEnvelope />
             </div>
             <input
@@ -123,13 +117,14 @@ const LoginPage = () => {
               placeholder="Nhập email của bạn"
               value={formData.email}
               onChange={handleChange}
-              className={`login-input ${errors.email ? "input-error" : ""}`}
+              className={`${styles.loginInput} ${errors.email ? styles.inputError : ""}`}
             />
-            {errors.email && <p className="error-text">{errors.email}</p>}
+            {errors.email && <p className={styles.errorText}>{errors.email}</p>}
           </div>
 
-          <div className="input-group">
-            <div className="input-icon">
+          {/* Password input */}
+          <div className={styles.inputGroup}>
+            <div className={styles.inputIcon}>
               <FaLock />
             </div>
             <input
@@ -138,19 +133,20 @@ const LoginPage = () => {
               placeholder="Nhập mật khẩu của bạn"
               value={formData.password}
               onChange={handleChange}
-              className={`login-input ${errors.password ? "input-error" : ""}`}
+              className={`${styles.loginInput} ${errors.password ? styles.inputError : ""}`}
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="toggle-password"
+              className={styles.togglePassword}
             >
               {showPassword ? <FaEyeSlash /> : <FaEye />}
             </button>
-            {errors.password && <p className="error-text">{errors.password}</p>}
+            {errors.password && <p className={styles.errorText}>{errors.password}</p>}
           </div>
 
-          <div className="login-options">
+          {/* Remember me + forgot password */}
+          <div className={styles.loginOptions}>
             <label>
               <input
                 type="checkbox"
@@ -160,17 +156,22 @@ const LoginPage = () => {
               />
               Ghi nhớ tôi
             </label>
-            <a href="/forgot-password" className="forgot-password">
+            <a href="/forgot-password" className={styles.forgotPassword}>
               Quên mật khẩu?
             </a>
           </div>
 
-          <button type="submit" className="login-button" disabled={isLoading}>
+          {/* Submit button */}
+          <button type="submit" className={styles.loginButton} disabled={isLoading}>
             {isLoading ? "Đang đăng nhập..." : "Đăng nhập"}
           </button>
 
-          <p className="register-text">
+          {/* Đăng ký & quay về trang chủ */}
+          <p className={styles.registerText}>
             Chưa có tài khoản? <a href="/register">Đăng ký tại đây</a>
+          </p>
+          <p className={styles.backHomeText}>
+            <a href="/">Quay về trang chủ</a>
           </p>
         </form>
       </div>
