@@ -4,9 +4,13 @@ import { useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash, FaLock, FaEnvelope } from "react-icons/fa";
 import { useAuth } from "../../config/AuthContext";
 import api from "../../config/axios";
+
 import styles from "./LoginPage.module.css";
 
-// form theo api post 
+import styles from "./LoginPage.module.css"; // chuyển sang module CSS
+
+
+// form theo api post
 const LoginPage = () => {
   const [formData, setFormData] = useState({
     email: "",
@@ -45,25 +49,23 @@ const LoginPage = () => {
       try {
         const response = await api.post("auth/login", formData);
         console.log("Dữ liệu FE nhận từ BE:", response.data);
-        
-        if (response.data) {
 
+        if (response.data) {
           // lưu token
           const { accessToken, user } = response.data;
-          
 
           //lưu role
           const role = user.role;
-          
 
           // lưu full name
           const fullName = user.fullName;
-          
-          login(user)
+
+          login(user);
           localStorage.setItem("token", accessToken);
           localStorage.setItem("userRole", role);
-          localStorage.setItem("userFullname",fullName);
-          // theo role để vào các trang khác nhau 
+          localStorage.setItem("userFullname", fullName);
+
+          // theo role để vào các trang khác nhau
           // role admin SchoolAdmin
           if (role === "SchoolAdmin") {
             toast.success(`Admin đăng nhập thành công`);
@@ -72,23 +74,18 @@ const LoginPage = () => {
           // role quản lý StaffManager
           if (role === "StaffManager") {
             toast.success(`Quản lý đăng nhập thành công!`);
-
-          navigate("/dashboardManager");
+            navigate("/dashboardManager");
           }
           // role y tá MedicalStaff
           if (role === "MedicalStaff") {
             toast.success(`Y tá đăng nhập thành công!`);
-
-          navigate("/dashboardNurse");
+            navigate("/dashboardNurse");
           }
           // role parent qua thẳng homepage
           if (role === "Parent") {
-            toast.success(`đăng nhập thành công!`);
-
-          navigate("/");
+            toast.success(`Đăng nhập thành công!`);
+            navigate("/");
           }
-          
-            
         } else {
           toast.error("Định dạng phản hồi không hợp lệ");
         }
@@ -109,12 +106,22 @@ const LoginPage = () => {
   };
 
   return (
+
     <div className={styles['login-container']}>
       <div className={styles['login-box']}>
         <h2 className={styles['login-title']}>Đăng nhập vào tài khoản của bạn</h2>
         <form onSubmit={handleSubmit} className={styles['login-form']}>
           <div className={styles['input-group']}>
             <div className={styles['input-icon']}>
+
+    <div className={styles.loginContainer}>
+      <div className={styles.loginBox}>
+        <h2 className={styles.loginTitle}>Đăng nhập vào tài khoản của bạn</h2>
+        <form onSubmit={handleSubmit} className={styles.loginForm}>
+          {/* Email input */}
+          <div className={styles.inputGroup}>
+            <div className={styles.inputIcon}>
+
               <FaEnvelope />
             </div>
             <input
@@ -123,6 +130,7 @@ const LoginPage = () => {
               placeholder="Nhập email của bạn"
               value={formData.email}
               onChange={handleChange}
+
               className={`${styles['login-input']} ${errors.email ? styles['input-error'] : ""}`}
             />
             {errors.email && <p className={styles['error-text']}>{errors.email}</p>}
@@ -130,6 +138,16 @@ const LoginPage = () => {
 
           <div className={styles['input-group']}>
             <div className={styles['input-icon']}>
+
+              className={`${styles.loginInput} ${errors.email ? styles.inputError : ""}`}
+            />
+            {errors.email && <p className={styles.errorText}>{errors.email}</p>}
+          </div>
+
+          {/* Password input */}
+          <div className={styles.inputGroup}>
+            <div className={styles.inputIcon}>
+
               <FaLock />
             </div>
             <input
@@ -138,11 +156,16 @@ const LoginPage = () => {
               placeholder="Nhập mật khẩu của bạn"
               value={formData.password}
               onChange={handleChange}
+
               className={`${styles['login-input']} ${errors.password ? styles['input-error'] : ""}`}
+
+              className={`${styles.loginInput} ${errors.password ? styles.inputError : ""}`}
+
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
+
               className={styles['toggle-password']}
             >
               {showPassword ? <FaEyeSlash /> : <FaEye />}
@@ -151,6 +174,17 @@ const LoginPage = () => {
           </div>
 
           <div className={styles['login-options']}>
+
+              className={styles.togglePassword}
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </button>
+            {errors.password && <p className={styles.errorText}>{errors.password}</p>}
+          </div>
+
+          {/* Remember me + forgot password */}
+          <div className={styles.loginOptions}>
+
             <label>
               <input
                 type="checkbox"
@@ -160,17 +194,33 @@ const LoginPage = () => {
               />
               Ghi nhớ tôi
             </label>
+
             <a href="/forgot-password" className={styles['forgot-password']}>
+
+            <a href="/forgot-password" className={styles.forgotPassword}>
+
               Quên mật khẩu?
             </a>
           </div>
+
 
           <button type="submit" className={styles['login-button']} disabled={isLoading}>
             {isLoading ? "Đang đăng nhập..." : "Đăng nhập"}
           </button>
 
           <p className={styles['register-text']}>
+
+          {/* Submit button */}
+          <button type="submit" className={styles.loginButton} disabled={isLoading}>
+            {isLoading ? "Đang đăng nhập..." : "Đăng nhập"}
+          </button>
+
+          {/* Đăng ký & quay về trang chủ */}
+
             Chưa có tài khoản? <a href="/register">Đăng ký tại đây</a>
+          </p>
+          <p className={styles.backHomeText}>
+            <a href="/">Quay về trang chủ</a>
           </p>
         </form>
       </div>

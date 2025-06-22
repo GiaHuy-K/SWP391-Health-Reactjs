@@ -1,5 +1,9 @@
 /* Nền + căn giữa giống reset */
+
 .register-container {
+
+.registerContainer {
+
   min-height: 100vh;
   background: linear-gradient(135deg, #a6c1ee, #fbc2eb);
   display: flex;
@@ -10,7 +14,11 @@
 }
 
 /* Form box đẹp */
+
 .register-card {
+
+.registerCard {
+
   background: white;
   padding: 40px;
   border-radius: 16px;
@@ -20,7 +28,11 @@
 }
 
 /* Title */
+
 .register-form h2 {
+
+.registerForm h2 {
+
   text-align: center;
   font-size: 24px;
   color: #333;
@@ -28,12 +40,20 @@
 }
 
 /* Form group spacing */
+
 .form-group {
+
+.formGroup {
+
   margin-bottom: 1rem;
 }
 
 /* Label */
+
 .form-group label {
+
+.formGroup label {
+
   font-weight: 600;
   display: block;
   margin-bottom: 0.25rem;
@@ -41,12 +61,20 @@
 }
 
 /* Input wrapper (for eye icon) */
+
 .input-wrapper {
+
+.inputWrapper {
+
   position: relative;
 }
 
 /* Input style */
+
 .input-wrapper input {
+
+.inputWrapper input {
+
   width: 100%;
   padding: 12px 40px 12px 14px;
   border: 1px solid #ccc;
@@ -55,18 +83,31 @@
   transition: border-color 0.3s ease;
 }
 
+
 .input-wrapper input:focus {
+
+.inputWrapper input:focus {
+
   border-color: #1890ff;
   outline: none;
 }
 
 /* Input khi lỗi */
+
 .input-wrapper input.error {
   border-color: red;
 }
 
 /* Icon con mắt */
 .eye-icon {
+
+.error {
+  border-color: red !important;
+}
+
+/* Icon con mắt */
+.eyeIcon {
+
   position: absolute;
   right: 0.75rem;
   top: 50%;
@@ -76,14 +117,22 @@
 }
 
 /* Error text */
+
 .error-text {
+
+.errorText {
+
   color: red;
   font-size: 0.8rem;
   margin-top: 0.25rem;
 }
 
 /* Strength bar */
+
 .strength-bar {
+
+.strengthBar {
+
   background: #eee;
   border-radius: 1rem;
   height: 0.5rem;
@@ -91,13 +140,21 @@
   overflow: hidden;
 }
 
+
 .strength-fill {
+
+.strengthFill {
+
   height: 100%;
   transition: width 0.3s ease-in-out;
 }
 
 /* Submit button */
+
 .register-form button {
+
+.registerForm button {
+
   width: 100%;
   padding: 12px 16px;
   background: #1890ff;
@@ -110,22 +167,38 @@
   transition: background 0.3s ease;
 }
 
+
 .register-form button:disabled {
+
+.registerForm button:disabled {
+
   background: #a5b4fc;
   cursor: not-allowed;
 }
 
+
 .register-form button:hover:not(:disabled) {
+
+.registerForm button:hover:not(:disabled) {
+
   background: #40a9ff;
 }
 
 /* Login link */
+
 .login-link {
+
+.loginLink {
+
   text-align: center;
   margin-top: 1rem;
 }
 
+
 .login-link button {
+
+.loginLink button {
+
   background: none;
   border: none;
   color: #1890ff;
@@ -134,11 +207,19 @@
 }
 
 /* Success icon */
+
 .register-success {
   text-align: center;
 }
 
 .register-icon.success {
+
+.registerSuccess {
+  text-align: center;
+}
+
+.registerIconSuccess {
+
   color: green;
   font-size: 2rem;
 }
