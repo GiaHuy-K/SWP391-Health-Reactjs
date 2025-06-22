@@ -1,0 +1,40 @@
+/* Reset CSS cơ bản */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f0f2f5; /* Thêm màu nền chung cho ứng dụng */
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* Đảm bảo các link không có gạch chân và giữ màu gốc */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Style cơ bản cho button */
+button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* Style cơ bản cho input */
+input {
+  border: none;
+  outline: none;
+  font-family: inherit;
+}

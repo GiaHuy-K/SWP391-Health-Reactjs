@@ -3,7 +3,7 @@ import { FaEye, FaEyeSlash, FaTimesCircle } from "react-icons/fa";
 import api from "../../config/axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import "./RegisterPage.css";
+import styles from "./RegisterPage.module.css";
 
 // formdata các giá trị phải giống với BE để trả về
 const RegisterPage = () => {
@@ -161,9 +161,9 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="register-container">
-      <div className="register-card">
-        <form className="register-form" onSubmit={handleSubmit}>
+    <div className={styles['register-container']}>
+      <div className={styles['register-card']}>
+        <form className={styles['register-form']} onSubmit={handleSubmit}>
           <h2>Tạo tài khoản của bạn</h2>
 
           {[
@@ -173,7 +173,7 @@ const RegisterPage = () => {
             "password",
             "confirmPassword",
           ].map((field) => (
-            <div key={field} className="form-group">
+            <div key={field} className={styles['form-group']}>
               <label htmlFor={field}>
                 {
                   {
@@ -185,7 +185,7 @@ const RegisterPage = () => {
                   }[field]
                 }
               </label>
-              <div className="input-wrapper">
+              <div className={styles['input-wrapper']}>
                 <input
                   type={
                     field === "password" || field === "confirmPassword"
@@ -201,26 +201,26 @@ const RegisterPage = () => {
                   value={formData[field]}
                   onChange={handleChange}
                   placeholder={field === "email" ? "you@example.com" : ""}
-                  className={errors[field] ? "error" : ""}
+                  className={errors[field] ? styles.error : ""}
                 />
                 {(field === "password" || field === "confirmPassword") && (
                   <span
-                    className="eye-icon"
+                    className={styles['eye-icon']}
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? <FaEyeSlash /> : <FaEye />}
                   </span>
                 )}
               </div>
-              {errors[field] && <p className="error-text">{errors[field]}</p>}
+              {errors[field] && <p className={styles['error-text']}>{errors[field]}</p>}
             </div>
           ))}
 
-          <div className="form-group">
+          <div className={styles['form-group']}>
             <label>Độ mạnh của mật khẩu:</label>
-            <div className="strength-bar">
+            <div className={styles['strength-bar']}>
               <div
-                className="strength-fill"
+                className={styles['strength-fill']}
                 style={{
                   width: `${(passwordStrength / 4) * 100}%`,
                   backgroundColor: getStrengthColor(),
@@ -233,7 +233,7 @@ const RegisterPage = () => {
             {isLoading ? "Đang xử lý..." : "Đăng ký"}
           </button>
 
-          <div className="login-link">
+          <div className={styles['login-link']}>
             <span>Đã có tài khoản? </span>
             <button type="button" onClick={() => navigate("/login")}>
               Đăng nhập

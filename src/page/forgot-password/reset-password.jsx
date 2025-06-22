@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../config/axios';
 import { toast } from 'react-toastify';
-import './resetPassword.css';
+import styles from './resetPassword.module.css';
 
 const ResetPassword = () => {
   const [email, setEmail] = useState('');
@@ -29,38 +29,38 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="reset-wrapper">
-      <div className="reset-container">
-        <h2 className="reset-title">Đặt lại mật khẩu</h2>
+    <div className={styles['reset-wrapper']}>
+      <div className={styles['reset-container']}>
+        <h2 className={styles['reset-title']}>Đặt lại mật khẩu</h2>
         <form onSubmit={handleSubmit}>
-          <label className="reset-label">Email:</label>
+          <label className={styles['reset-label']}>Email:</label>
           <input
             type="email"
-            className="reset-input"
+            className={styles['reset-input']}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
           />
 
-          <label className="reset-label">OTP:</label>
+          <label className={styles['reset-label']}>OTP:</label>
           <input
             type="text"
-            className="reset-input"
+            className={styles['reset-input']}
             value={otp}
             onChange={(e) => setOtp(e.target.value)}
             required
           />
 
-          <label className="reset-label">Mật khẩu mới:</label>
+          <label className={styles['reset-label']}>Mật khẩu mới:</label>
           <input
             type="password"
-            className="reset-input"
+            className={styles['reset-input']}
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
             required
           />
 
-          <button type="submit" className="reset-button">
+          <button type="submit" className={styles['reset-button']}>
             Đặt lại mật khẩu
           </button>
         </form>

@@ -8,6 +8,7 @@ import {
   TeamOutlined ,
   PlusOutlined,
   PieChartOutlined,
+  ProfileOutlined,
 } from "@ant-design/icons";
 import { Layout, Menu, theme, Avatar, Dropdown, Space, message } from "antd";
 import { Link, Outlet, useNavigate } from "react-router-dom";
@@ -52,11 +53,21 @@ const AdminLayout = () => {
       localStorage.removeItem("username");
       message.success("Đã đăng xuất");
       navigate("/login");
+    } else if (key === "profile") {
+      navigate("/profile");
     }
   };
 
   const userMenu = {
     items: [
+      {
+        key: "profile",
+        label: "Hồ sơ cá nhân",
+        icon: <ProfileOutlined />,
+      },
+      {
+        type: "divider",
+      },
       {
         key: "logout",
         label: "Đăng xuất",

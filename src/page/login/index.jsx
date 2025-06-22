@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash, FaLock, FaEnvelope } from "react-icons/fa";
 import { useAuth } from "../../config/AuthContext";
 import api from "../../config/axios";
-import "./LoginPage.css";
+import styles from "./LoginPage.module.css";
 
 // form theo api post 
 const LoginPage = () => {
@@ -109,12 +109,12 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="login-container">
-      <div className="login-box">
-        <h2 className="login-title">Đăng nhập vào tài khoản của bạn</h2>
-        <form onSubmit={handleSubmit} className="login-form">
-          <div className="input-group">
-            <div className="input-icon">
+    <div className={styles['login-container']}>
+      <div className={styles['login-box']}>
+        <h2 className={styles['login-title']}>Đăng nhập vào tài khoản của bạn</h2>
+        <form onSubmit={handleSubmit} className={styles['login-form']}>
+          <div className={styles['input-group']}>
+            <div className={styles['input-icon']}>
               <FaEnvelope />
             </div>
             <input
@@ -123,13 +123,13 @@ const LoginPage = () => {
               placeholder="Nhập email của bạn"
               value={formData.email}
               onChange={handleChange}
-              className={`login-input ${errors.email ? "input-error" : ""}`}
+              className={`${styles['login-input']} ${errors.email ? styles['input-error'] : ""}`}
             />
-            {errors.email && <p className="error-text">{errors.email}</p>}
+            {errors.email && <p className={styles['error-text']}>{errors.email}</p>}
           </div>
 
-          <div className="input-group">
-            <div className="input-icon">
+          <div className={styles['input-group']}>
+            <div className={styles['input-icon']}>
               <FaLock />
             </div>
             <input
@@ -138,19 +138,19 @@ const LoginPage = () => {
               placeholder="Nhập mật khẩu của bạn"
               value={formData.password}
               onChange={handleChange}
-              className={`login-input ${errors.password ? "input-error" : ""}`}
+              className={`${styles['login-input']} ${errors.password ? styles['input-error'] : ""}`}
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="toggle-password"
+              className={styles['toggle-password']}
             >
               {showPassword ? <FaEyeSlash /> : <FaEye />}
             </button>
-            {errors.password && <p className="error-text">{errors.password}</p>}
+            {errors.password && <p className={styles['error-text']}>{errors.password}</p>}
           </div>
 
-          <div className="login-options">
+          <div className={styles['login-options']}>
             <label>
               <input
                 type="checkbox"
@@ -160,16 +160,16 @@ const LoginPage = () => {
               />
               Ghi nhớ tôi
             </label>
-            <a href="/forgot-password" className="forgot-password">
+            <a href="/forgot-password" className={styles['forgot-password']}>
               Quên mật khẩu?
             </a>
           </div>
 
-          <button type="submit" className="login-button" disabled={isLoading}>
+          <button type="submit" className={styles['login-button']} disabled={isLoading}>
             {isLoading ? "Đang đăng nhập..." : "Đăng nhập"}
           </button>
 
-          <p className="register-text">
+          <p className={styles['register-text']}>
             Chưa có tài khoản? <a href="/register">Đăng ký tại đây</a>
           </p>
         </form>

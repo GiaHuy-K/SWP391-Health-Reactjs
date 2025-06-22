@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../config/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import api from "../../config/axios";
-import "./UserProfile.css";
+import styles from "./UserProfile.module.css";
 
 const RELATIONSHIP_OPTIONS = [
   { value: "FATHER", label: "Bố" },
@@ -14,8 +14,16 @@ const RELATIONSHIP_OPTIONS = [
   { value: "OTHER", label: "Khác" },
 ];
 
+// Component nhỏ để hiển thị một mục thông tin
+const InfoItem = ({ label, value }) => (
+  <div className={styles.infoItem}>
+    <label className={styles.formLabel}>{label}</label>
+    <div className={styles.infoText}>{value}</div>
+  </div>
+);
+
 const UserProfile = () => {
-  const { logout } = useAuth();
+  const { logout, user: authUser } = useAuth();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [studentInfo, setStudentInfo] = useState(null);
@@ -39,16 +47,35 @@ const UserProfile = () => {
   const fetchUserProfile = async () => {
     setLoading(true);
     try {
-      const res = await api.get("/user/profile/me");
-      setUser(res.data);
-      if (res.data.linkedToStudent) {
-        const response = await api.get("/parent/my-students");
-        const raw = response.data;
-        const studentRes = Array.isArray(raw.content) ? raw.content : [];
-        console.log(studentRes);
-        setStudentInfo(studentRes);
+      const userRole = authUser?.role;
+      
+      if (userRole === "Parent") {
+        const res = await api.get("/user/profile/me");
+        setUser(res.data);
+        if (res.data.linkedToStudent) {
+          const response = await api.get("/parent/my-students");
+          const raw = response.data;
+          const studentRes = Array.isArray(raw.content) ? raw.content : [];
+          console.log(studentRes);
+          setStudentInfo(studentRes);
+        } else {
+          setStudentInfo(null);
+        }
       } else {
-        setStudentInfo(null);
+        try {
+          const res = await api.get("/user/profile/me");
+          setUser(res.data);
+          setStudentInfo(null);
+        } catch (err) {
+          if (err.response?.status === 401) {
+            toast.error("Phiên đăng nhập hết hạn, vui lòng đăng nhập lại");
+            logout();
+            navigate("/login");
+          } else {
+            toast.error("Không thể tải thông tin cá nhân");
+            setUser({});
+          }
+        }
       }
     } catch (err) {
       if (err.response?.status === 401) {
@@ -56,9 +83,14 @@ const UserProfile = () => {
         logout();
         navigate("/login");
       } else if (err.response?.status === 403) {
-        setUser({});
-        setStudentInfo(null);
-        toast.warn("Bạn cần liên kết học sinh để sử dụng các chức năng!");
+        if (authUser?.role === "Parent") {
+          setUser({});
+          setStudentInfo(null);
+          toast.warn("Bạn cần liên kết học sinh để sử dụng các chức năng!");
+        } else {
+          toast.error("Không thể tải thông tin cá nhân");
+          setUser({});
+        }
       } else {
         toast.error("Không thể tải thông tin cá nhân");
         setUser({});
@@ -128,222 +160,194 @@ const UserProfile = () => {
   };
 
   const handleGoHome = () => {
-    navigate("/");
+    const userRole = authUser?.role;
+    if (userRole === "SchoolAdmin") {
+      navigate("/dashboard");
+    } else if (userRole === "StaffManager") {
+      navigate("/dashboardManager");
+    } else if (userRole === "MedicalStaff") {
+      navigate("/dashboardNurse");
+    } else {
+      navigate("/");
+    }
+  };
+
+  const getRoleDisplayName = (role) => {
+    switch (role) {
+      case "SchoolAdmin":
+        return "Quản trị viên";
+      case "Manager":
+        return "Quản lý";
+      case "Nurse":
+        return "Y tá";
+      case "Parent":
+        return "Phụ huynh";
+      default:
+        return role;
+    }
   };
 
   if (loading || !user) {
-    return <div className="profile-loading">Đang tải thông tin...</div>;
+    return <div className={styles.profileLoading}>Đang tải thông tin...</div>;
   }
 
+  const isParent = authUser?.role === "Parent";
+
   return (
-    <div className="userprofile-container">
-      <div className="layout-container">
-        <header className="header">
-          <div className="header-content">
-            <div className="logo-section">
-              <div className="logo-icon">
-                <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path
-                    fillRule="evenodd"
-                    clipRule="evenodd"
-                    d="M39.475 21.6262C40.358 21.4363 40.6863 21.5589 40.7581 21.5934C40.7876 21.655 40.8547 21.857 40.8082 22.3336C40.7408 23.0255 40.4502 24.0046 39.8572 25.2301C38.6799 27.6631 36.5085 30.6631 33.5858 33.5858C30.6631 36.5085 27.6632 38.6799 25.2301 39.8572C24.0046 40.4502 23.0255 40.7407 22.3336 40.8082C21.8571 40.8547 21.6551 40.7875 21.5934 40.7581C21.5589 40.6863 21.4363 40.358 21.6262 39.475C21.8562 38.4054 22.4689 36.9657 23.5038 35.2817C24.7575 33.2417 26.5497 30.9744 28.7621 28.762C30.9744 26.5497 33.2417 24.7574 35.2817 23.5037C36.9657 22.4689 38.4054 21.8562 39.475 21.6262ZM4.41189 29.2403L18.7597 43.5881C19.8813 44.7097 21.4027 44.9179 22.7217 44.7893C24.0585 44.659 25.5148 44.1631 26.9723 43.4579C29.9052 42.0387 33.2618 39.5667 36.4142 36.4142C39.5667 33.2618 42.0387 29.9052 43.4579 26.9723C44.1631 25.5148 44.659 24.0585 44.7893 22.7217C44.9179 21.4027 44.7097 19.8813 43.5881 18.7597L29.2403 4.41187C27.8527 3.02428 25.8765 3.02573 24.2861 3.36776C22.6081 3.72863 20.7334 4.58419 18.8396 5.74801C16.4978 7.18716 13.9881 9.18353 11.5858 11.5858C9.18354 13.988 7.18717 16.4978 5.74802 18.8396C4.58421 20.7334 3.72865 22.6081 3.36778 24.2861C3.02574 25.8765 3.02429 27.8527 4.41189 29.2403Z"
-                    fill="currentColor"
-                  ></path>
-                </svg>
-              </div>
-              <h2 className="logo-text">SchoolMed</h2>
+    <div className={styles.userprofileContainer}>
+      <header className={styles.header}>
+        <div className={styles.headerContent}>
+          <Link to="/" className={styles.logoSection}>
+            <div className={styles.logoIcon}>
+              <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 6H42L36 24L42 42H6L12 24L6 6Z" fill="currentColor"></path>
+              </svg>
             </div>
-            <div className="nav-section">
-              <div className="nav-links">
-                <a className="nav-link" href="#" onClick={handleGoHome}>Homepage</a>
-                <a className="nav-link" href="#" onClick={() => setShowPasswordModal(true)}>Change Password</a>
-              </div>
-              <button className="logout-btn" onClick={handleLogout}>
-                <span>Logout</span>
-              </button>
+            <h2 className={styles.logoText}>SchoolMed</h2>
+          </Link>
+          <div className={styles.navSection}>
+            <div className={styles.navLinks}>
+              {!isParent && (
+                <a className={styles.navLink} onClick={handleGoHome}>Dashboard</a>
+              )}
+              <a className={styles.navLink} onClick={() => setShowPasswordModal(true)}>Đổi mật khẩu</a>
             </div>
-          </div>
-        </header>
-
-        <div className="main-content">
-          <div className="content-container">
-            <div className="page-title">
-              <h1>User Profile</h1>
-            </div>
-
-            <div className="form-section">
-              <div className="form-group">
-                <label className="form-label">Full Name</label>
-                <input
-                  className="form-input"
-                  type="text"
-                  value={user.fullName || ""}
-                  readOnly
-                  placeholder="Full Name"
-                />
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Email</label>
-                <input
-                  className="form-input"
-                  type="email"
-                  value={user.email || ""}
-                  readOnly
-                  placeholder="Email"
-                />
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Phone Number</label>
-                <input
-                  className="form-input"
-                  type="text"
-                  value={user.phoneNumber || ""}
-                  readOnly
-                  placeholder="Phone Number"
-                />
-              </div>
-            </div>
-
-            {!user.linkedToStudent && (
-              <div className="link-section">
-                <h2 className="section-title">Link User and Student Accounts</h2>
-                <form onSubmit={handleLinkSubmit} className="link-form">
-                  <div className="form-group">
-                    <label className="form-label">Invitation Code</label>
-                    <input
-                      className="form-input"
-                      type="text"
-                      name="invitationCode"
-                      value={linkForm.invitationCode}
-                      onChange={handleLinkChange}
-                      placeholder="Enter invitation code"
-                      required
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label className="form-label">Relationship Type</label>
-                    <select
-                      className="form-select"
-                      name="relationshipType"
-                      value={linkForm.relationshipType}
-                      onChange={handleLinkChange}
-                      required
-                    >
-                      <option value="">Select relationship type</option>
-                      {RELATIONSHIP_OPTIONS.map((opt) => (
-                        <option key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="form-actions">
-                    <button
-                      type="submit"
-                      className="submit-btn"
-                      disabled={submitting}
-                    >
-                      {submitting ? "Đang xử lý..." : "Link to Student"}
-                    </button>
-                  </div>
-                </form>
-              </div>
-            )}
-
-            {user.linkedToStudent && Array.isArray(studentInfo) && studentInfo.length > 0 && (
-              <div className="student-section">
-                <h2 className="section-title">Linked Student Information</h2>
-                <div className="student-info">
-                  <div className="info-item">
-                    <strong>Full Name:</strong> {studentInfo[0].fullName}
-                  </div>
-                  <div className="info-item">
-                    <strong>Student Code:</strong> {studentInfo[0].studentCode}
-                  </div>
-                  <div className="info-item">
-                    <strong>Class:</strong> {studentInfo[0].className}
-                  </div>
-                  <div className="info-item">
-                    <strong>Date of Birth:</strong> {studentInfo[0].dateOfBirth}
-                  </div>
-                  <div className="info-item">
-                    <strong>Gender:</strong> {studentInfo[0].gender}
-                  </div>
-                </div>
-              </div>
-            )}
+            <button className={styles.logoutBtn} onClick={handleLogout}>
+              <span>Đăng xuất</span>
+            </button>
           </div>
         </div>
-      </div>
+      </header>
 
-      {/* Password Change Modal */}
-      {showPasswordModal && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h2>Change Password</h2>
-              <button 
-                className="modal-close"
-                onClick={() => setShowPasswordModal(false)}
-              >
-                ×
-              </button>
+      <main className={styles.mainContent}>
+        <h1 className={styles.pageTitle}>Hồ sơ cá nhân</h1>
+
+        {/* User Information Card */}
+        <div className={styles.card}>
+          <h2 className={styles.sectionTitle}>Thông tin tài khoản</h2>
+          <div className={styles.infoGrid}>
+            <InfoItem label="Họ và tên" value={user.fullName || "Chưa cập nhật"} />
+            <InfoItem label="Email" value={user.email || "Chưa cập nhật"} />
+            <InfoItem label="Số điện thoại" value={user.phoneNumber || "Chưa cập nhật"} />
+            <InfoItem label="Vai trò" value={getRoleDisplayName(user.role || authUser?.role) || ""} />
+          </div>
+        </div>
+
+        {/* Link Student Form Card (for Parents only) */}
+        {isParent && !user.linkedToStudent && (
+          <div className={styles.card}>
+            <h2 className={styles.sectionTitle}>Liên kết tài khoản với học sinh</h2>
+            <form onSubmit={handleLinkSubmit}>
+              <div className={styles.infoGrid}>
+                <div className={styles.formGroup}>
+                  <label className={styles.formLabel}>Mã mời</label>
+                  <input
+                    className={styles.formInput}
+                    type="text"
+                    name="invitationCode"
+                    value={linkForm.invitationCode}
+                    onChange={handleLinkChange}
+                    placeholder="Nhập mã mời của học sinh"
+                    required
+                  />
+                </div>
+                <div className={styles.formGroup}>
+                  <label className={styles.formLabel}>Mối quan hệ</label>
+                  <select
+                    className={styles.formSelect}
+                    name="relationshipType"
+                    value={linkForm.relationshipType}
+                    onChange={handleLinkChange}
+                    required
+                  >
+                    <option value="">Chọn mối quan hệ</option>
+                    {RELATIONSHIP_OPTIONS.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className={styles.formActions}>
+                <button type="submit" className={styles.submitBtn} disabled={submitting}>
+                  {submitting ? "Đang xử lý..." : "Liên kết ngay"}
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
+
+        {/* Linked Student Info Card (for Parents only) */}
+        {isParent && user.linkedToStudent && Array.isArray(studentInfo) && studentInfo.length > 0 && (
+          <div className={styles.card}>
+            <h2 className={styles.sectionTitle}>Thông tin học sinh đã liên kết</h2>
+            <div className={styles.studentInfo}>
+               {studentInfo.map(student => (
+                  <div key={student.studentId} className={styles.infoItem}>
+                    <strong>Họ và tên:</strong> {student.fullName}<br/>
+                    <strong>Mã học sinh:</strong> {student.studentCode}<br/>
+                    <strong>Lớp:</strong> {student.className}<br/>
+                    <strong>Ngày sinh:</strong> {student.dateOfBirth}<br/>
+                    <strong>Giới tính:</strong> {student.gender}
+                  </div>
+                ))}
             </div>
-            <form onSubmit={handlePasswordSubmit} className="modal-form">
-              <div className="form-group">
-                <label className="form-label">Current Password</label>
+          </div>
+        )}
+      </main>
+
+      {/* Change Password Modal */}
+      {showPasswordModal && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalContent}>
+            <div className={styles.modalHeader}>
+              <h2>Đổi mật khẩu</h2>
+              <button className={styles.modalClose} onClick={() => setShowPasswordModal(false)}>×</button>
+            </div>
+            <form onSubmit={handlePasswordSubmit} className={styles.modalForm}>
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel}>Mật khẩu hiện tại</label>
                 <input
-                  className="form-input"
+                  className={styles.formInput}
                   type="password"
                   name="oldPassword"
                   value={passwordForm.oldPassword}
                   onChange={handlePasswordChange}
-                  placeholder="Enter current password"
+                  placeholder="Nhập mật khẩu hiện tại"
                   required
                 />
               </div>
-              <div className="form-group">
-                <label className="form-label">New Password</label>
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel}>Mật khẩu mới</label>
                 <input
-                  className="form-input"
+                  className={styles.formInput}
                   type="password"
                   name="newPassword"
                   value={passwordForm.newPassword}
                   onChange={handlePasswordChange}
-                  placeholder="Enter new password"
+                  placeholder="Nhập mật khẩu mới"
                   required
                 />
               </div>
-              <div className="form-group">
-                <label className="form-label">Confirm New Password</label>
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel}>Xác nhận mật khẩu mới</label>
                 <input
-                  className="form-input"
+                  className={styles.formInput}
                   type="password"
                   name="confirmNewPassword"
                   value={passwordForm.confirmNewPassword}
                   onChange={handlePasswordChange}
-                  placeholder="Confirm new password"
+                  placeholder="Xác nhận lại mật khẩu mới"
                   required
                 />
               </div>
-              <div className="modal-actions">
-                <button
-                  type="submit"
-                  className="submit-btn"
-                  disabled={submitting}
-                >
-                  {submitting ? "Đang xử lý..." : "Update Password"}
+              <div className={styles.modalActions}>
+                <button type="button" className={styles.cancelBtn} onClick={() => setShowPasswordModal(false)}>
+                  Hủy
                 </button>
-                <button
-                  type="button"
-                  className="cancel-btn"
-                  onClick={() => setShowPasswordModal(false)}
-                >
-                  Cancel
+                <button type="submit" className={styles.submitBtn} disabled={submitting}>
+                  {submitting ? "Đang cập nhật..." : "Cập nhật"}
                 </button>
               </div>
             </form>

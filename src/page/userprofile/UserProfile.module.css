@@ -498,4 +498,313 @@
 .link-section,
 .student-section {
   animation: fadeIn 0.5s ease;
+}
+
+/* UserProfile.module.css */
+
+/* Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap');
+
+.userprofileContainer {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background-color: #f0f2f5;
+  min-height: 100vh;
+}
+
+/* --- Header --- */
+.header {
+  background-color: white;
+  padding: 0.75rem 2rem;
+  border-bottom: 1px solid #e8e8e8;
+  display: flex;
+  justify-content: center;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.headerContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 1200px;
+}
+
+.logoSection {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.logoIcon svg {
+  width: 2rem;
+  height: 2rem;
+  color: #1a202c;
+}
+
+.logoText {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #1a202c;
+}
+
+.navSection {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.navLinks {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.navLink {
+  font-weight: 600;
+  color: #4a5568;
+  transition: color 0.2s;
+  cursor: pointer;
+}
+
+.navLink:hover {
+  color: #2b6cb0;
+}
+
+.logoutBtn {
+  background-color: #2b6cb0;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.logoutBtn:hover {
+  background-color: #2c5282;
+}
+
+
+/* --- Main Content --- */
+.mainContent {
+  padding: 2rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.pageTitle {
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 2rem;
+  color: #1a202c;
+}
+
+
+/* --- Card Layout --- */
+.card {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  margin-bottom: 2rem;
+}
+
+.sectionTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #2d3748;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+
+/* --- Form & Info Styles --- */
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.infoItem, .formGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.formLabel {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #4a5568;
+  margin-bottom: 0.5rem;
+}
+
+.infoText, .formInput, .formSelect {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.infoText {
+  background-color: #f7fafc;
+  color: #2d3748;
+  border: 1px solid #e2e8f0;
+}
+
+.formInput, .formSelect {
+  background-color: white;
+  border: 1px solid #cbd5e0;
+  color: #2d3748;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.formInput:focus, .formSelect:focus {
+  border-color: #3182ce;
+  box-shadow: 0 0 0 1px #3182ce;
+  outline: none;
+}
+
+.formSelect {
+  appearance: none;
+  background-image: url('data:image/svg+xml;utf8,<svg fill="black" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+}
+
+.formActions {
+  margin-top: 1.5rem;
+}
+
+.submitBtn {
+  background-color: #3182ce;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.submitBtn:hover:not(:disabled) {
+  background-color: #2b6cb0;
+}
+
+.submitBtn:disabled {
+  background-color: #a0aec0;
+  cursor: not-allowed;
+}
+
+/* --- Student Info --- */
+.studentInfo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+.studentInfo .infoItem {
+  background-color: #f7fafc;
+  padding: 1rem;
+  border-radius: 8px;
+  border-left: 4px solid #3182ce;
+}
+.studentInfo strong {
+  display: block;
+  font-weight: 600;
+  color: #4a5568;
+  margin-bottom: 0.25rem;
+}
+
+/* --- Modal --- */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.modalContent {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.modalHeader h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.modalClose {
+  font-size: 1.75rem;
+  font-weight: 300;
+  color: #718096;
+  transition: color 0.2s;
+}
+
+.modalClose:hover {
+  color: #2d3748;
+}
+
+.modalForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.cancelBtn {
+  background-color: #e2e8f0;
+  color: #4a5568;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.cancelBtn:hover {
+  background-color: #cbd5e0;
+}
+
+
+/* --- Loading --- */
+.profileLoading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: #4a5568;
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  .mainContent {
+    padding: 1rem;
+  }
+  .header {
+    padding: 0.75rem 1rem;
+  }
+  .navLinks {
+    display: none;
+  }
 } 
