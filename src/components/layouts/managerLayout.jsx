@@ -25,7 +25,7 @@ function getItem(label, key, icon, children) {
 
 const items = [
   getItem('Quản lý sự cố', 'event-Manager', <PieChartOutlined />),
-  getItem('Option 2', '2', <DesktopOutlined />),
+  getItem('Quản lý vật tư', 'supply-Manager', <DesktopOutlined />),
 ];
 
 const ManagerLayout = () => {

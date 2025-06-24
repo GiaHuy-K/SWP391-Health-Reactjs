@@ -38,11 +38,20 @@ const MedicalSupplyDrawer = ({ open, onClose, supplyId }) => {
               <Descriptions.Item label="Loại">{supply.category}</Descriptions.Item>
               <Descriptions.Item label="Đơn vị">{supply.unit}</Descriptions.Item>
               <Descriptions.Item label="Tồn kho">{supply.currentStock}</Descriptions.Item>
+
               <Descriptions.Item label="Trạng thái">
-                <span style={{ color: supply.active ? "green" : "red" }}>
-                  {supply.active ? "Còn hạn sử dụng" : "Hết hạn sử dụng"}
+                <span style={{ color: supply.status === "Sẵn có" ? "green" : "red" }}>
+                  {supply.status || "Không xác định"}
                 </span>
               </Descriptions.Item>
+
+              <Descriptions.Item label="Hạn sử dụng">
+                {supply.expiredDate
+                  ? new Date(supply.expiredDate).toLocaleDateString("vi-VN")
+                  : "Không có thông tin"}
+              </Descriptions.Item>
+
+              <Descriptions.Item label="Mô tả">{supply.description}</Descriptions.Item>
               <Descriptions.Item label="Người tạo">{supply.createdByUserEmail}</Descriptions.Item>
               <Descriptions.Item label="Người cập nhật">{supply.updatedByUserEmail}</Descriptions.Item>
               <Descriptions.Item label="Ngày tạo">

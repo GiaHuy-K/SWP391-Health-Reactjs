@@ -1,15 +1,12 @@
 import api from "../config/axios";
 import { toast } from "react-toastify";
 
-//  Lấy danh sách tất cả vật tư y tế (phân trang)
+// Lấy danh sách tất cả vật tư y tế (phân trang)
 export const getMedicalSupplies = async () => {
   try {
     const response = await api.get("medical-supplies");
     const raw = response.data;
-    // vì kiểu trả về là content array nên cần hàm này 
     const content = Array.isArray(raw.content) ? raw.content : [];
-    //console.log(raw);
-    console.log(content);
     return content;
   } catch (error) {
     toast.error("Không thể tải danh sách vật tư y tế");
@@ -17,7 +14,7 @@ export const getMedicalSupplies = async () => {
   }
 };
 
-//  Lấy thông tin vật tư y tế theo ID
+// Lấy thông tin vật tư y tế theo ID
 export const getMedicalSupplyById = async (id) => {
   try {
     const res = await api.get(`medical-supplies/${id}`);
@@ -39,11 +36,10 @@ export const getMedicalSupplyTransactions = async (supplyId) => {
   }
 };
 
-
 // Tạo mới một vật tư y tế
 export const createMedicalSupply = async (data) => {
   try {
-    const res = await api.post("/api/medical-supplies", data);
+    const res = await api.post("medical-supplies", data);
     toast.success("Tạo vật tư thành công");
     return res.data;
   } catch (error) {
@@ -52,10 +48,10 @@ export const createMedicalSupply = async (data) => {
   }
 };
 
-// Cập nhật thông tin (metadata) của một vật tư y tế
+// Cập nhật thông tin vật tư y tế
 export const updateMedicalSupply = async (id, data) => {
   try {
-    const res = await api.put(`/api/medical-supplies/${id}`, data);
+    const res = await api.put(`medical-supplies/${id}`, data);
     toast.success("Cập nhật vật tư thành công");
     return res.data;
   } catch (error) {
@@ -64,10 +60,10 @@ export const updateMedicalSupply = async (id, data) => {
   }
 };
 
-//  Điều chỉnh số lượng tồn kho của vật tư y tế
+// Điều chỉnh số lượng tồn kho
 export const adjustMedicalSupplyStock = async (id, stockData) => {
   try {
-    const res = await api.post(`/api/medical-supplies/${id}/stock-adjustment`, stockData);
+    const res = await api.post(`medical-supplies/${id}/stock-adjustment`, stockData);
     toast.success("Điều chỉnh tồn kho thành công");
     return res.data;
   } catch (error) {
@@ -76,13 +72,24 @@ export const adjustMedicalSupplyStock = async (id, stockData) => {
   }
 };
 
-//  Xoá mềm một vật tư y tế (vô hiệu hóa)
-export const deleteMedicalSupply = async (id) => {
+// Xoá mềm vật tư (vô hiệu hóa)
+export const softDeleteMedicalSupply = async (id) => {
   try {
-    await api.delete(`/api/medical-supplies/${id}`);
-    toast.success("Xoá vật tư thành công");
+    await api.post(`medical-supplies/${id}/dispose`);
+    toast.success("Đã vô hiệu hóa vật tư");
   } catch (error) {
-    toast.error("Xoá vật tư thất bại");
+    toast.error("Vô hiệu hóa thất bại");
+    throw error;
+  }
+};
+
+// Xoá cứng vật tư
+export const hardDeleteMedicalSupply = async (id) => {
+  try {
+    await api.delete(`medical-supplies/${id}/delete`);
+    toast.success("Xoá vĩnh viễn vật tư thành công");
+  } catch (error) {
+    toast.error("Xoá vĩnh viễn thất bại");
     throw error;
   }
 };

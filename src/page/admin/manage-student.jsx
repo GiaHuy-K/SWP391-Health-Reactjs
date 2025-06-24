@@ -120,13 +120,6 @@ function ManageStudent() {
       >
         <Form layout="vertical" form={form}>
           <Form.Item
-            label="Mã học sinh"
-            name="studentCode"
-            rules={[{ required: true, message: "Nhập mã học sinh" }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
             label="Họ tên"
             name="fullName"
             rules={[{ required: true, message: "Nhập họ tên" }]}
@@ -154,13 +147,6 @@ function ManageStudent() {
             label="Lớp"
             name="className"
             rules={[{ required: true, message: "Nhập lớp học" }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            label="Địa chỉ"
-            name="address"
-            rules={[{ required: true, message: "Nhập địa chỉ" }]}
           >
             <Input />
           </Form.Item>

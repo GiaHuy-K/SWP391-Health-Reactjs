@@ -28,6 +28,7 @@ import ManageEvent from "./page/schoolnurse/manage-event.jsx";
 
 import ManageMedicalSupply from "./page/schoolnurse/manage-medicalSupply.jsx";
 import ManageEventM from "./page/manager/manage-event.jsx";
+import ManageMedicalSupplyM from "./page/manager/manage-medical-supply.jsx";
 
 // Component bảo vệ route yêu cầu đăng nhập
 const PrivateRoute = ({ children }) => {
@@ -51,18 +52,19 @@ const router = createBrowserRouter([
   { path: "/forgot-password", element: <ForgotPassword /> },
   { path: "/reset-password", element: <ResetPassword /> },
 
-  //dashboard của manager
+  //dashboard của manager (Quản lý Nhân sự/Nhân viên)
   { path: "/dashboardManager", element: <ManagerLayout />, children: [
     {path: "event-Manager", element: <ManageEventM/>},
+    {path: "supply-Manager", element: <ManageMedicalSupplyM/>},
   ] },
-  //dashboard của nurse
+  //dashboard của nurse (Nhân viên Y tế)
   { path: "/dashboardNurse", element: <NurseLayout />, children: [
 
     {path:"event-Nurse", element:<ManageEvent/>},
     {path :"medicalSupply-Nurse", element: <ManageMedicalSupply/>}
   ] },
 
-  //dashboard của admin 
+  //dashboard của admin (Quản trị viên Trường học)
   {
     path: "/dashboard",
     element: (

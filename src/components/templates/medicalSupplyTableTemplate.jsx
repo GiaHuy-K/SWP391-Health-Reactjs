@@ -40,14 +40,13 @@ const MedicalSupplyTableTemplate = ({
     },
     {
       title: "Trạng thái",
-      dataIndex: "active",
-      key: "active",
-      render: (value) =>
-        value ? (
-          <Tag color="green">Còn hạn sử dụng</Tag>
-        ) : (
-          <Tag color="red">Hết hạn sử dụng</Tag>
-        ),
+      dataIndex: "status",
+      key: "status",
+      render: (status) => (
+        <Tag color={status === "Sẵn có" ? "green" : "red"}>
+          {status}
+        </Tag>
+      ),
     },
     {
       title: "Hành động",
