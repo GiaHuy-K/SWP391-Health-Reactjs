@@ -8,6 +8,7 @@ import {
   TeamOutlined,
   PlusOutlined,
   PieChartOutlined,
+  ProfileOutlined,
 } from "@ant-design/icons";
 import { Layout, Menu, theme, Avatar, Dropdown, Space, message } from "antd";
 import { Link, Outlet, useNavigate } from "react-router-dom";
@@ -46,20 +47,30 @@ const items = [
 const AdminLayout = () => {
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
+  const navigate = useNavigate();
 
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
   const { isAuthenticated, logout } = useAuth();
+  
   const handleMenuClick = ({ key }) => {
     if (key === "logout") {
       logout();
       message.success("Đã đăng xuất");
+      navigate("/");
+    } else if (key === "profile") {
+      navigate("/profile");
     }
   };
 
   const userMenu = {
     items: [
+      {
+        key: "profile",
+        label: "Hồ sơ",
+        icon: <ProfileOutlined />,
+      },
       {
         key: "logout",
         label: "Đăng xuất",
