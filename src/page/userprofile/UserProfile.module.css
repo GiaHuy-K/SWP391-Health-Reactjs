@@ -9,7 +9,7 @@
   font-family: "Plus Jakarta Sans", "Noto Sans", sans-serif;
 }
 
-.userprofile-container {
+.userprofileContainer {
   position: relative;
   display: flex;
   width: 100%;
@@ -19,7 +19,7 @@
   overflow-x: hidden;
 }
 
-.layout-container {
+.layoutContainer {
   display: flex;
   height: 100%;
   flex-grow: 1;
@@ -40,7 +40,7 @@
   z-index: 1000;
 }
 
-.header-content {
+.headerContent {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -49,20 +49,29 @@
   margin: 0 auto;
 }
 
-.logo-section {
+.logoSection {
   display: flex;
   align-items: center;
   gap: 1rem;
   color: #141414;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0.5rem;
+  border-radius: 8px;
 }
 
-.logo-icon {
+.logoSection:hover {
+  background-color: #f8f9fa;
+  transform: translateY(-1px);
+}
+
+.logoIcon {
   width: 1rem;
   height: 1rem;
   color: #141414;
 }
 
-.logo-text {
+.logoText {
   color: #141414;
   font-size: 1.125rem;
   font-weight: 700;
@@ -70,20 +79,20 @@
   letter-spacing: -0.015em;
 }
 
-.nav-section {
+.navSection {
   display: flex;
   flex: 1;
   justify-content: flex-end;
   gap: 2rem;
 }
 
-.nav-links {
+.navLinks {
   display: flex;
   align-items: center;
   gap: 2.25rem;
 }
 
-.nav-link {
+.navLink {
   color: #141414;
   font-size: 0.875rem;
   font-weight: 500;
@@ -93,11 +102,11 @@
   cursor: pointer;
 }
 
-.nav-link:hover {
+.navLink:hover {
   color: #3498db;
 }
 
-.logout-btn {
+.logoutBtn {
   display: flex;
   min-width: 84px;
   max-width: 480px;
@@ -118,13 +127,13 @@
   transition: all 0.3s ease;
 }
 
-.logout-btn:hover {
+.logoutBtn:hover {
   background-color: #e0e0e0;
   transform: translateY(-1px);
 }
 
 /* Main Content */
-.main-content {
+.mainContent {
   padding: 0 10rem;
   display: flex;
   flex: 1;
@@ -133,7 +142,7 @@
   padding-bottom: 1.25rem;
 }
 
-.content-container {
+.contentContainer {
   display: flex;
   flex-direction: column;
   max-width: 960px;
@@ -141,7 +150,7 @@
 }
 
 /* Page Title */
-.page-title {
+.pageTitle {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
@@ -149,7 +158,7 @@
   padding: 1rem;
 }
 
-.page-title h1 {
+.pageTitle h1 {
   color: #141414;
   letter-spacing: -0.015em;
   font-size: 2rem;
@@ -159,13 +168,13 @@
 }
 
 /* Form Sections */
-.form-section,
-.link-section,
-.student-section {
+.formSection,
+.linkSection,
+.studentSection {
   margin-bottom: 2rem;
 }
 
-.section-title {
+.sectionTitle {
   color: #141414;
   font-size: 1.375rem;
   font-weight: 700;
@@ -176,23 +185,21 @@
 }
 
 /* Form Groups */
-.form-group {
+.formGroup {
   display: flex;
-  max-width: 480px;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  gap: 1rem;
-  padding: 0.75rem 1rem;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
 }
 
-.form-label {
-  display: flex;
-  flex-direction: column;
-  min-width: 10rem;
-  flex: 1;
+.formLabel {
+  width: 120px;
+  min-width: 120px;
+  font-weight: 500;
+  color: #141414;
 }
 
-.form-label p {
+.formLabel p {
   color: #141414;
   font-size: 1rem;
   font-weight: 500;
@@ -200,58 +207,48 @@
   padding-bottom: 0.5rem;
 }
 
-/* Form Inputs */
-.form-input,
-.form-select {
+.formInput,
+.formSelect {
   display: flex;
-  width: 100%;
-  min-width: 0;
-  flex: 1;
-  resize: none;
-  overflow: hidden;
-  border-radius: 0.75rem;
+  min-height: 2.5rem;
+  padding: 0.5rem 0.75rem;
+  align-items: center;
+  gap: 0.5rem;
+  align-self: stretch;
+  border-radius: 0.5rem;
+  border: 1px solid #d1d5db;
+  background-color: white;
   color: #141414;
-  outline: none;
-  border: none;
-  background-color: #f2f2f2;
-  height: 3.5rem;
-  padding: 1rem;
-  font-size: 1rem;
+  font-size: 0.875rem;
   font-weight: 400;
   line-height: normal;
-  transition: all 0.3s ease;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.form-input:focus,
-.form-select:focus {
-  background-color: #e8e8e8;
-  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+.formInput:focus,
+.formSelect:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
 }
 
-.form-input::placeholder {
-  color: #757575;
+.formInput::placeholder {
+  color: #9ca3af;
 }
 
-.form-select {
-  background-image: url('data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2724px%27 height=%2724px%27 fill=%27rgb(117,117,117)%27 viewBox=%270 0 256 256%27%3e%3cpath d=%27M181.66,170.34a8,8,0,0,1,0,11.32l-48,48a8,8,0,0,1-11.32,0l-48-48a8,8,0,0,1,11.32-11.32L128,212.69l42.34-42.35A8,8,0,0,1,181.66,170.34Zm-96-84.68L128,43.31l42.34,42.35a8,8,0,0,0,11.32-11.32l-48-48a8,8,0,0,0-11.32,0l-48,48A8,8,0,0,0,85.66,85.66Z%27%3e%3c/path%3e%3c/svg%3e');
-  background-repeat: no-repeat;
-  background-position: right 1rem center;
-  background-size: 1rem;
-  padding-right: 3rem;
-  appearance: none;
+.formSelect {
+  cursor: pointer;
 }
 
-/* Form Actions */
-.form-actions {
+.formActions {
   display: flex;
-  max-width: 480px;
-  flex-wrap: wrap;
-  align-items: flex-end;
+  justify-content: flex-end;
   gap: 1rem;
-  padding: 0.75rem 1rem;
+  padding: 1rem;
+  margin-top: 1rem;
 }
 
-.submit-btn {
+.submitBtn {
   display: flex;
   min-width: 84px;
   max-width: 480px;
@@ -272,42 +269,48 @@
   transition: all 0.3s ease;
 }
 
-.submit-btn:hover:not(:disabled) {
+.submitBtn:hover:not(:disabled) {
   background-color: #2980b9;
   transform: translateY(-1px);
 }
 
-.submit-btn:disabled {
-  background-color: #bdc3c7;
+.submitBtn:disabled {
+  background-color: #9ca3af;
   cursor: not-allowed;
   transform: none;
 }
 
-/* Student Information */
-.student-info {
-  padding: 0 1rem;
+.linkForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
-.info-item {
+.studentInfo {
+  padding: 1rem;
+}
+
+.infoItem {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #f2f2f2;
   color: #141414;
-  font-size: 1rem;
+  font-size: 0.875rem;
   font-weight: 400;
   line-height: normal;
-  padding: 0.5rem 0;
-  border-bottom: 1px solid #f2f2f2;
 }
 
-.info-item:last-child {
+.infoItem:last-child {
   border-bottom: none;
 }
 
-.info-item strong {
+.infoItem strong {
+  color: #141414;
   font-weight: 600;
-  margin-right: 0.5rem;
 }
 
-/* Modal Styles */
-.modal-overlay {
+.modalOverlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -317,63 +320,65 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2000;
+  z-index: 1000;
   padding: 1rem;
 }
 
-.modal-content {
+.modalContent {
   background-color: white;
-  border-radius: 1rem;
+  border-radius: 12px;
+  padding: 2rem;
   max-width: 500px;
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  animation: fadeIn 0.3s ease-out;
 }
 
-.modal-header {
+.modalHeader {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 1.5rem;
-  border-bottom: 1px solid #f2f2f2;
+  align-items: center;
+  margin-bottom: 1.5rem;
 }
 
-.modal-header h2 {
+.modalHeader h2 {
   color: #141414;
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   font-weight: 700;
   line-height: 1.25;
+  letter-spacing: -0.015em;
 }
 
-.modal-close {
+.modalClose {
   background: none;
   border: none;
   font-size: 1.5rem;
-  color: #757575;
   cursor: pointer;
+  color: #666;
   padding: 0.25rem;
   border-radius: 0.25rem;
-  transition: all 0.3s ease;
+  transition: background-color 0.3s ease;
 }
 
-.modal-close:hover {
+.modalClose:hover {
   background-color: #f2f2f2;
-  color: #141414;
 }
 
-.modal-form {
-  padding: 1.5rem;
-}
-
-.modal-actions {
+.modalForm {
   display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
   gap: 1rem;
   margin-top: 1.5rem;
-  justify-content: flex-end;
 }
 
-.cancel-btn {
+.cancelBtn {
   display: flex;
   min-width: 84px;
   max-width: 480px;
@@ -387,93 +392,87 @@
   background-color: #f2f2f2;
   color: #141414;
   font-size: 0.875rem;
-  font-weight: 500;
+  font-weight: 700;
   line-height: normal;
+  letter-spacing: 0.015em;
   border: none;
   transition: all 0.3s ease;
 }
 
-.cancel-btn:hover {
+.cancelBtn:hover {
   background-color: #e0e0e0;
   transform: translateY(-1px);
 }
 
-/* Loading State */
-.profile-loading {
+.profileLoading {
   display: flex;
-  align-items: center;
   justify-content: center;
-  height: 100vh;
-  font-size: 1.125rem;
-  color: #757575;
+  align-items: center;
+  min-height: 400px;
+  color: #666;
+  font-size: 1rem;
+  font-weight: 500;
 }
 
 /* Responsive Design */
 @media (max-width: 1024px) {
-  .main-content {
-    padding: 0 2rem;
+  .mainContent {
+    padding: 0 5rem;
   }
-  
-  .page-title h1 {
+
+  .pageTitle h1 {
     font-size: 1.75rem;
   }
 }
 
 @media (max-width: 768px) {
   .header {
-    padding: 0.75rem 1rem;
+    padding: 0.75rem 1.5rem;
   }
-  
-  .nav-links {
+
+  .navLinks {
     display: none;
   }
-  
-  .main-content {
-    padding: 0 1rem;
+
+  .mainContent {
+    padding: 0 1.5rem;
   }
-  
-  .page-title h1 {
+
+  .pageTitle h1 {
     font-size: 1.5rem;
-    min-width: auto;
   }
-  
-  .form-group,
-  .form-actions {
+
+  .formGroup,
+  .modalContent {
     max-width: 100%;
   }
-  
-  .modal-content {
-    margin: 1rem;
-    max-height: calc(100vh - 2rem);
-  }
-  
-  .modal-actions {
+
+  .modalActions {
     flex-direction: column;
   }
-  
-  .submit-btn,
-  .cancel-btn {
+
+  .submitBtn,
+  .cancelBtn {
     width: 100%;
   }
 }
 
 @media (max-width: 480px) {
-  .page-title h1 {
+  .pageTitle h1 {
     font-size: 1.25rem;
   }
-  
-  .section-title {
+
+  .sectionTitle {
     font-size: 1.125rem;
   }
-  
-  .form-input,
-  .form-select {
-    height: 3rem;
-    padding: 0.75rem;
+
+  .formInput,
+  .formSelect {
+    font-size: 1rem;
   }
-  
-  .modal-header,
-  .modal-form {
+
+  .modalHeader,
+  .modalContent {
     padding: 1rem;
   }
 }
@@ -482,20 +481,20 @@
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: scale(0.95);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: scale(1);
   }
 }
 
-.modal-content {
-  animation: fadeIn 0.3s ease;
+.modalContent {
+  animation: fadeIn 0.3s ease-out;
 }
 
-.form-section,
-.link-section,
-.student-section {
-  animation: fadeIn 0.5s ease;
+.formSection,
+.linkSection,
+.studentSection {
+  animation: fadeIn 0.5s ease-out;
 } 

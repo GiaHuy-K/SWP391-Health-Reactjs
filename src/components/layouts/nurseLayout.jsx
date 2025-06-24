@@ -6,6 +6,7 @@ import {
   PieChartOutlined,
   TeamOutlined,
   UserOutlined,
+  ProfileOutlined,
 } from "@ant-design/icons";
 import {
   Avatar,
@@ -41,11 +42,18 @@ const NurseLayout = () => {
       logout();
       message.success("Đã đăng xuất");
       navigate("/");
+    } else if (key === "profile") {
+      navigate("/profile");
     }
   };
 
   const userMenu = {
     items: [
+      {
+        key: "profile",
+        label: "Hồ sơ",
+        icon: <ProfileOutlined />,
+      },
       {
         key: "logout",
         label: "Đăng xuất",

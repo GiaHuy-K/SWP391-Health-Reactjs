@@ -3,7 +3,7 @@ import { useAuth } from "../../config/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import api from "../../config/axios";
-import "./UserProfile.css";
+import styles from "./UserProfile.module.css";
 
 const RELATIONSHIP_OPTIONS = [
   { value: "FATHER", label: "Bố" },
@@ -14,8 +14,56 @@ const RELATIONSHIP_OPTIONS = [
   { value: "OTHER", label: "Khác" },
 ];
 
+// Component input tự động co giãn chiều rộng
+const AutoWidthInput = ({ value, placeholder, className }) => {
+  const spanRef = React.useRef(null);
+  const [inputWidth, setInputWidth] = React.useState(0);
+
+  React.useLayoutEffect(() => {
+    if (spanRef.current) {
+      // Đảm bảo input không nhỏ hơn minWidth
+      const minWidth = 240;
+      const width = Math.max(spanRef.current.offsetWidth + 24, minWidth);
+      setInputWidth(width);
+      console.log(`Tự động set width cho input: ${width}px, value: ${value}`);
+    }
+  }, [value, placeholder]);
+
+  return (
+    <div style={{ position: "relative", display: "block", width: inputWidth }}>
+      <input
+        value={value}
+        placeholder={placeholder}
+        className={className}
+        style={{
+          width: inputWidth,
+          minWidth: 240,
+          maxWidth: 400,
+          transition: "width 0.2s",
+        }}
+        readOnly
+      />
+      <span
+        ref={spanRef}
+        style={{
+          position: "absolute",
+          visibility: "hidden",
+          height: 0,
+          whiteSpace: "pre",
+          fontSize: "16px",
+          fontFamily: "inherit",
+          fontWeight: "inherit",
+          padding: "8px 12px",
+        }}
+      >
+        {value || placeholder}
+      </span>
+    </div>
+  );
+};
+
 const UserProfile = () => {
-  const { logout } = useAuth();
+  const { logout, user: authUser } = useAuth();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [studentInfo, setStudentInfo] = useState(null);
@@ -31,6 +79,9 @@ const UserProfile = () => {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
+
+  // Kiểm tra xem user có phải là Parent không
+  const isParent = authUser?.role === "Parent" || user?.role === "Parent";
 
   useEffect(() => {
     fetchUserProfile();
@@ -131,17 +182,21 @@ const UserProfile = () => {
     navigate("/");
   };
 
+  const handleLogoClick = () => {
+    navigate('/');
+  };
+
   if (loading || !user) {
-    return <div className="profile-loading">Đang tải thông tin...</div>;
+    return <div className={styles.profileLoading}>Đang tải thông tin...</div>;
   }
 
   return (
-    <div className="userprofile-container">
-      <div className="layout-container">
-        <header className="header">
-          <div className="header-content">
-            <div className="logo-section">
-              <div className="logo-icon">
+    <div className={styles.userprofileContainer}>
+      <div className={styles.layoutContainer}>
+        <header className={styles.header}>
+          <div className={styles.headerContent}>
+            <div className={styles.logoSection} onClick={handleLogoClick} style={{ cursor: 'pointer' }}>
+              <div className={styles.logoIcon}>
                 <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path
                     fillRule="evenodd"
@@ -151,69 +206,63 @@ const UserProfile = () => {
                   ></path>
                 </svg>
               </div>
-              <h2 className="logo-text">SchoolMed</h2>
+              <h2 className={styles.logoText}>SchoolMed</h2>
             </div>
-            <div className="nav-section">
-              <div className="nav-links">
-                <a className="nav-link" href="#" onClick={handleGoHome}>Homepage</a>
-                <a className="nav-link" href="#" onClick={() => setShowPasswordModal(true)}>Change Password</a>
+            <div className={styles.navSection}>
+              <div className={styles.navLinks}>
+                <a className={styles.navLink} href="#" onClick={handleGoHome}>Homepage</a>
+                <a className={styles.navLink} href="#" onClick={() => setShowPasswordModal(true)}>Change Password</a>
               </div>
-              <button className="logout-btn" onClick={handleLogout}>
+              <button className={styles.logoutBtn} onClick={handleLogout}>
                 <span>Logout</span>
               </button>
             </div>
           </div>
         </header>
 
-        <div className="main-content">
-          <div className="content-container">
-            <div className="page-title">
+        <div className={styles.mainContent}>
+          <div className={styles.contentContainer}>
+            <div className={styles.pageTitle}>
               <h1>User Profile</h1>
             </div>
 
-            <div className="form-section">
-              <div className="form-group">
-                <label className="form-label">Full Name</label>
-                <input
-                  className="form-input"
-                  type="text"
+            <div className={styles.formSection}>
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel}>Full Name</label>
+                <AutoWidthInput
                   value={user.fullName || ""}
-                  readOnly
                   placeholder="Full Name"
+                  className={styles.formInput}
                 />
               </div>
 
-              <div className="form-group">
-                <label className="form-label">Email</label>
-                <input
-                  className="form-input"
-                  type="email"
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel}>Email</label>
+                <AutoWidthInput
                   value={user.email || ""}
-                  readOnly
                   placeholder="Email"
+                  className={styles.formInput}
                 />
               </div>
 
-              <div className="form-group">
-                <label className="form-label">Phone Number</label>
-                <input
-                  className="form-input"
-                  type="text"
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel}>Phone Number</label>
+                <AutoWidthInput
                   value={user.phoneNumber || ""}
-                  readOnly
                   placeholder="Phone Number"
+                  className={styles.formInput}
                 />
               </div>
             </div>
 
-            {!user.linkedToStudent && (
-              <div className="link-section">
-                <h2 className="section-title">Link User and Student Accounts</h2>
-                <form onSubmit={handleLinkSubmit} className="link-form">
-                  <div className="form-group">
-                    <label className="form-label">Invitation Code</label>
+            {!user.linkedToStudent && isParent && (
+              <div className={styles.linkSection}>
+                <h2 className={styles.sectionTitle}>Link User and Student Accounts</h2>
+                <form onSubmit={handleLinkSubmit} className={styles.linkForm}>
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Invitation Code</label>
                     <input
-                      className="form-input"
+                      className={styles.formInput}
                       type="text"
                       name="invitationCode"
                       value={linkForm.invitationCode}
@@ -223,10 +272,10 @@ const UserProfile = () => {
                     />
                   </div>
 
-                  <div className="form-group">
-                    <label className="form-label">Relationship Type</label>
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Relationship Type</label>
                     <select
-                      className="form-select"
+                      className={styles.formSelect}
                       name="relationshipType"
                       value={linkForm.relationshipType}
                       onChange={handleLinkChange}
@@ -241,10 +290,10 @@ const UserProfile = () => {
                     </select>
                   </div>
 
-                  <div className="form-actions">
+                  <div className={styles.formActions}>
                     <button
                       type="submit"
-                      className="submit-btn"
+                      className={styles.submitBtn}
                       disabled={submitting}
                     >
                       {submitting ? "Đang xử lý..." : "Link to Student"}
@@ -254,23 +303,23 @@ const UserProfile = () => {
               </div>
             )}
 
-            {user.linkedToStudent && Array.isArray(studentInfo) && studentInfo.length > 0 && (
-              <div className="student-section">
-                <h2 className="section-title">Linked Student Information</h2>
-                <div className="student-info">
-                  <div className="info-item">
+            {user.linkedToStudent && Array.isArray(studentInfo) && studentInfo.length > 0 && isParent && (
+              <div className={styles.studentSection}>
+                <h2 className={styles.sectionTitle}>Linked Student Information</h2>
+                <div className={styles.studentInfo}>
+                  <div className={styles.infoItem}>
                     <strong>Full Name:</strong> {studentInfo[0].fullName}
                   </div>
-                  <div className="info-item">
+                  <div className={styles.infoItem}>
                     <strong>Student Code:</strong> {studentInfo[0].studentCode}
                   </div>
-                  <div className="info-item">
+                  <div className={styles.infoItem}>
                     <strong>Class:</strong> {studentInfo[0].className}
                   </div>
-                  <div className="info-item">
+                  <div className={styles.infoItem}>
                     <strong>Date of Birth:</strong> {studentInfo[0].dateOfBirth}
                   </div>
-                  <div className="info-item">
+                  <div className={styles.infoItem}>
                     <strong>Gender:</strong> {studentInfo[0].gender}
                   </div>
                 </div>
@@ -282,22 +331,22 @@ const UserProfile = () => {
 
       {/* Password Change Modal */}
       {showPasswordModal && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <div className="modal-header">
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalContent}>
+            <div className={styles.modalHeader}>
               <h2>Change Password</h2>
               <button 
-                className="modal-close"
+                className={styles.modalClose}
                 onClick={() => setShowPasswordModal(false)}
               >
                 ×
               </button>
             </div>
-            <form onSubmit={handlePasswordSubmit} className="modal-form">
-              <div className="form-group">
-                <label className="form-label">Current Password</label>
+            <form onSubmit={handlePasswordSubmit} className={styles.modalForm}>
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel}>Current Password</label>
                 <input
-                  className="form-input"
+                  className={styles.formInput}
                   type="password"
                   name="oldPassword"
                   value={passwordForm.oldPassword}
@@ -306,10 +355,10 @@ const UserProfile = () => {
                   required
                 />
               </div>
-              <div className="form-group">
-                <label className="form-label">New Password</label>
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel}>New Password</label>
                 <input
-                  className="form-input"
+                  className={styles.formInput}
                   type="password"
                   name="newPassword"
                   value={passwordForm.newPassword}
@@ -318,10 +367,10 @@ const UserProfile = () => {
                   required
                 />
               </div>
-              <div className="form-group">
-                <label className="form-label">Confirm New Password</label>
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel}>Confirm New Password</label>
                 <input
-                  className="form-input"
+                  className={styles.formInput}
                   type="password"
                   name="confirmNewPassword"
                   value={passwordForm.confirmNewPassword}
@@ -330,17 +379,17 @@ const UserProfile = () => {
                   required
                 />
               </div>
-              <div className="modal-actions">
+              <div className={styles.modalActions}>
                 <button
                   type="submit"
-                  className="submit-btn"
+                  className={styles.submitBtn}
                   disabled={submitting}
                 >
                   {submitting ? "Đang xử lý..." : "Update Password"}
                 </button>
                 <button
                   type="button"
-                  className="cancel-btn"
+                  className={styles.cancelBtn}
                   onClick={() => setShowPasswordModal(false)}
                 >
                   Cancel
