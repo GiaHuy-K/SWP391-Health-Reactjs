@@ -66,7 +66,7 @@ const MedicalSupplyDrawer = ({ open, onClose, supplyId }) => {
         title="Lịch sử giao dịch"
         open={transactionDrawerOpen}
         onClose={() => setTransactionDrawerOpen(false)}
-        width={700}
+        width={750}
       >
         <MedicalSupplyTransaction supplyId={supplyId} />
       </Drawer>

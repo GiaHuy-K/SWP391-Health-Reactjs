@@ -47,20 +47,22 @@ const router = createBrowserRouter([
   { path: "/", element: <HomePage /> },
   { path: "/login", element: <LoginPage /> },
   { path: "/register", element: <RegisterPage /> },
-  { path: "/unauthorized", element: <Unauthorized /> },
+  { path: "/unauthorized", element: <Unauthorized /> }, // trang khi người dùng cố tình vào đường dẫn không cho phép
   { path: "/forgot-password", element: <ForgotPassword /> },
   { path: "/reset-password", element: <ResetPassword /> },
 
+  //dashboard của manager
   { path: "/dashboardManager", element: <ManagerLayout />, children: [
     {path: "event-Manager", element: <ManageEventM/>},
   ] },
-
+  //dashboard của nurse
   { path: "/dashboardNurse", element: <NurseLayout />, children: [
 
     {path:"event-Nurse", element:<ManageEvent/>},
     {path :"medicalSupply-Nurse", element: <ManageMedicalSupply/>}
   ] },
 
+  //dashboard của admin 
   {
     path: "/dashboard",
     element: (
