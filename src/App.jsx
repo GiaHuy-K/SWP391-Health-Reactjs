@@ -39,7 +39,7 @@ const AdminRoute = ({ children }) => {
   const { isAuthenticated, user } = useAuth();
 
   if (!isAuthenticated) return <Navigate to="/login" />;
-  if (user?.role !== "SchoolAdmin") return <Navigate to="/unauthorized" />;
+  if (user?.role !== "Quản trị viên Trường học") return <Navigate to="/unauthorized" />;
   return children;
 };
 

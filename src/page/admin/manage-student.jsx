@@ -64,11 +64,6 @@ function ManageStudent() {
 
   const columns = [
     {
-      title: "Mã học sinh",
-      dataIndex: "studentCode",
-      key: "studentCode",
-    },
-    {
       title: "Họ tên",
       dataIndex: "fullName",
       key: "fullName",
@@ -77,11 +72,6 @@ function ManageStudent() {
       title: "Lớp",
       dataIndex: "className",
       key: "className",
-    },
-    {
-      title: "Địa chỉ",
-      dataIndex: "address",
-      key: "address",
     },
     {
       title: "Giới tính",

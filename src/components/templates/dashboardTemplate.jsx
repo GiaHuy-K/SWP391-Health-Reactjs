@@ -44,15 +44,15 @@ function DashboardTemplate({ columns, uri }) {
     let label = role;
 
     switch (role) {
-      case "MedicalStaff":
+      case "Nhân viên Y tế":
         color = "green";
         label = "Y tá";
         break;
-      case "Parent":
+      case "Phụ huynh":
         color = "purple";
         label = "Phụ huynh";
         break;
-      case "StaffManager":
+      case "Quản lý Nhân sự/Nhân viên":
         color = "volcano";
         label = "Quản Lý";
         break;

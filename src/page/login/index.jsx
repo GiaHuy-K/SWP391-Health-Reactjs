@@ -63,7 +63,7 @@ const LoginPage = () => {
 
           // theo role để vào các trang khác nhau
           // role admin SchoolAdmin
-          if (role === "SchoolAdmin") {
+          if (role === "Quản trị viên Trường học") {
             toast.success(`Admin đăng nhập thành công`);
             navigate("/dashboard");
           }
