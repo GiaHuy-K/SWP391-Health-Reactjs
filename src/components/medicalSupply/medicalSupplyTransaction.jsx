@@ -12,7 +12,7 @@ const MedicalSupplyTransaction = ({ supplyId }) => {
       setLoading(true);
       try {
         const data = await getMedicalSupplyTransactions(supplyId);
-        setTransactions(data); 
+        setTransactions(data);
       } finally {
         setLoading(false);
       }
@@ -20,6 +20,15 @@ const MedicalSupplyTransaction = ({ supplyId }) => {
 
     fetchTransactions();
   }, [supplyId]);
+
+  const typeMap = {
+    "Nhập kho mới": { color: "green" },
+    "Sử dụng cho sự cố": { color: "red" },
+    "Điều chỉnh giảm": { color: "orange" },
+    "Điều chỉnh tăng": { color: "blue" },
+    "Trả lại từ sự cố": { color: "purple" },
+    "Loại bỏ hết vì hết hạn": { color: "magenta" },
+  };
 
   const columns = [
     {
@@ -33,8 +42,8 @@ const MedicalSupplyTransaction = ({ supplyId }) => {
       dataIndex: "supplyTransactionType",
       key: "supplyTransactionType",
       render: (type) => {
-        let color = type === "RECEIVED" ? "green" : type === "ISSUED" ? "red" : "orange";
-        return <Tag color={color}>{type}</Tag>;
+        const info = typeMap[type] || { color: "gray" };
+        return <Tag color={info.color}>{type}</Tag>;
       },
     },
     {
@@ -60,7 +69,7 @@ const MedicalSupplyTransaction = ({ supplyId }) => {
       columns={columns}
       dataSource={transactions}
       loading={loading}
-      pagination={5} 
+      pagination={{ pageSize: 5 }}
     />
   );
 };

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
   getMedicalSupplies,
-  deleteMedicalSupply,
+  softDeleteMedicalSupply,
 } from "../../services/api.medicalSupply";
 import MedicalSupplyTableTemplate from "../../components/templates/medicalSupplyTableTemplate";
 import { toast } from "react-toastify";
@@ -10,7 +10,7 @@ function ManageMedicalSupply({ role }) {
   const [medicalList, setMedicalList] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const canDelete = role === "StaffManager";
+  const canDelete = role === "Quản lý Nhân sự/Nhân viên";
   const canView = true;
 
   const fetchSupply = async () => {
@@ -31,7 +31,7 @@ function ManageMedicalSupply({ role }) {
   }, []);
 
   const handleDelete = async (id) => {
-    await deleteMedicalSupply(id);
+    await softDeleteMedicalSupply(id);
     fetchSupply();
   };
 

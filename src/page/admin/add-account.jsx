@@ -23,7 +23,7 @@ const AddAccount = () => {
     fullName: "",
     email: "",
     phoneNumber: "",
-    role: "MedicalStaff",
+    role: "Nhân viên Y tế",
   });
 
   const [errors, setErrors] = useState({});
@@ -80,7 +80,7 @@ const AddAccount = () => {
       fullName: "",
       email: "",
       phoneNumber: "",
-      role: "MedicalStaff",
+      role: "Nhân viên Y tế",
     });
     setErrors({});
     toast.info("📄 Đã reset form");
@@ -176,10 +176,10 @@ const AddAccount = () => {
             value={formData.role}
             onChange={(value) => handleChange("role", value)}
           >
-            <Option value="MedicalStaff">
+            <Option value="Nhân viên Y tế">
               <MedicineBoxOutlined /> Nhân viên y tế
             </Option>
-            <Option value="StaffManager">
+            <Option value="Quản lý Nhân sự/Nhân viên">
               <SolutionOutlined /> Quản lý y tế
             </Option>
           </Select>

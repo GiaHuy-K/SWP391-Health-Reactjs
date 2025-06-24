@@ -26,12 +26,10 @@ const StudentDetailModal = ({ open, onClose, studentId }) => {
         <Spin />
       ) : student ? (
         <div>
-          <p><strong>Mã học sinh:</strong> {student.studentCode}</p>
           <p><strong>Họ tên:</strong> {student.fullName}</p>
           <p><strong>Ngày sinh:</strong> {student.dateOfBirth}</p>
           <p><strong>Giới tính:</strong> {student.gender}</p>
           <p><strong>Lớp:</strong> {student.className}</p>
-          <p><strong>Địa chỉ:</strong> {student.address}</p>
           <p><strong>Trạng thái:</strong> {student.isActive ? "Đang hoạt động" : "Vô hiệu hóa"}</p>
           <p><strong>Mã mời:</strong> {student.invitationCode}</p>
         </div>

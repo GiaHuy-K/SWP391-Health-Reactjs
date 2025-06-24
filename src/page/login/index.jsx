@@ -63,22 +63,22 @@ const LoginPage = () => {
 
           // theo role để vào các trang khác nhau
           // role admin SchoolAdmin
-          if (role === "SchoolAdmin") {
+          if (role === "Quản trị viên Trường học") {
             toast.success(`Admin đăng nhập thành công`);
             navigate("/dashboard");
           }
-          // role quản lý StaffManager
-          if (role === "StaffManager") {
+          // role quản lý StaffManager/ Quản lý Nhân sự/Nhân viên
+          if (role === "Quản lý Nhân sự/Nhân viên") {
             toast.success(`Quản lý đăng nhập thành công!`);
             navigate("/dashboardManager");
           }
-          // role y tá MedicalStaff
-          if (role === "MedicalStaff") {
+          // role y tá MedicalStaff / Nhân viên Y tế
+          if (role === "Nhân viên Y tế") {
             toast.success(`Y tá đăng nhập thành công!`);
             navigate("/dashboardNurse");
           }
-          // role parent qua thẳng homepage
-          if (role === "Parent") {
+          // role parent qua thẳng homepage /Phụ huynh
+          if (role === "Phụ huynh") {
             toast.success(`Đăng nhập thành công!`);
             navigate("/");
           }
