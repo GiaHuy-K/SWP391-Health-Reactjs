@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import api from "../../config/axios";
 import styles from "./UserProfile.module.css";
+import { isParentRole } from "../../config/AuthContext";
 
 const RELATIONSHIP_OPTIONS = [
   { value: "FATHER", label: "Bố" },
@@ -14,56 +15,8 @@ const RELATIONSHIP_OPTIONS = [
   { value: "OTHER", label: "Khác" },
 ];
 
-// Component input tự động co giãn chiều rộng
-const AutoWidthInput = ({ value, placeholder, className }) => {
-  const spanRef = React.useRef(null);
-  const [inputWidth, setInputWidth] = React.useState(0);
-
-  React.useLayoutEffect(() => {
-    if (spanRef.current) {
-      // Đảm bảo input không nhỏ hơn minWidth
-      const minWidth = 240;
-      const width = Math.max(spanRef.current.offsetWidth + 24, minWidth);
-      setInputWidth(width);
-      console.log(`Tự động set width cho input: ${width}px, value: ${value}`);
-    }
-  }, [value, placeholder]);
-
-  return (
-    <div style={{ position: "relative", display: "block", width: inputWidth }}>
-      <input
-        value={value}
-        placeholder={placeholder}
-        className={className}
-        style={{
-          width: inputWidth,
-          minWidth: 240,
-          maxWidth: 400,
-          transition: "width 0.2s",
-        }}
-        readOnly
-      />
-      <span
-        ref={spanRef}
-        style={{
-          position: "absolute",
-          visibility: "hidden",
-          height: 0,
-          whiteSpace: "pre",
-          fontSize: "16px",
-          fontFamily: "inherit",
-          fontWeight: "inherit",
-          padding: "8px 12px",
-        }}
-      >
-        {value || placeholder}
-      </span>
-    </div>
-  );
-};
-
 const UserProfile = () => {
-  const { logout, user: authUser } = useAuth();
+  const { logout } = useAuth();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [studentInfo, setStudentInfo] = useState(null);
@@ -79,9 +32,6 @@ const UserProfile = () => {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
-
-  // Kiểm tra xem user có phải là Parent không
-  const isParent = authUser?.role === "Parent" || user?.role === "Parent";
 
   useEffect(() => {
     fetchUserProfile();
@@ -186,6 +136,33 @@ const UserProfile = () => {
     navigate('/');
   };
 
+  // Hàm điều hướng đến dashboard tương ứng với role
+  const handleDashboardClick = () => {
+    switch (user?.role) {
+      case "Hệ thống":
+      case "Quản trị viên Trường học":
+        navigate('/dashboard/overview');
+        break;
+      case "Quản lý Nhân sự/Nhân viên":
+        navigate('/dashboardManager/event-Manager');
+        break;
+      case "Nhân viên Y tế":
+        navigate('/dashboardNurse/event-Nurse');
+        break;
+      default:
+        // Parent không có dashboard riêng
+        break;
+    }
+  };
+
+  // Kiểm tra xem user có phải là Parent không
+  const isParent = isParentRole(user);
+  
+  // Debug log để kiểm tra role
+  console.log("User role:", user?.role);
+  console.log("LocalStorage userRole:", localStorage.getItem("userRole"));
+  console.log("Is Parent:", isParent);
+
   if (loading || !user) {
     return <div className={styles.profileLoading}>Đang tải thông tin...</div>;
   }
@@ -211,6 +188,9 @@ const UserProfile = () => {
             <div className={styles.navSection}>
               <div className={styles.navLinks}>
                 <a className={styles.navLink} href="#" onClick={handleGoHome}>Homepage</a>
+                {!isParent && (
+                  <a className={styles.navLink} href="#" onClick={handleDashboardClick}>Dashboard</a>
+                )}
                 <a className={styles.navLink} href="#" onClick={() => setShowPasswordModal(true)}>Change Password</a>
               </div>
               <button className={styles.logoutBtn} onClick={handleLogout}>
@@ -229,33 +209,40 @@ const UserProfile = () => {
             <div className={styles.formSection}>
               <div className={styles.formGroup}>
                 <label className={styles.formLabel}>Full Name</label>
-                <AutoWidthInput
-                  value={user.fullName || ""}
-                  placeholder="Full Name"
+                <input
                   className={styles.formInput}
+                  type="text"
+                  value={user.fullName || ""}
+                  readOnly
+                  placeholder="Full Name"
                 />
               </div>
 
               <div className={styles.formGroup}>
                 <label className={styles.formLabel}>Email</label>
-                <AutoWidthInput
-                  value={user.email || ""}
-                  placeholder="Email"
+                <input
                   className={styles.formInput}
+                  type="email"
+                  value={user.email || ""}
+                  readOnly
+                  placeholder="Email"
                 />
               </div>
 
               <div className={styles.formGroup}>
                 <label className={styles.formLabel}>Phone Number</label>
-                <AutoWidthInput
-                  value={user.phoneNumber || ""}
-                  placeholder="Phone Number"
+                <input
                   className={styles.formInput}
+                  type="text"
+                  value={user.phoneNumber || ""}
+                  readOnly
+                  placeholder="Phone Number"
                 />
               </div>
             </div>
 
-            {!user.linkedToStudent && isParent && (
+            {/* Chỉ hiển thị form liên kết nếu là phụ huynh và chưa liên kết học sinh */}
+            {isParent && !user.linkedToStudent && (
               <div className={styles.linkSection}>
                 <h2 className={styles.sectionTitle}>Link User and Student Accounts</h2>
                 <form onSubmit={handleLinkSubmit} className={styles.linkForm}>
@@ -303,7 +290,7 @@ const UserProfile = () => {
               </div>
             )}
 
-            {user.linkedToStudent && Array.isArray(studentInfo) && studentInfo.length > 0 && isParent && (
+            {user.linkedToStudent && Array.isArray(studentInfo) && studentInfo.length > 0 && (
               <div className={styles.studentSection}>
                 <h2 className={styles.sectionTitle}>Linked Student Information</h2>
                 <div className={styles.studentInfo}>

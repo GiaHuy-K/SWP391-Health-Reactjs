@@ -3,10 +3,11 @@ import styles from './HomePage.module.css';
 import { useNavigate } from 'react-router-dom';
 import { FaUserCircle } from 'react-icons/fa';
 import { useAuth } from '../../config/AuthContext';
+import { isParentRole } from '../../config/AuthContext';
 
 const HomePage = () => {
   const [showDropdown, setShowDropdown] = useState(false);
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout, user } = useAuth();
   const navigate = useNavigate();
 
   const handleLogin = () => {
@@ -18,6 +19,25 @@ const HomePage = () => {
     setShowDropdown(false);
   };
 
+  const handleDashboardClick = () => {
+    // Điều hướng đến dashboard tương ứng với role
+    switch (user?.role) {
+      case "Quản trị viên Trường học":
+        navigate('/dashboard/overview');
+        break;
+      case "Quản lý Nhân sự/Nhân viên":
+        navigate('/dashboardManager/event-Manager');
+        break;
+      case "Nhân viên Y tế":
+        navigate('/dashboardNurse/event-Nurse');
+        break;
+      default:
+        // Parent không có dashboard riêng
+        break;
+    }
+    setShowDropdown(false);
+  };
+
   const handleLogout = () => {
     logout();
     navigate('/');
@@ -26,7 +46,22 @@ const HomePage = () => {
 
   const handleGetStarted = () => {
     if (isAuthenticated) {
-      navigate('/dashboard');
+      // Điều hướng đến dashboard tương ứng với role
+      switch (user?.role) {
+        case "Quản trị viên Trường học":
+          navigate('/dashboard/overview');
+          break;
+        case "Quản lý Nhân sự/Nhân viên":
+          navigate('/dashboardManager/event-Manager');
+          break;
+        case "Nhân viên Y tế":
+          navigate('/dashboardNurse/event-Nurse');
+          break;
+        default:
+          // Parent không có dashboard riêng
+          navigate('/profile');
+          break;
+      }
     } else {
       navigate('/login');
     }
@@ -35,6 +70,14 @@ const HomePage = () => {
   const handleLogoClick = () => {
     navigate('/');
   };
+
+  // Kiểm tra xem user có phải là Parent không
+  const isParent = isParentRole(user);
+  
+  // Debug log để kiểm tra role
+  console.log("User role:", user?.role);
+  console.log("LocalStorage userRole:", localStorage.getItem("userRole"));
+  console.log("Is Parent:", isParent);
 
   return (
     <div className={styles.homepageContainer}>
@@ -70,8 +113,18 @@ const HomePage = () => {
                     />
                     {showDropdown && (
                       <div className={styles.dropdownMenu}>
-                        <button onClick={handleProfileClick}>Hồ sơ</button>
-                        <button onClick={handleLogout}>Đăng xuất</button>
+                        {isParent ? (
+                          <>
+                            <button onClick={handleProfileClick}>Hồ sơ</button>
+                            <button onClick={handleLogout}>Đăng xuất</button>
+                          </>
+                        ) : (
+                          <>
+                            <button onClick={handleDashboardClick}>Dashboard</button>
+                            <button onClick={handleProfileClick}>Hồ sơ</button>
+                            <button onClick={handleLogout}>Đăng xuất</button>
+                          </>
+                        )}
                       </div>
                     )}
                   </div>
@@ -165,37 +218,11 @@ const HomePage = () => {
                     <span>Read More</span>
                   </button>
                 </div>
-                <div className={`${styles.blogImage} ${styles.nutrition}`}></div>
-              </div>
-
-              <div className={styles.blogCard}>
-                <div className={styles.blogContent}>
-                  <div className={styles.blogText}>
-                    <p className={styles.blogTitle}>Preventing Common Illnesses</p>
-                    <p className={styles.blogDescription}>Tips for preventing the spread of common illnesses in schools.</p>
-                  </div>
-                  <button className={styles.readMoreBtn}>
-                    <span>Read More</span>
-                  </button>
-                </div>
-                <div className={`${styles.blogImage} ${styles.prevention}`}></div>
+                <div className={`${styles.blogImage} ${styles.nutritionTips}`}></div>
               </div>
             </div>
           </div>
         </div>
-
-        <footer className={styles.footer}>
-          <div className={styles.footerContainer}>
-            <div className={styles.footerContent}>
-              <div className={styles.footerLinks}>
-                <a className={styles.footerLink} href="#">Privacy Policy</a>
-                <a className={styles.footerLink} href="#">Terms of Service</a>
-                <a className={styles.footerLink} href="#">Contact Us</a>
-              </div>
-              <p className={styles.footerCopyright}>@2024 SchoolMed. All rights reserved.</p>
-            </div>
-          </div>
-        </footer>
       </div>
     </div>
   );
