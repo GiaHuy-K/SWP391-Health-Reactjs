@@ -9,11 +9,13 @@ import {
   PlusOutlined,
   PieChartOutlined,
   ProfileOutlined,
+  DashboardOutlined,
 } from "@ant-design/icons";
 import { Layout, Menu, theme, Avatar, Dropdown, Space, message } from "antd";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { useAuth } from "../../config/AuthContext";
+import { isParentRole } from "../../config/AuthContext";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -52,7 +54,7 @@ const AdminLayout = () => {
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout, user } = useAuth();
   
   const handleMenuClick = ({ key }) => {
     if (key === "logout") {
@@ -61,23 +63,44 @@ const AdminLayout = () => {
       navigate("/");
     } else if (key === "profile") {
       navigate("/profile");
+    } else if (key === "dashboard") {
+      navigate("/dashboard/overview");
     }
   };
 
   const userMenu = {
-    items: [
-      {
-        key: "profile",
-        label: "Hồ sơ",
-        icon: <ProfileOutlined />,
-      },
-      {
-        key: "logout",
-        label: "Đăng xuất",
-        icon: <LogoutOutlined />,
-        danger: true,
-      },
-    ],
+    items: isParentRole(user)
+      ? [
+          {
+            key: "profile",
+            label: "Hồ sơ",
+            icon: <ProfileOutlined />,
+          },
+          {
+            key: "logout",
+            label: "Đăng xuất",
+            icon: <LogoutOutlined />,
+            danger: true,
+          },
+        ]
+      : [
+          {
+            key: "dashboard",
+            label: "Dashboard",
+            icon: <DashboardOutlined />,
+          },
+          {
+            key: "profile",
+            label: "Hồ sơ",
+            icon: <ProfileOutlined />,
+          },
+          {
+            key: "logout",
+            label: "Đăng xuất",
+            icon: <LogoutOutlined />,
+            danger: true,
+          },
+        ],
     onClick: handleMenuClick,
   };
 

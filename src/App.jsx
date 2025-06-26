@@ -29,18 +29,38 @@ import ManageEvent from "./page/schoolnurse/manage-event.jsx";
 import ManageMedicalSupply from "./page/schoolnurse/manage-medicalSupply.jsx";
 import ManageEventM from "./page/manager/manage-event.jsx";
 import ManageMedicalSupplyM from "./page/manager/manage-medical-supply.jsx";
+import StudentVaccinationPage from './page/manager/manage-student-inf-vc.jsx';
 
 // Component bảo vệ route yêu cầu đăng nhập
 const PrivateRoute = ({ children }) => {
   const { isAuthenticated } = useAuth();
   return isAuthenticated ? children : <Navigate to="/login" />;
 };
+
 // bảo vệ trang dashboard của admin
 const AdminRoute = ({ children }) => {
   const { isAuthenticated, user } = useAuth();
 
   if (!isAuthenticated) return <Navigate to="/login" />;
   if (user?.role !== "Quản trị viên Trường học") return <Navigate to="/unauthorized" />;
+  return children;
+};
+
+// bảo vệ trang dashboard của manager
+const ManagerRoute = ({ children }) => {
+  const { isAuthenticated, user } = useAuth();
+
+  if (!isAuthenticated) return <Navigate to="/login" />;
+  if (user?.role !== "Quản lý Nhân sự/Nhân viên") return <Navigate to="/unauthorized" />;
+  return children;
+};
+
+// bảo vệ trang dashboard của nurse
+const NurseRoute = ({ children }) => {
+  const { isAuthenticated, user } = useAuth();
+
+  if (!isAuthenticated) return <Navigate to="/login" />;
+  if (user?.role !== "Nhân viên Y tế") return <Navigate to="/unauthorized" />;
   return children;
 };
 
@@ -53,16 +73,33 @@ const router = createBrowserRouter([
   { path: "/reset-password", element: <ResetPassword /> },
 
   //dashboard của manager (Quản lý Nhân sự/Nhân viên)
-  { path: "/dashboardManager", element: <ManagerLayout />, children: [
-    {path: "event-Manager", element: <ManageEventM/>},
-    {path: "supply-Manager", element: <ManageMedicalSupplyM/>},
-  ] },
+  { 
+    path: "/dashboardManager", 
+    element: (
+      <ManagerRoute>
+        <ManagerLayout />
+      </ManagerRoute>
+    ), 
+    children: [
+      {path: "event-Manager", element: <ManageEventM/>},
+      {path: "supply-Manager", element: <ManageMedicalSupplyM/>},
+      {path: "student-vaccination", element: <StudentVaccinationPage/>},
+    ] 
+  },
+  
   //dashboard của nurse (Nhân viên Y tế)
-  { path: "/dashboardNurse", element: <NurseLayout />, children: [
-
-    {path:"event-Nurse", element:<ManageEvent/>},
-    {path :"medicalSupply-Nurse", element: <ManageMedicalSupply/>}
-  ] },
+  { 
+    path: "/dashboardNurse", 
+    element: (
+      <NurseRoute>
+        <NurseLayout />
+      </NurseRoute>
+    ), 
+    children: [
+      {path:"event-Nurse", element:<ManageEvent/>},
+      {path :"medicalSupply-Nurse", element: <ManageMedicalSupply/>}
+    ] 
+  },
 
   //dashboard của admin (Quản trị viên Trường học)
   {
