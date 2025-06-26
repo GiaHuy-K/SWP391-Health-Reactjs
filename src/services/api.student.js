@@ -44,3 +44,84 @@ export const getStudentVaccinations = async (studentId, params = {}) => {
   }
 };
 
+/**
+ * Thêm mới thông tin tiêm chủng cho học sinh
+ * @param {number|string} studentId - ID học sinh
+ * @param {object} data - Dữ liệu tiêm chủng mới
+ * @returns {Promise<object>} Bản ghi tiêm chủng vừa tạo
+ */
+export const addStudentVaccination = async (studentId, data) => {
+  try {
+    const response = await api.post(`/students/${studentId}/vaccinations`, data);
+    toast.success("Thêm mới thông tin tiêm chủng thành công!");
+    return response.data;
+  } catch (error) {
+    toast.error(error.response?.data?.message || "Không thể thêm mới thông tin tiêm chủng");
+    throw error;
+  }
+};
+
+/**
+ * Cập nhật thông tin tiêm chủng cho học sinh
+ * @param {number|string} vaccinationId - ID bản ghi tiêm chủng
+ * @param {object} data - Dữ liệu cập nhật
+ * @returns {Promise<object>} Bản ghi tiêm chủng đã cập nhật
+ */
+export const updateStudentVaccination = async (vaccinationId, data) => {
+  try {
+    const response = await api.put(`/vaccinations/${vaccinationId}`, data);
+    toast.success("Cập nhật thông tin tiêm chủng thành công!");
+    return response.data;
+  } catch (error) {
+    toast.error(error.response?.data?.message || "Không thể cập nhật thông tin tiêm chủng");
+    throw error;
+  }
+};
+
+/**
+ * Xoá thông tin tiêm chủng
+ * @param {number|string} vaccinationId - ID bản ghi tiêm chủng
+ * @returns {Promise<void>}
+ */
+export const deleteStudentVaccination = async (vaccinationId) => {
+  try {
+    await api.delete(`/vaccinations/${vaccinationId}`);
+    toast.success("Xoá thông tin tiêm chủng thành công!");
+  } catch (error) {
+    toast.error(error.response?.data?.message || "Không thể xoá thông tin tiêm chủng");
+    throw error;
+  }
+};
+
+/**
+ * Duyệt/Thay đổi trạng thái bản ghi tiêm chủng
+ * @param {number|string} vaccinationId - ID bản ghi tiêm chủng
+ * @param {string} status - Trạng thái mới (ví dụ: 'APPROVED', 'REJECTED', ...)
+ * @returns {Promise<object>} Bản ghi tiêm chủng đã cập nhật trạng thái
+ */
+export const updateVaccinationStatus = async (vaccinationId, status) => {
+  try {
+    const response = await api.patch(`/vaccinations/${vaccinationId}/status`, { status });
+    toast.success("Cập nhật trạng thái tiêm chủng thành công!");
+    return response.data;
+  } catch (error) {
+    toast.error(error.response?.data?.message || "Không thể cập nhật trạng thái tiêm chủng");
+    throw error;
+  }
+};
+
+/**
+ * Lấy chi tiết 1 bản ghi tiêm chủng
+ * @param {number|string} vaccinationId
+ * @returns {Promise<object>}
+ */
+export const getVaccinationDetail = async (vaccinationId) => {
+  try {
+    const response = await api.get(`/vaccinations/${vaccinationId}`);
+    return response.data;
+  } catch (error) {
+    toast.error(error.response?.data?.message || "Không thể lấy chi tiết tiêm chủng");
+    throw error;
+  }
+};
+
