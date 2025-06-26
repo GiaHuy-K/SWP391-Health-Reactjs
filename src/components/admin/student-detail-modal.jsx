@@ -7,6 +7,8 @@ const StudentDetailModal = ({ open, onClose, studentId }) => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    // Khi modal mở và có studentId, gọi API để lấy thông tin học sinh
+    console.log("studnentId:", studentId);
     if (open && studentId) {
       setLoading(true);
       getStudentById(studentId)
