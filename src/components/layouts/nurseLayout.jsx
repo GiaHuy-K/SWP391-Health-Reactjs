@@ -7,6 +7,7 @@ import {
   TeamOutlined,
   UserOutlined,
   ProfileOutlined,
+  DashboardOutlined,
 } from "@ant-design/icons";
 import {
   Avatar,
@@ -20,6 +21,7 @@ import {
 } from "antd";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../../config/AuthContext";
+import { isParentRole } from "../../config/AuthContext";
 const { Header, Content, Footer, Sider } = Layout;
 function getItem(label, key, icon, children) {
   return {
@@ -36,7 +38,7 @@ const items = [
 
 const NurseLayout = () => {
   const navigate = useNavigate();
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout, user } = useAuth();
   const handleMenuClick = ({ key }) => {
     if (key === "logout") {
       logout();
@@ -44,23 +46,44 @@ const NurseLayout = () => {
       navigate("/");
     } else if (key === "profile") {
       navigate("/profile");
+    } else if (key === "dashboard") {
+      navigate("/dashboardNurse/event-Nurse");
     }
   };
 
   const userMenu = {
-    items: [
-      {
-        key: "profile",
-        label: "Hồ sơ",
-        icon: <ProfileOutlined />,
-      },
-      {
-        key: "logout",
-        label: "Đăng xuất",
-        icon: <LogoutOutlined />,
-        danger: true,
-      },
-    ],
+    items: isParentRole(user)
+      ? [
+          {
+            key: "profile",
+            label: "Hồ sơ",
+            icon: <ProfileOutlined />,
+          },
+          {
+            key: "logout",
+            label: "Đăng xuất",
+            icon: <LogoutOutlined />,
+            danger: true,
+          },
+        ]
+      : [
+          {
+            key: "dashboard",
+            label: "Dashboard",
+            icon: <DashboardOutlined />,
+          },
+          {
+            key: "profile",
+            label: "Hồ sơ",
+            icon: <ProfileOutlined />,
+          },
+          {
+            key: "logout",
+            label: "Đăng xuất",
+            icon: <LogoutOutlined />,
+            danger: true,
+          },
+        ],
     onClick: handleMenuClick,
   };
   const [collapsed, setCollapsed] = useState(false);

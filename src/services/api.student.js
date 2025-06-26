@@ -27,4 +27,20 @@ export const getStudentById = async (id) => {
     }
   };
   
+/**
+ * Lấy danh sách tất cả thông tin tiêm chủng của một học sinh (phân trang)
+ * @param {number|string} studentId - ID học sinh
+ * @param {object} params - Tham số phân trang: { page, size, sort }
+ * @returns {Promise<object>} Đối tượng Page chứa danh sách tiêm chủng
+ */
+export const getStudentVaccinations = async (studentId, params = {}) => {
+  try {
+    const response = await api.get(`/students/${studentId}/vaccinations`, { params });
+    console.log("Lấy danh sách tiêm chủng cho học sinh:", response.data);
+    return response.data;
+  } catch (error) {
+    toast.error(error.response?.data?.message || "Không thể lấy danh sách tiêm chủng");
+    throw error;
+  }
+};
 

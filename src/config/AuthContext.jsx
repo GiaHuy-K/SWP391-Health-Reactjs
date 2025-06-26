@@ -51,12 +51,12 @@ export const AuthProvider = ({ children }) => {
     const role = userData?.role;
     let profileData = userData;
 
-    if (role === "Parent") {
+    if (role === "Phụ huynh") {
       try {
         const response = await api.get("/user/profile/me");
         profileData = response.data;
       } catch (error) {
-        console.warn("Không thể lấy profile Parent:", error);
+        console.warn("Không thể lấy profile Phụ huynh:", error);
         // vẫn lưu role và fullname nếu có
         localStorage.setItem("userRole", role);
         localStorage.setItem("userFullname", userData?.fullName || "Phụ huynh");
@@ -88,3 +88,8 @@ export const AuthProvider = ({ children }) => {
 };
 
 export const useAuth = () => useContext(AuthContext);
+
+// Helper function để kiểm tra Parent role
+export const isParentRole = (user) => {
+  return user?.role === "Phụ huynh" || localStorage.getItem("userRole") === "Phụ huynh";
+};

@@ -7,10 +7,12 @@ import {
   UserOutlined,
   LogoutOutlined,
   ProfileOutlined,
+  DashboardOutlined,
 } from '@ant-design/icons';
 import { Breadcrumb, Layout, Menu, theme, Avatar, Dropdown, Space, message } from 'antd';
 import { Link, Outlet, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../config/AuthContext';
+import { useAuth } from "../../config/AuthContext";
+import { isParentRole } from "../../config/AuthContext";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -25,13 +27,13 @@ function getItem(label, key, icon, children) {
 
 const items = [
   getItem('Quản lý sự cố', 'event-Manager', <PieChartOutlined />),
-  getItem('Quản lý vật tư', 'supply-Manager', <DesktopOutlined />),
+  getItem('Thông tin tiêm chủng học sinh', 'student-vaccination', <DesktopOutlined />),
 ];
 
 const ManagerLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   
   const {
     token: { colorBgContainer, borderRadiusLG },
@@ -44,47 +46,58 @@ const ManagerLayout = () => {
       navigate("/");
     } else if (key === "profile") {
       navigate("/profile");
+    } else if (key === "dashboard") {
+      navigate("/dashboardManager/event-Manager");
     }
   };
 
   const userMenu = {
-    items: [
-      {
-        key: "profile",
-        label: "Hồ sơ",
-        icon: <ProfileOutlined />,
-      },
-      {
-        key: "logout",
-        label: "Đăng xuất",
-        icon: <LogoutOutlined />,
-        danger: true,
-      },
-    ],
+    items: isParentRole(user)
+      ? [
+          {
+            key: "profile",
+            label: "Hồ sơ",
+            icon: <ProfileOutlined />,
+          },
+          {
+            key: "logout",
+            label: "Đăng xuất",
+            icon: <LogoutOutlined />,
+            danger: true,
+          },
+        ]
+      : [
+          {
+            key: "dashboard",
+            label: "Dashboard",
+            icon: <DashboardOutlined />,
+          },
+          {
+            key: "profile",
+            label: "Hồ sơ",
+            icon: <ProfileOutlined />,
+          },
+          {
+            key: "logout",
+            label: "Đăng xuất",
+            icon: <LogoutOutlined />,
+            danger: true,
+          },
+        ],
     onClick: handleMenuClick,
   };
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <Sider collapsible collapsed={collapsed} onCollapse={value => setCollapsed(value)}>
-        <div
-          style={{
-            height: 32,
-            margin: 16,
-            color: "white",
-            fontWeight: "bold",
-            textAlign: "center",
-          }}
-        >
-          Manager
-        </div>
+        <div className="demo-logo-vertical" />
         <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline" items={items} />
       </Sider>
       <Layout>
-        <Header
-          style={{
+        <Header 
+          style={{ 
+            padding: "0 24px", 
             background: colorBgContainer,
-            padding: "0 24px",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
@@ -101,7 +114,7 @@ const ManagerLayout = () => {
             }}
           >
             <span style={{ fontSize: 22 }}>👋</span> Xin chào,{" "}
-            <strong>Manager</strong>
+            <strong>Quản lý</strong>
           </div>
 
           <Dropdown menu={userMenu} placement="bottomRight">
@@ -110,7 +123,7 @@ const ManagerLayout = () => {
                 style={{ backgroundColor: "#1890ff" }}
                 icon={<UserOutlined />}
               />
-              <span style={{ fontWeight: 500 }}>Manager</span>
+              <span style={{ fontWeight: 500 }}>Quản lý</span>
             </Space>
           </Dropdown>
         </Header>
