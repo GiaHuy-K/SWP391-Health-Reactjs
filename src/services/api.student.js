@@ -110,3 +110,18 @@ export const updateVaccinationStatus = async (vaccinationId, status) => {
   }
 };
 
+/**
+ * Lấy chi tiết 1 bản ghi tiêm chủng
+ * @param {number|string} vaccinationId
+ * @returns {Promise<object>}
+ */
+export const getVaccinationDetail = async (vaccinationId) => {
+  try {
+    const response = await api.get(`/vaccinations/${vaccinationId}`);
+    return response.data;
+  } catch (error) {
+    toast.error(error.response?.data?.message || "Không thể lấy chi tiết tiêm chủng");
+    throw error;
+  }
+};
+

@@ -6,8 +6,8 @@ import {
 import MedicalSupplyTableTemplate from "../../components/templates/medicalSupplyTableTemplate";
 import { toast } from "react-toastify";
 import { getStudent } from "../../services/api.student";
-import { getStudentVaccinations, addStudentVaccination, updateStudentVaccination, deleteStudentVaccination, updateVaccinationStatus } from "../../services/api.student";
-import { Table, Input, Button, Drawer, Pagination, message } from "antd";
+import { getStudentVaccinations, addStudentVaccination, updateStudentVaccination, deleteStudentVaccination, updateVaccinationStatus, getVaccinationDetail } from "../../services/api.student";
+import { Table, Input, Button, Drawer, Pagination, message, Modal, Descriptions } from "antd";
 
 function ManageMedicalSupplyM() {
     const [medicalList, setMedicalList] = useState([]);
@@ -25,6 +25,7 @@ function ManageMedicalSupplyM() {
     const [editForm, setEditForm] = useState(null);
     const [editLoading, setEditLoading] = useState(false);
     const [statusLoadingId, setStatusLoadingId] = useState(null);
+    const [detailModal, setDetailModal] = useState({ open: false, data: null, loading: false });
 
     const role = localStorage.getItem("role");
     const canDelete = role === "Quản lý Nhân sự/Nhân viên";
@@ -160,6 +161,16 @@ function ManageMedicalSupplyM() {
       setStatusLoadingId(null);
     };
 
+    const handleShowDetail = async (record) => {
+      setDetailModal({ open: true, data: null, loading: true });
+      try {
+        const data = await getVaccinationDetail(record.id);
+        setDetailModal({ open: true, data, loading: false });
+      } catch (err) {
+        setDetailModal({ open: false, data: null, loading: false });
+      }
+    };
+
     const columns = [
       { title: "Mã HS", dataIndex: "studentId" },
       { title: "Họ tên", dataIndex: "fullName" },
@@ -184,6 +195,7 @@ function ManageMedicalSupplyM() {
         title: "Hành động",
         render: (_, record) => (
           <>
+            <Button onClick={() => handleShowDetail(record)} size="small" style={{ marginRight: 8 }}>Chi tiết</Button>
             <Button onClick={() => handleEditClick(record)} size="small" style={{ marginRight: 8 }}>Sửa</Button>
             <Button onClick={() => handleDeleteVaccination(record)} size="small" danger style={{ marginRight: 8 }}>Xoá</Button>
             <Button
@@ -320,6 +332,32 @@ function ManageMedicalSupplyM() {
             pageSizeOptions={["5", "10", "20", "50"]}
           />
         </Drawer>
+        <Modal
+          open={detailModal.open}
+          onCancel={() => setDetailModal({ open: false, data: null, loading: false })}
+          footer={null}
+          title="Chi tiết tiêm chủng"
+          width={600}
+          loading={detailModal.loading ? 1 : 0}
+        >
+          {detailModal.data && (
+            <Descriptions bordered column={1} size="small">
+              <Descriptions.Item label="Tên vắc xin">{detailModal.data.vaccineName}</Descriptions.Item>
+              <Descriptions.Item label="Ngày tiêm">{detailModal.data.vaccinationDate}</Descriptions.Item>
+              <Descriptions.Item label="Mũi số">{detailModal.data.doseNumber}</Descriptions.Item>
+              <Descriptions.Item label="Ghi chú">{detailModal.data.note}</Descriptions.Item>
+              <Descriptions.Item label="Trạng thái">{detailModal.data.status}</Descriptions.Item>
+              <Descriptions.Item label="Người duyệt">{detailModal.data.approvedByUserFullName || '-'}</Descriptions.Item>
+              <Descriptions.Item label="Ghi chú duyệt">{detailModal.data.approverNotes || '-'}</Descriptions.Item>
+              <Descriptions.Item label="Ngày duyệt">{detailModal.data.approvedAt || '-'}</Descriptions.Item>
+              <Descriptions.Item label="File chứng nhận">
+                {detailModal.data.hasProofFile ? (
+                  <a href={detailModal.data.proofFileAccessUrl} target="_blank" rel="noopener noreferrer">Tải file</a>
+                ) : 'Không có'}
+              </Descriptions.Item>
+            </Descriptions>
+          )}
+        </Modal>
       </div>
     );
 }
