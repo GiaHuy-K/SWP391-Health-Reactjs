@@ -27,6 +27,8 @@ function getItem(label, key, icon, children) {
 
 const items = [
   getItem('Quản lý sự cố', 'event-Manager', <PieChartOutlined />),
+  //supply-Manager
+  getItem('Quản lý vật tư y tế', 'supply-Manager', <DesktopOutlined />),
   getItem('Thông tin tiêm chủng học sinh', 'student-vaccination', <DesktopOutlined />),
 ];
 
