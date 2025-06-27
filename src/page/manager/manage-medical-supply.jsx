@@ -26,6 +26,7 @@ const ManageMedicalSupplyM = () => {
     setLoading(true);
     try {
       const response = await getMedicalSupplies();
+      console.log(response);
       setMedicalList(response);
     } catch (error) {
       console.log(error);
