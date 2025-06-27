@@ -19,8 +19,12 @@ export const getStudent = async () => {
 // lấy thông tin student theo id (dùng trong xem chi tiết ở dashboard admin, nurse, parent)
 export const getStudentById = async (id) => {
     try {
-      const res = await api.get(`/students/${id}`);
+      const res = await api.get(`students/${id}`);
+      console.log("getStudentById response:");
+      console.log(res);
+      console.log(res.data);
       return res.data;
+      
     } catch (error) {
       toast.error("Không thể lấy chi tiết học sinh");
       throw error;
