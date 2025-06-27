@@ -1,103 +1,122 @@
-import React, { useState } from 'react';
-import { getStudentVaccinations } from '../../services/api.student';
-import { Table, Input, Button, Pagination, message } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { getStudent } from '../../services/api.student';
+import { getStudentVaccinations } from '../../services/api.vaccine';
+import { Table, Button, Pagination, message, Drawer } from 'antd';
 
-const columns = [
+const studentColumns = [
+  { title: 'Mã HS', dataIndex: 'studentId', key: 'studentId' },
+  { title: 'Họ tên', dataIndex: 'fullName', key: 'fullName' },
+  { title: 'Lớp', dataIndex: 'className', key: 'className' },
   {
-    title: 'STT',
-    dataIndex: 'index',
-    key: 'index',
-    render: (text, record, idx) => idx + 1,
-  },
-  {
-    title: 'Tên vắc xin',
-    dataIndex: 'vaccineName',
-    key: 'vaccineName',
-  },
-  {
-    title: 'Ngày tiêm',
-    dataIndex: 'vaccinationDate',
-    key: 'vaccinationDate',
-  },
-  {
-    title: 'Mũi số',
-    dataIndex: 'doseNumber',
-    key: 'doseNumber',
-  },
-  {
-    title: 'Ghi chú',
-    dataIndex: 'note',
-    key: 'note',
+    title: 'Hành động',
+    key: 'action',
+    render: (_, record) => (
+      <Button onClick={() => handleShowVaccination(record)}>Xem tiêm chủng</Button>
+    ),
   },
 ];
 
-const StudentVaccinationPage = () => {
-  const [studentId, setStudentId] = useState('');
-  const [data, setData] = useState([]);
-  const [pagination, setPagination] = useState({ page: 0, size: 10, total: 0 });
-  const [loading, setLoading] = useState(false);
+const vaccColumns = [
+  { title: 'Tên vắc xin', dataIndex: 'vaccineName', key: 'vaccineName' },
+  { title: 'Ngày tiêm', dataIndex: 'vaccinationDate', key: 'vaccinationDate' },
+  { title: 'Mũi số', dataIndex: 'doseNumber', key: 'doseNumber' },
+  { title: 'Ghi chú', dataIndex: 'note', key: 'note' },
+];
 
-  const fetchVaccinations = async (page = 0, size = 10) => {
-    if (!studentId) {
-      message.warning('Vui lòng nhập mã học sinh!');
+const StudentVaccinationPage = () => {
+  const [students, setStudents] = useState([]);
+  const [loadingStudents, setLoadingStudents] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState(null);
+  const [vaccinations, setVaccinations] = useState([]);
+  const [vaccLoading, setVaccLoading] = useState(false);
+  const [vaccPagination, setVaccPagination] = useState({ page: 0, size: 10, total: 0 });
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  useEffect(() => {
+    const fetchStudents = async () => {
+      setLoadingStudents(true);
+      try {
+        const res = await getStudent();
+        setStudents(res || []);
+      } catch (err) {
+        message.error('Không thể tải danh sách học sinh');
+      } finally {
+        setLoadingStudents(false);
+      }
+    };
+    fetchStudents();
+  }, []);
+
+  const handleShowVaccination = async (student) => {
+    if (!student?.id) {
+      message.error("Không tìm thấy ID học sinh!");
       return;
     }
-    setLoading(true);
+    setSelectedStudent(student);
+    setDrawerOpen(true);
+    fetchVaccinations(student.id, 0, vaccPagination.size);
+  };
+
+  const fetchVaccinations = async (studentId, page = 0, size = 10) => {
+    if (!studentId) return;
+    setVaccLoading(true);
     try {
       const res = await getStudentVaccinations(studentId, { page, size, sort: 'vaccinationDate,DESC' });
-      setData(res.content || []);
-      setPagination({
-        page: res.number,
-        size: res.size,
-        total: res.totalElements,
-      });
+      setVaccinations(res.content || []);
+      setVaccPagination({ page: res.number, size: res.size, total: res.totalElements });
     } catch (err) {
-      setData([]);
-      setPagination({ page: 0, size: 10, total: 0 });
+      setVaccinations([]);
+      setVaccPagination({ page: 0, size: 10, total: 0 });
     } finally {
-      setLoading(false);
+      setVaccLoading(false);
     }
   };
 
-  const handleSearch = () => {
-    fetchVaccinations(0, pagination.size);
-  };
-
-  const handlePageChange = (page, pageSize) => {
-    fetchVaccinations(page - 1, pageSize);
+  const handleVaccPageChange = (page, pageSize) => {
+    if (selectedStudent) {
+      fetchVaccinations(selectedStudent.id, page - 1, pageSize);
+    }
   };
 
   return (
     <div style={{ padding: 24 }}>
-      <h2>Tra cứu thông tin tiêm chủng của học sinh</h2>
-      <div style={{ marginBottom: 16, display: 'flex', gap: 8 }}>
-        <Input
-          placeholder="Nhập mã học sinh"
-          value={studentId}
-          onChange={e => setStudentId(e.target.value)}
-          style={{ width: 200 }}
-        />
-        <Button type="primary" onClick={handleSearch} loading={loading}>
-          Tìm kiếm
-        </Button>
-      </div>
+      <h2>Danh sách học sinh</h2>
       <Table
-        columns={columns}
-        dataSource={data}
-        rowKey={(record, idx) => idx}
-        loading={loading}
+        columns={studentColumns.map(col =>
+          col.key === 'action'
+            ? { ...col, render: (_, record) => <Button onClick={() => handleShowVaccination(record)}>Xem tiêm chủng</Button> }
+            : col
+        )}
+        dataSource={students}
+        rowKey={r => r.id}
+        loading={loadingStudents}
         pagination={false}
-        locale={{ emptyText: 'Không có dữ liệu' }}
+        locale={{ emptyText: 'Không có dữ liệu học sinh' }}
       />
-      <Pagination
-        style={{ marginTop: 16, textAlign: 'right' }}
-        current={pagination.page + 1}
-        pageSize={pagination.size}
-        total={pagination.total}
-        onChange={handlePageChange}
-        showSizeChanger
-        pageSizeOptions={['5', '10', '20', '50']}
-      />
+      <Drawer
+        title={`Thông tin tiêm chủng: ${selectedStudent?.fullName || ''}`}
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        width={700}
+      >
+        <Table
+          columns={vaccColumns}
+          dataSource={vaccinations}
+          rowKey={r => r.id || r.vaccineName + r.vaccinationDate}
+          loading={vaccLoading}
+          pagination={false}
+          locale={{ emptyText: 'Không có dữ liệu tiêm chủng' }}
+        />
+        <Pagination
+          style={{ marginTop: 16, textAlign: 'right' }}
+          current={vaccPagination.page + 1}
+          pageSize={vaccPagination.size}
+          total={vaccPagination.total}
+          onChange={handleVaccPageChange}
+          showSizeChanger
+          pageSizeOptions={['5', '10', '20', '50']}
+        />
+      </Drawer>
     </div>
   );
 };

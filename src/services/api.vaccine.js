@@ -4,13 +4,13 @@ import api from "../config/axios";
   
 /**
  * Lấy danh sách tất cả thông tin tiêm chủng của một học sinh (phân trang)
- * @param {number|string} studentId - ID học sinh
+ * @param {number|string} id - ID học sinh
  * @param {object} params - Tham số phân trang: { page, size, sort }
  * @returns {Promise<object>} Đối tượng Page chứa danh sách tiêm chủng
  */
-export const getStudentVaccinations = async (studentId, params = {}) => {
+export const getStudentVaccinations = async (id, params = {}) => {
   try {
-    const response = await api.get(`/students/${studentId}/vaccinations`, { params });
+    const response = await api.get(`/students/${id}/vaccinations`, { params });
     console.log("Lấy danh sách tiêm chủng cho học sinh:", response.data);
     return response.data;
   } catch (error) {
