@@ -71,12 +71,16 @@ export const deleteStudentVaccination = async (vaccinationId) => {
 /**
  * Duyệt/Thay đổi trạng thái bản ghi tiêm chủng
  * @param {number|string} vaccinationId - ID bản ghi tiêm chủng
- * @param {string} status - Trạng thái mới (ví dụ: 'APPROVED', 'REJECTED', ...)
+ * @param {string} newStatus - Trạng thái mới (APPROVE hoặc REJECTED)
+ * @param {string} approverNotes - Ghi chú của người duyệt (tùy chọn)
  * @returns {Promise<object>} Bản ghi tiêm chủng đã cập nhật trạng thái
  */
-export const updateVaccinationStatus = async (vaccinationId, status) => {
+export const updateVaccinationStatus = async (vaccinationId, newStatus, approverNotes = "") => {
   try {
-    const response = await api.patch(`/vaccinations/${vaccinationId}/status`, { status });
+    const response = await api.patch(`/vaccinations/${vaccinationId}/status`, {
+      newStatus,
+      approverNotes,
+    });
     toast.success("Cập nhật trạng thái tiêm chủng thành công!");
     return response.data;
   } catch (error) {

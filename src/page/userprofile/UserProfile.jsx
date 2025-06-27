@@ -29,9 +29,17 @@ const UserProfile = () => {
     invitationCode: "",
     relationshipType: "",
   });
+  const [vaccineForm, setVaccineForm] = useState({
+    vaccineName: "",
+    vaccinationDate: "",
+    provider: "",
+    notes: "",
+    proofFile: null,
+  });
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [showVaccineModal, setShowVaccineModal] = useState(false);
 
   useEffect(() => {
     fetchUserProfile();
@@ -122,6 +130,60 @@ const UserProfile = () => {
     }
   };
 
+  const handleVaccineChange = (e) => {
+    const { name, value } = e.target;
+    setVaccineForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setVaccineForm((prev) => ({ ...prev, proofFile: file }));
+  };
+
+  const handleVaccineSubmit = async (e) => {
+    e.preventDefault();
+    if (!vaccineForm.vaccineName || !vaccineForm.vaccinationDate || !vaccineForm.provider || !vaccineForm.proofFile) {
+      toast.error("Vui lòng nhập đầy đủ thông tin bắt buộc");
+      return;
+    }
+    if (!studentInfo || studentInfo.length === 0) {
+      toast.error("Không tìm thấy thông tin học sinh");
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const formData = new FormData();
+      formData.append('vaccineName', vaccineForm.vaccineName);
+      formData.append('vaccinationDate', vaccineForm.vaccinationDate);
+      formData.append('provider', vaccineForm.provider);
+      if (vaccineForm.notes) {
+        formData.append('notes', vaccineForm.notes);
+      }
+      formData.append('proofFile', vaccineForm.proofFile);
+
+      await api.post(`/students/${studentInfo[0].id}/vaccinations`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      
+      toast.success("Khai báo thông tin vaccine thành công!");
+      setVaccineForm({
+        vaccineName: "",
+        vaccinationDate: "",
+        provider: "",
+        notes: "",
+        proofFile: null,
+      });
+      setShowVaccineModal(false);
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Khai báo thông tin vaccine thất bại");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const handleLogout = () => {
     logout();
     navigate("/");
@@ -190,6 +252,9 @@ const UserProfile = () => {
                 <a className={styles.navLink} href="#" onClick={handleGoHome}>Homepage</a>
                 {!isParent && (
                   <a className={styles.navLink} href="#" onClick={handleDashboardClick}>Dashboard</a>
+                )}
+                {isParent && user.linkedToStudent && (
+                  <a className={styles.navLink} href="#" onClick={() => setShowVaccineModal(true)}>Vaccination Declaration</a>
                 )}
                 <a className={styles.navLink} href="#" onClick={() => setShowPasswordModal(true)}>Change Password</a>
               </div>
@@ -298,7 +363,7 @@ const UserProfile = () => {
                     <strong>Full Name:</strong> {studentInfo[0].fullName}
                   </div>
                   <div className={styles.infoItem}>
-                    <strong>Student Code:</strong> {studentInfo[0].studentCode}
+                    <strong>Student Code:</strong> {studentInfo[0].id}
                   </div>
                   <div className={styles.infoItem}>
                     <strong>Class:</strong> {studentInfo[0].className}
@@ -380,6 +445,101 @@ const UserProfile = () => {
                   onClick={() => setShowPasswordModal(false)}
                 >
                   Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Vaccine Declaration Modal */}
+      {showVaccineModal && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalContent}>
+            <div className={styles.modalHeader}>
+              <h2>Khai báo thông tin vaccine</h2>
+              <button 
+                className={styles.modalClose}
+                onClick={() => setShowVaccineModal(false)}
+              >
+                ×
+              </button>
+            </div>
+            <form onSubmit={handleVaccineSubmit} className={styles.modalForm}>
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel}>Tên vaccine *</label>
+                <input
+                  className={styles.formInput}
+                  type="text"
+                  name="vaccineName"
+                  value={vaccineForm.vaccineName}
+                  onChange={handleVaccineChange}
+                  placeholder="Nhập tên vaccine"
+                  required
+                />
+              </div>
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel}>Ngày tiêm chủng *</label>
+                <input
+                  className={styles.formInput}
+                  type="date"
+                  name="vaccinationDate"
+                  value={vaccineForm.vaccinationDate}
+                  onChange={handleVaccineChange}
+                  required
+                />
+              </div>
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel}>Nơi tiêm chủng *</label>
+                <input
+                  className={styles.formInput}
+                  type="text"
+                  name="provider"
+                  value={vaccineForm.provider}
+                  onChange={handleVaccineChange}
+                  placeholder="Nhập nơi tiêm chủng"
+                  required
+                />
+              </div>
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel}>Ghi chú</label>
+                <textarea
+                  className={styles.formTextarea}
+                  name="notes"
+                  value={vaccineForm.notes}
+                  onChange={handleVaccineChange}
+                  placeholder="Nhập ghi chú (nếu có)"
+                  rows="3"
+                />
+              </div>
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel}>File bằng chứng *</label>
+                <input
+                  className={styles.formInput}
+                  type="file"
+                  name="proofFile"
+                  onChange={handleFileChange}
+                  accept=".pdf,.jpg,.jpeg,.png"
+                  required
+                />
+                <small style={{ color: '#666', fontSize: '12px' }}>
+                  Chấp nhận file: PDF, JPG, PNG
+                </small>
+              </div>
+              <div className={styles.modalActions}>
+                <button
+                  type="submit"
+                  className={styles.submitBtn}
+                  disabled={submitting}
+                >
+                  {submitting ? "Đang xử lý..." : "Khai báo"}
+                </button>
+                <button
+                  type="button"
+                  className={styles.cancelBtn}
+                  onClick={() => setShowVaccineModal(false)}
+                >
+                  Hủy
                 </button>
               </div>
             </form>
