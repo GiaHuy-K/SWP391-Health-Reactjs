@@ -5,12 +5,16 @@ import { toast } from 'react-toastify';
 import styles from './ResetPassword.module.css';
 
 const ResetPassword = () => {
+  // State để lưu trữ thông tin người dùng nhập vào
+  // Sử dụng useState để quản lý trạng thái email, OTP và mật khẩu mới
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
   const navigate = useNavigate();
-
+  // Hàm xử lý khi người dùng gửi form
+  // Hàm này sẽ được gọi khi người dùng nhấn nút "Đặt lại mật khẩu"
+  // Nó sẽ gửi yêu cầu đến API để đặt lại mật khẩu mới  
   const handleSubmit = async (e) => {
     e.preventDefault();
 

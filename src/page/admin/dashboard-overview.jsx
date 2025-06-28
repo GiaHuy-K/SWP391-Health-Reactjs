@@ -19,19 +19,31 @@ import api from "../../config/axios";
 const STATUS_COLORS = ["#4caf50", "#f44336"];
 
 const DashboardOverview = () => {
+  // State để lưu trữ dữ liệu người dùng theo trạng thái và vai trò
+  // Sử dụng useState để quản lý trạng thái của component
   const [userStatusData, setUserStatusData] = useState([]);
+  // userStatusData: lưu trữ số lượng người dùng theo trạng thái (hoạt động, vô hiệu hóa)
+  // roleData: lưu trữ số lượng người dùng theo vai trò (quản lý, y tá, phụ huynh)
+  // Sử dụng useState để quản lý trạng thái của component 
   const [roleData, setRoleData] = useState([]);
+  // loading: để hiển thị spinner khi đang fetch dữ liệu
+  // Sử dụng useState để quản lý trạng thái của component
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const [staffRes, medicalRes, parentRes] = await Promise.all([
+          
           api.get("admin/users/staff-managers"),
           api.get("admin/users/medical-staff"),
           api.get("admin/users/parents"),
         ]);
-
+        // staffRes: dữ liệu người dùng quản lý
+        // medicalRes: dữ liệu người dùng y tá  
+        // parentRes: dữ liệu người dùng phụ huynh
+        // Sử dụng Promise.all để fetch đồng thời dữ liệu từ 3 API
+        // Kết hợp dữ liệu từ 3 API để tính toán số lượng người dùng theo trạng thái
         const allUsers = [
           ...staffRes.data.content,
           ...medicalRes.data.content,
@@ -60,7 +72,8 @@ const DashboardOverview = () => {
 
     fetchData();
   }, []);
-
+  // Hàm render biểu đồ tròn với tiêu đề và dữ liệu
+  // Sử dụng Card từ Ant Design để hiển thị biểu đồ
   const renderPieChart = (title, data) => (
     <Card title={title} style={{ width: "100%" }}>
       <ResponsiveContainer width="100%" height={250}>

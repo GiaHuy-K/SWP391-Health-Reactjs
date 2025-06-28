@@ -1,6 +1,7 @@
 
 import React from "react";
 import { Link } from "react-router-dom";
+// Trang hiển thị khi người dùng không có quyền truy cập vào một trang nào đó
 
 const Unauthorized = () => {
   return (

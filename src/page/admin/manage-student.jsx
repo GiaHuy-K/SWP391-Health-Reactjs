@@ -20,22 +20,29 @@ const { Option } = Select;
 
 function ManageStudent() {
   // Danh sách học sinh
+  // Sử dụng useState để quản lý trạng thái của component
+  // studentList: lưu trữ danh sách học sinh từ API
   const [studentList, setStudentList] = useState([]);
 
   // Modal tạo mới học sinh
+  // Sử dụng useState để quản lý trạng thái mở/đóng modal
+  // isCreateModalOpen: true nếu modal đang mở, false nếu đóng
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [form] = Form.useForm();
 
   // Modal xem chi tiết học sinh
+  // Sử dụng useState để quản lý trạng thái mở/đóng modal
+  // selectedStudentId: lưu trữ ID của học sinh được chọn để xem chi tiết
   const [selectedStudentId, setSelectedStudentId] = useState(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
   // Lấy danh sách học sinh từ API
+
   const fetchStudent = async () => {
     const data = await getStudent();
     setStudentList(data);
   };
-
+  
   useEffect(() => {
     fetchStudent();
   }, []);

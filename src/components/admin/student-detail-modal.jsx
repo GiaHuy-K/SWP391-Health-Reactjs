@@ -5,7 +5,7 @@ import { getStudentById } from "../../services/api.student";
 const StudentDetailModal = ({ open, onClose, studentId }) => {
   const [student, setStudent] = useState(null);
   const [loading, setLoading] = useState(false);
-
+  // Hàm để render trạng thái học sinh với màu sắc tương ứng
   const renderStatus = (status) => {
     let color;
 

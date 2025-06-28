@@ -1,7 +1,6 @@
 import React from "react";
 import DashboardTemplate from "../../components/templates/dashboardTemplate";
-import { Space, Table, Tag } from "antd";
-//"Parent"
+
 const columns = [
     {
       title: "Họ tên",

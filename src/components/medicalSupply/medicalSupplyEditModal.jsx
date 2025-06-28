@@ -74,7 +74,6 @@ const EditMedicalSupplyModal = ({ open, onClose, supply, onSuccess }) => {
           <Select>
             <Option value="AVAILABLE">Sẵn có</Option>
             <Option value="OUT_OF_STOCK">Hết hàng</Option>
-            <Option value="EXPIRED">Hết hạn</Option>
             <Option value="DISPOSE">Không còn sử dụng</Option>
           </Select>
         </Form.Item>
