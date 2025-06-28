@@ -6,14 +6,7 @@ import api from "../../config/axios";
 import styles from "./UserProfile.module.css";
 import { isParentRole } from "../../config/AuthContext";
 
-const RELATIONSHIP_OPTIONS = [
-  { value: "FATHER", label: "Bố" },
-  { value: "MOTHER", label: "Mẹ" },
-  { value: "GUARDIAN", label: "Người giám hộ" },
-  { value: "GRANDFATHER", label: "Ông" },
-  { value: "GRANDMOTHER", label: "Bà" },
-  { value: "OTHER", label: "Khác" },
-];
+// Doi chinh sua tu API
 
 const UserProfile = () => {
   const { logout } = useAuth();
@@ -27,7 +20,6 @@ const UserProfile = () => {
   });
   const [linkForm, setLinkForm] = useState({
     invitationCode: "",
-    relationshipType: "",
   });
   const [vaccineForm, setVaccineForm] = useState({
     vaccineName: "",
@@ -113,7 +105,7 @@ const UserProfile = () => {
 
   const handleLinkSubmit = async (e) => {
     e.preventDefault();
-    if (!linkForm.invitationCode || !linkForm.relationshipType) {
+    if (!linkForm.invitationCode) {
       toast.error("Vui lòng nhập đầy đủ thông tin");
       return;
     }
@@ -121,7 +113,7 @@ const UserProfile = () => {
     try {
       await api.post("/parent/my-students", linkForm);
       toast.success("Liên kết học sinh thành công!");
-      setLinkForm({ invitationCode: "", relationshipType: "" });
+      setLinkForm({ invitationCode: "" });
       fetchUserProfile();
     } catch (err) {
       toast.error(err.response?.data?.message || "Liên kết thất bại");
@@ -322,24 +314,6 @@ const UserProfile = () => {
                       placeholder="Enter invitation code"
                       required
                     />
-                  </div>
-
-                  <div className={styles.formGroup}>
-                    <label className={styles.formLabel}>Relationship Type</label>
-                    <select
-                      className={styles.formSelect}
-                      name="relationshipType"
-                      value={linkForm.relationshipType}
-                      onChange={handleLinkChange}
-                      required
-                    >
-                      <option value="">Select relationship type</option>
-                      {RELATIONSHIP_OPTIONS.map((opt) => (
-                        <option key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </option>
-                      ))}
-                    </select>
                   </div>
 
                   <div className={styles.formActions}>
