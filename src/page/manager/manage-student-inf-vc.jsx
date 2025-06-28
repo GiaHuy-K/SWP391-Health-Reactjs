@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { getStudentVaccinations } from '../../services/api.student';
+import { getStudentVaccinations } from '../../services/api.vaccine';
 import { Table, Input, Button, Pagination, message } from 'antd';
 
 const columns = [

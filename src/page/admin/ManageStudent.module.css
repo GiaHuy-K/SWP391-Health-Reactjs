@@ -1,0 +1,12 @@
+.buttonCreate {
+  margin-bottom: 16px;
+}
+
+.clickableRow {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.clickableRow:hover {
+  background-color: #79c70b;
+}

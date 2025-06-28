@@ -4,9 +4,13 @@ import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import styles from './ForgotPassword.module.css';
 const ForgotPassword = () => {
+  // State để lưu trữ email người dùng nhập vào
+  // Sử dụng useState để quản lý trạng thái email
   const [email, setEmail] = useState('');
   const navigate = useNavigate();
-
+  // Hàm xử lý khi người dùng gửi form
+  // Hàm này sẽ được gọi khi người dùng nhấn nút "Gửi OTP"
+  // Nó sẽ gửi yêu cầu đến API để gửi OTP đến email đã nhập
   const handleSubmit = async (e) => {
     e.preventDefault();
 

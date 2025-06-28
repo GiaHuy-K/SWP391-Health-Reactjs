@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import {
   getMedicalSupplies,
-  hardDeleteMedicalSupply,
   createMedicalSupply,
+  softDeleteMedicalSupply,
 } from "../../services/api.medicalSupply";
 import MedicalSupplyTableTemplate from "../../components/templates/medicalSupplyTableTemplate";
 import { toast } from "react-toastify";
@@ -26,6 +26,7 @@ const ManageMedicalSupplyM = () => {
     setLoading(true);
     try {
       const response = await getMedicalSupplies();
+      console.log(response);
       setMedicalList(response);
     } catch (error) {
       console.log(error);
@@ -39,9 +40,13 @@ const ManageMedicalSupplyM = () => {
     fetchSupply();
   }, []);
 
-  const handleDelete = async (id) => {
-    await hardDeleteMedicalSupply(id);
-    fetchSupply();
+  const handleSoftDelete = async (id) => {
+    try {
+    await softDeleteMedicalSupply(id);
+    fetchSupply(); // Gọi lại danh sách sau khi xóa mềm
+  } catch (err) {
+    console.error(err);
+  }
   };
 
   const handleCreate = async () => {
@@ -62,8 +67,9 @@ const ManageMedicalSupplyM = () => {
       <MedicalSupplyTableTemplate
         data={medicalList}
         loading={loading}
-        onDelete={handleDelete}
+        onDelete={handleSoftDelete}
         onCreateClick={() => setCreateModalOpen(true)}
+        onReload={fetchSupply} 
         permissions={permissions}
       />
 

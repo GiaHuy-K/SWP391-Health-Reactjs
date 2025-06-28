@@ -27,6 +27,8 @@ function ManageNurse() {
 
   return (
     <div>
+      {/* Sử dụng DashboardTemplate để hiển thị bảng quản lý y tá */}
+      {/* Bảng này sẽ hiển thị danh sách các y tá với các cột đã định nghĩa */}
       <DashboardTemplate
         columns={columns}
         uri={"admin/users/medical-staff"}

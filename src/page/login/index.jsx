@@ -14,11 +14,20 @@ const LoginPage = () => {
     rememberMe: false,
   });
   const [errors, setErrors] = useState({});
+  // Sử dụng useState để quản lý trạng thái hiển thị mật khẩu
+  // showPassword: true nếu mật khẩu đang được hiển thị, false nếu ẩn
   const [showPassword, setShowPassword] = useState(false);
+  // Sử dụng useState để quản lý trạng thái loading
+  // isLoading: true khi đang gửi yêu cầu đăng nhập, false khi đã hoàn thành
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  // Sử dụng useAuth để lấy hàm login từ AuthContext
+  // Hàm login này sẽ được sử dụng để lưu trữ thông tin người dùng sau
   const { login } = useAuth();
 
+  // Hàm validateForm để kiểm tra tính hợp lệ của form
+  // Hàm này sẽ được gọi khi người dùng nhấn nút "Đăng nhập"
+  // Nó sẽ kiểm tra các trường email và mật khẩu
   const validateForm = () => {
     const newErrors = {};
     if (!formData.email.trim()) {
@@ -33,7 +42,8 @@ const LoginPage = () => {
     }
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+      
+    return Object.keys(newErrors).length === 0; 
   };
 
   const handleSubmit = async (e) => {
