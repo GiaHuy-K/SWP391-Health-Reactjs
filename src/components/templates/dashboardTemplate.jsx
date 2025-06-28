@@ -1,10 +1,4 @@
-import {
-  Table,
-  message,
-  Switch,
-  Tag,
-  Button
-} from "antd";
+import { Table, message, Switch, Tag, Button } from "antd";
 import React, { useEffect, useState } from "react";
 import api from "../../config/axios";
 import UserDetailModal from "../admin/user-detail-modal";
@@ -16,7 +10,7 @@ function DashboardTemplate({ columns, uri }) {
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // hàm vô hiệu hóa người dùng theo id khi clich vào 
+  // hàm vô hiệu hóa người dùng theo id khi clich vào
   const handleToggleActivation = async (userId, newStatus) => {
     try {
       await api.put(
@@ -38,7 +32,7 @@ function DashboardTemplate({ columns, uri }) {
       message.error("Thay đổi trạng thái thất bại");
     }
   };
-  // màu cho 3 role 
+  // màu cho 3 role
   const formatRole = (role) => {
     let color = "gray";
     let label = role;
@@ -68,9 +62,7 @@ function DashboardTemplate({ columns, uri }) {
 
   useEffect(() => {
     const formattedColumns = columns.map((col) =>
-      col.dataIndex === "role"
-        ? { ...col, render: formatRole }
-        : col
+      col.dataIndex === "role" ? { ...col, render: formatRole } : col
     );
 
     const tableColumns = [
@@ -84,19 +76,8 @@ function DashboardTemplate({ columns, uri }) {
             checked={isActive}
             checkedChildren="Đang hoạt động"
             unCheckedChildren="Bị khóa"
-            onChange={() =>
-              handleToggleActivation(record.userId, !isActive)
-            }
+            onChange={() => handleToggleActivation(record.userId, !isActive)}
           />
-        ),
-      },
-      {
-        title: "Xem",
-        key: "action",
-        render: (_, record) => (
-          <Button type="link" onClick={() => handleViewDetail(record.userId)}>
-            Xem chi tiết
-          </Button>
         ),
       },
     ];
@@ -128,6 +109,9 @@ function DashboardTemplate({ columns, uri }) {
         columns={newColumns}
         dataSource={data}
         rowKey="userId"
+        onRow={(record) => ({
+          onClick: () => handleViewDetail(record.userId),
+        })}
         pagination={{ pageSize: 10 }}
       />
       {/* Modal xem chi tiết */}

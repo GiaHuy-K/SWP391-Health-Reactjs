@@ -14,6 +14,7 @@ import dayjs from "dayjs";
 import api from "../../config/axios";
 import { getStudent } from "../../services/api.student";
 import StudentDetailModal from "../../components/admin/student-detail-modal";
+import styles from "./ManageStudent.module.css";
 
 const { Option } = Select;
 
@@ -64,7 +65,28 @@ function ManageStudent() {
     setSelectedStudentId(record.id); // dùng id đúng với API trả về
     setIsDetailModalOpen(true);
   };
+  const renderStatus = (status) => {
+    let color;
 
+    switch (status?.toLowerCase()) {
+      case "hoạt động":
+        color = "green";
+        break;
+      case "tốt nghiệp":
+        color = "blue";
+        break;
+      case "chuyển trường":
+        color = "orange";
+        break;
+      case "thôi học":
+        color = "red";
+        break;
+      default:
+        color = "default";
+    }
+
+    return <Tag color={color}>{status}</Tag>;
+  };
   // Cấu hình cột cho bảng
   const columns = [
     {
@@ -82,9 +104,16 @@ function ManageStudent() {
       dataIndex: "gender",
       key: "gender",
       render: (gender) => {
-        const color = gender === "Nam" || gender === "MALE" ? "blue" : "magenta";
+        const color =
+          gender === "Nam" || gender === "MALE" ? "blue" : "magenta";
         return <Tag color={color}>{gender}</Tag>;
       },
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status",
+      render: (status) => renderStatus(status),
     },
     {
       title: "Mã mời",
@@ -98,7 +127,7 @@ function ManageStudent() {
       {/* Nút mở modal tạo mới */}
       <Button
         type="primary"
-        style={{ marginBottom: 16 }}
+        className={styles.buttonCreate}
         onClick={() => setIsCreateModalOpen(true)}
       >
         Tạo mới học sinh
@@ -106,14 +135,14 @@ function ManageStudent() {
 
       {/* Bảng danh sách học sinh */}
       <Table
-        dataSource={studentList}
-        columns={columns}
-        rowKey="id" // đảm bảo key đúng với dữ liệu trả về
-        onRow={(record) => ({
-          onClick: () => handleRowClick(record),
-          style: { cursor: "pointer" },
-        })}
-      />
+  dataSource={studentList}
+  columns={columns}
+  rowKey="id"
+  onRow={(record) => ({
+    onClick: () => handleRowClick(record),
+  })}
+  rowClassName={() => styles.clickableRow}
+/>
 
       {/* Modal tạo mới học sinh */}
       <Modal
