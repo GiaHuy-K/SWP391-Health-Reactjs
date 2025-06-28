@@ -4,13 +4,13 @@ import api from "../config/axios";
   
 /**
  * Lấy danh sách tất cả thông tin tiêm chủng của một học sinh (phân trang)
- * @param {number|string} studentId - ID học sinh
+ * @param {number|string} id - ID học sinh
  * @param {object} params - Tham số phân trang: { page, size, sort }
  * @returns {Promise<object>} Đối tượng Page chứa danh sách tiêm chủng
  */
-export const getStudentVaccinations = async (studentId, params = {}) => {
+export const getStudentVaccinations = async (id, params = {}) => {
   try {
-    const response = await api.get(`/students/${studentId}/vaccinations`, { params });
+    const response = await api.get(`/students/${id}/vaccinations`, { params });
     console.log("Lấy danh sách tiêm chủng cho học sinh:", response.data);
     return response.data;
   } catch (error) {
@@ -71,12 +71,16 @@ export const deleteStudentVaccination = async (vaccinationId) => {
 /**
  * Duyệt/Thay đổi trạng thái bản ghi tiêm chủng
  * @param {number|string} vaccinationId - ID bản ghi tiêm chủng
- * @param {string} status - Trạng thái mới (ví dụ: 'APPROVED', 'REJECTED', ...)
+ * @param {string} newStatus - Trạng thái mới (APPROVE hoặc REJECTED)
+ * @param {string} approverNotes - Ghi chú của người duyệt (tùy chọn)
  * @returns {Promise<object>} Bản ghi tiêm chủng đã cập nhật trạng thái
  */
-export const updateVaccinationStatus = async (vaccinationId, status) => {
+export const updateVaccinationStatus = async (vaccinationId, newStatus, approverNotes = "") => {
   try {
-    const response = await api.patch(`/vaccinations/${vaccinationId}/status`, { status });
+    const response = await api.patch(`/vaccinations/${vaccinationId}/status`, {
+      newStatus,
+      approverNotes,
+    });
     toast.success("Cập nhật trạng thái tiêm chủng thành công!");
     return response.data;
   } catch (error) {
