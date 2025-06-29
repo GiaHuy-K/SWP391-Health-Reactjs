@@ -85,25 +85,27 @@ const HomePage = () => {
         <header className={styles.header}>
           <div className={styles.headerContent}>
             <div className={styles.logoSection} onClick={handleLogoClick} style={{ cursor: 'pointer' }}>
-              <div className={styles.logoIcon}>
-                <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M6 6H42L36 24L42 42H6L12 24L6 6Z" fill="currentColor"></path>
-                </svg>
-              </div>
+            <div className={styles.logoIcon}>
+            <img
+              src="/logo_medical_health_system.jpg"
+              alt="SchoolMed Logo"
+              style={{ width: 48, height: 48, objectFit: "contain" }}
+            />
+          </div>
               <h2 className={styles.logoText}>SchoolMed</h2>
             </div>
             <div className={styles.navSection}>
               <div className={styles.navLinks}>
-                <a className={styles.navLink} href="#home">Home</a>
-                <a className={styles.navLink} href="#features">Features</a>
-                <a className={styles.navLink} href="#contact">Contact</a>
-                <a className={styles.navLink} href="#about">About Us</a>
-                <a className={styles.navLink} href="#blog">Blog</a>
+                <a className={styles.navLink} href="#home">Trang chủ</a>
+                <a className={styles.navLink} href="#features">Tính năng</a>
+                <a className={styles.navLink} href="#contact">Liên hệ</a>
+                <a className={styles.navLink} href="#about">Về chúng tôi</a>
+                <a className={styles.navLink} href="#blog">Blog sức khỏe</a>
               </div>
               <div className={styles.authSection}>
                 {!isAuthenticated ? (
                   <button className={styles.loginBtn} onClick={handleLogin}>
-                    <span>Login</span>
+                    <span>Đăng nhập</span>
                   </button>
                 ) : (
                   <div className={styles.profileSection}>
@@ -120,6 +122,7 @@ const HomePage = () => {
                           </>
                         ) : (
                           <>
+                            <button onClick={handleDashboardClick}>Dashboard</button>
                             <button onClick={handleDashboardClick}>Dashboard</button>
                             <button onClick={handleProfileClick}>Hồ sơ</button>
                             <button onClick={handleLogout}>Đăng xuất</button>
@@ -140,69 +143,66 @@ const HomePage = () => {
               <div className={styles.heroContent}>
                 <div className={styles.heroText}>
                   <h1 className={styles.heroTitle}>
-                    Welcome to SchoolMed
+                    Chào mừng banh tới với SchoolMed!
                   </h1>
                   <h2 className={styles.heroSubtitle}>
-                    Your comprehensive solution for managing school health records and promoting student well-being.
+                    Trang web quản lý sức khỏe trường học, giúp quản lý sức khỏe của học sinh và nhân viên trường học.
                   </h2>
                 </div>
                 <button className={styles.ctaButton} onClick={handleGetStarted}>
-                  <span>Get Started</span>
+                  <span>Bắt đầu</span>
                 </button>
               </div>
             </div>
 
-            <h2 className={styles.sectionTitle} id="about">About Our School</h2>
+            <h2 className={styles.sectionTitle} id="about">Về chúng tôi</h2>
             <p className={styles.sectionText}>
-              Our school is dedicated to providing a safe and healthy environment for all students. We offer a range of health services and resources to support their physical and
-              mental well-being. Our team of experienced health professionals is committed to ensuring that every student has access to the care they need to thrive.
+              Trường chúng tôi đặt ra mục tiêu cung cấp môi trường an toàn và một sức khỏe mạnh cho tất cả học sinh. Chúng tôi cung cấp một loạt dịch vụ và tài nguyên sức khỏe để hỗ trợ sức khỏe vật lý và tâm lý của học sinh. Đội ngũ chuyên gia sức khỏe có trách nhiệm đảm bảo rằng mọi học sinh đều có quyền truy cập vào sự chăm sóc mà họ cần để phát triển.
             </p>
 
-            <h2 className={styles.sectionTitle} id="features">Health Documents</h2>
+            <h2 className={styles.sectionTitle} id="features">Tài liệu sức khỏe</h2>
             <p className={styles.sectionText}>
-              Access important health documents and resources related to school health policies, procedures, and guidelines. Stay informed about health updates and recommendations
-              for students and staff.
+              Truy cập các tài liệu sức khỏe quan trọng và tài nguyên liên quan đến chính sách, quy trình và hướng dẫn sức khỏe trường học. Giữ thông tin về các cập nhật sức khỏe và khuyến nghị cho học sinh và nhân viên.
             </p>
 
             <div className={styles.documentsGrid}>
               <div className={styles.documentCard}>
                 <div className={`${styles.documentImage} ${styles.healthGuidelines}`}></div>
-                <div className={styles.documentContent}>
-                  <p className={styles.documentTitle}>Health Guidelines</p>
-                  <p className={styles.documentDescription}>Comprehensive guidelines for maintaining a healthy school environment.</p>
+                  <div className={styles.documentContent}>
+                    <p className={styles.documentTitle}>Quy tắc sức khỏe trường học</p>
+                  <p className={styles.documentDescription}>Quy tắc sức khỏe trường học.</p>
                 </div>
               </div>
               <div className={styles.documentCard}>
                 <div className={`${styles.documentImage} ${styles.emergencyProcedures}`}></div>
                 <div className={styles.documentContent}>
-                  <p className={styles.documentTitle}>Emergency Procedures</p>
-                  <p className={styles.documentDescription}>Step-by-step procedures for handling health emergencies.</p>
+                  <p className={styles.documentTitle}>Quy trình khẩn cấp</p>
+                  <p className={styles.documentDescription}>Quy trình khẩn cấp.</p>
                 </div>
               </div>
               <div className={styles.documentCard}>
                 <div className={`${styles.documentImage} ${styles.studentForms}`}></div>
                 <div className={styles.documentContent}>
-                  <p className={styles.documentTitle}>Student Health Forms</p>
-                  <p className={styles.documentDescription}>Essential forms for student health information and consent.</p>
+                  <p className={styles.documentTitle}>Hồ sơ sức khỏe học sinh</p>
+                  <p className={styles.documentDescription}>Hồ sơ sức khỏe học sinh.</p>
                 </div>
               </div>
             </div>
 
-            <h2 className={styles.sectionTitle} id="blog">Health Blog</h2>
+            <h2 className={styles.sectionTitle} id="blog">Blog sức khỏe</h2>
             <p className={styles.sectionText}>
-              Read our blog for the latest articles, tips, and advice on student health and well-being. Learn from experienced health professionals and stay up-to-date on important
-              health topics.
+              Đọc blog của chúng tôi để cập nhật các bài viết mới nhất, mẹo và khuyến nghị về sức khỏe học sinh và sức khỏe tốt. Học từ các chuyên gia sức khỏe có kinh nghiệm và giữ thông tin về các chủ đề sức khỏe quan trọng.
             </p>
 
             <div className={styles.blogSection}>
               <div className={styles.blogCard}>
                 <div className={styles.blogContent}>
                   <div className={styles.blogText}>
-                    <p className={styles.blogTitle}>Promoting Mental Health in Schools</p>
-                    <p className={styles.blogDescription}>Strategies for supporting student mental health and creating a positive school climate.</p>
+                    <p className={styles.blogTitle}>Tăng cường sức khỏe tâm lý trong trường học</p>
+                    <p className={styles.blogDescription}>Chiến lược để hỗ trợ sức khỏe tâm lý của học sinh và tạo ra môi trường học tập tích cực.</p>
                   </div>
                   <button className={styles.readMoreBtn}>
-                    <span>Read More</span>
+                    <span>Đọc thêm</span>
                   </button>
                 </div>
                 <div className={`${styles.blogImage} ${styles.mentalHealth}`}></div>
@@ -211,11 +211,11 @@ const HomePage = () => {
               <div className={styles.blogCard}>
                 <div className={styles.blogContent}>
                   <div className={styles.blogText}>
-                    <p className={styles.blogTitle}>Nutrition Tips for Students</p>
-                    <p className={styles.blogDescription}>Healthy eating habits to boost student energy and focus.</p>
+                    <p className={styles.blogTitle}>Mẹo dinh dưỡng cho học sinh</p>
+                    <p className={styles.blogDescription}>Thói quen ăn uống lành mạnh để tăng năng lượng và tập trung của học sinh.</p>
                   </div>
                   <button className={styles.readMoreBtn}>
-                    <span>Read More</span>
+                    <span>Đọc thêm</span>
                   </button>
                 </div>
                 <div className={`${styles.blogImage} ${styles.nutritionTips}`}></div>
