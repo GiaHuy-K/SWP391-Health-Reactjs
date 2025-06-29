@@ -60,15 +60,20 @@
   border-radius: 8px;
 }
 
-.logoSection:hover {
-  background-color: #f8f9fa;
-  transform: translateY(-1px);
+.logoSection {
+  display: flex;
+  align-items: center;
+  gap: 2rem; /* hoặc 1rem tùy khoảng cách bạn muốn */
+  color: #141414;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0.5rem;
+  border-radius: 8px;
 }
 
 .logoIcon {
-  width: 1rem;
-  height: 1rem;
-  color: #141414;
+  width: 24px; /* tăng từ 1rem nếu bạn cần to hơn */
+  height: 40px;
 }
 
 .logoText {

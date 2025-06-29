@@ -78,10 +78,31 @@ const UserProfile = () => {
 
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
-    if (passwordForm.newPassword !== passwordForm.confirmNewPassword) {
-      toast.error("Mật khẩu mới không khớp");
+    const errors = {};
+
+    if (!passwordForm.oldPassword.trim()) {
+      errors.oldPassword = "Mật khẩu hiện tại là bắt buộc";
+    } else if (passwordForm.oldPassword.length < 8) {
+      errors.oldPassword = "Mật khẩu hiện tại phải có ít nhất 8 ký tự";
+    }
+
+    if (!passwordForm.newPassword.trim()) {
+      errors.newPassword = "Mật khẩu mới là bắt buộc";
+    } else if (passwordForm.newPassword.length < 8) {
+      errors.newPassword = "Mật khẩu mới phải có ít nhất 8 ký tự";
+    }
+
+    if (!passwordForm.confirmNewPassword.trim()) {
+      errors.confirmNewPassword = "Xác nhận mật khẩu mới là bắt buộc";
+    } else if (passwordForm.newPassword !== passwordForm.confirmNewPassword) {
+      errors.confirmNewPassword = "Mật khẩu mới không khớp";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      Object.values(errors).forEach((error) => toast.error(error));
       return;
     }
+
     setSubmitting(true);
     try {
       await api.put("/user/profile/change-password", passwordForm);
@@ -228,31 +249,28 @@ const UserProfile = () => {
         <header className={styles.header}>
           <div className={styles.headerContent}>
             <div className={styles.logoSection} onClick={handleLogoClick} style={{ cursor: 'pointer' }}>
-              <div className={styles.logoIcon}>
-                <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path
-                    fillRule="evenodd"
-                    clipRule="evenodd"
-                    d="M39.475 21.6262C40.358 21.4363 40.6863 21.5589 40.7581 21.5934C40.7876 21.655 40.8547 21.857 40.8082 22.3336C40.7408 23.0255 40.4502 24.0046 39.8572 25.2301C38.6799 27.6631 36.5085 30.6631 33.5858 33.5858C30.6631 36.5085 27.6632 38.6799 25.2301 39.8572C24.0046 40.4502 23.0255 40.7407 22.3336 40.8082C21.8571 40.8547 21.6551 40.7875 21.5934 40.7581C21.5589 40.6863 21.4363 40.358 21.6262 39.475C21.8562 38.4054 22.4689 36.9657 23.5038 35.2817C24.7575 33.2417 26.5497 30.9744 28.7621 28.762C30.9744 26.5497 33.2417 24.7574 35.2817 23.5037C36.9657 22.4689 38.4054 21.8562 39.475 21.6262ZM4.41189 29.2403L18.7597 43.5881C19.8813 44.7097 21.4027 44.9179 22.7217 44.7893C24.0585 44.659 25.5148 44.1631 26.9723 43.4579C29.9052 42.0387 33.2618 39.5667 36.4142 36.4142C39.5667 33.2618 42.0387 29.9052 43.4579 26.9723C44.1631 25.5148 44.659 24.0585 44.7893 22.7217C44.9179 21.4027 44.7097 19.8813 43.5881 18.7597L29.2403 4.41187C27.8527 3.02428 25.8765 3.02573 24.2861 3.36776C22.6081 3.72863 20.7334 4.58419 18.8396 5.74801C16.4978 7.18716 13.9881 9.18353 11.5858 11.5858C9.18354 13.988 7.18717 16.4978 5.74802 18.8396C4.58421 20.7334 3.72865 22.6081 3.36778 24.2861C3.02574 25.8765 3.02429 27.8527 4.41189 29.2403Z"
-                    fill="currentColor"
-                  ></path>
-                </svg>
-              </div>
+            <div className={styles.logoIcon}>
+            <img
+              src="/logo_medical_health_system.jpg"
+              alt="SchoolMed Logo"
+              style={{ width: 48, height: 48, objectFit: "contain" }}
+            />
+          </div>
               <h2 className={styles.logoText}>SchoolMed</h2>
             </div>
             <div className={styles.navSection}>
               <div className={styles.navLinks}>
-                <a className={styles.navLink} href="#" onClick={handleGoHome}>Homepage</a>
+                <a className={styles.navLink} href="#" onClick={handleGoHome}>Trang chủ</a>
                 {!isParent && (
-                  <a className={styles.navLink} href="#" onClick={handleDashboardClick}>Dashboard</a>
+                  <a className={styles.navLink} href="#" onClick={handleDashboardClick}>Bảng số liệu</a>
                 )}
                 {isParent && user.linkedToStudent && (
-                  <a className={styles.navLink} href="#" onClick={() => setShowVaccineModal(true)}>Vaccination Declaration</a>
+                  <a className={styles.navLink} href="#" onClick={() => setShowVaccineModal(true)}>Khai báo vaccine đã tiêm</a>
                 )}
-                <a className={styles.navLink} href="#" onClick={() => setShowPasswordModal(true)}>Change Password</a>
+                <a className={styles.navLink} href="#" onClick={() => setShowPasswordModal(true)}>Đổi mật khẩu</a>
               </div>
               <button className={styles.logoutBtn} onClick={handleLogout}>
-                <span>Logout</span>
+                <span>Đăng xuất</span>
               </button>
             </div>
           </div>
@@ -261,40 +279,40 @@ const UserProfile = () => {
         <div className={styles.mainContent}>
           <div className={styles.contentContainer}>
             <div className={styles.pageTitle}>
-              <h1>User Profile</h1>
+              <h1>Hồ sơ cá nhân</h1>
             </div>
 
             <div className={styles.formSection}>
               <div className={styles.formGroup}>
-                <label className={styles.formLabel}>Full Name</label>
+                <label className={styles.formLabel}>Họ và tên</label>
                 <input
                   className={styles.formInput}
                   type="text"
                   value={user.fullName || ""}
                   readOnly
-                  placeholder="Full Name"
+                  placeholder="Họ và tên"
                 />
               </div>
 
               <div className={styles.formGroup}>
-                <label className={styles.formLabel}>Email</label>
+                <label className={styles.formLabel}>Email *</label>
                 <input
                   className={styles.formInput}
                   type="email"
                   value={user.email || ""}
                   readOnly
-                  placeholder="Email"
+                  placeholder="Email *"
                 />
               </div>
 
               <div className={styles.formGroup}>
-                <label className={styles.formLabel}>Phone Number</label>
+                <label className={styles.formLabel}>Số điện thoại</label>
                 <input
                   className={styles.formInput}
                   type="text"
                   value={user.phoneNumber || ""}
                   readOnly
-                  placeholder="Phone Number"
+                  placeholder="Số điện thoại"
                 />
               </div>
             </div>
@@ -302,24 +320,24 @@ const UserProfile = () => {
             {/* Chỉ hiển thị form liên kết nếu là phụ huynh và chưa liên kết học sinh */}
             {isParent && !user.linkedToStudent && (
               <div className={styles.linkSection}>
-                <h2 className={styles.sectionTitle}>Link User and Student Accounts</h2>
+                <h2 className={styles.sectionTitle}>Liên kết tài khoản học sinh bạn giám hộ</h2>
                 <form onSubmit={handleLinkSubmit} className={styles.linkForm}>
                   <div className={styles.formGroup}>
-                    <label className={styles.formLabel}>Invitation Code</label>
+                    <label className={styles.formLabel}>Mã liên kết</label>
                     <input
                       className={styles.formInput}
                       type="text"
                       name="invitationCode"
                       value={linkForm.invitationCode}
                       onChange={handleLinkChange}
-                      placeholder="Enter invitation code"
+                      placeholder="Nhập mã liên kết"
                       maxLength={20}
                       required
                     />
                   </div>
 
                   <div className={styles.formGroup}>
-                    <label className={styles.formLabel}>Relationship Type</label>
+                    <label className={styles.formLabel}>Quan hệ với học sinh</label>
                     <select
                       className={styles.formInput}
                       name="relationshipType"
@@ -327,13 +345,13 @@ const UserProfile = () => {
                       onChange={handleLinkChange}
                       required
                     >
-                      <option value="">Select relationship type</option>
-                      <option value="FATHER">Father</option>
-                      <option value="MOTHER">Mother</option>
-                      <option value="GUARDIAN">Guardian</option>
-                      <option value="GRANDFATHER">Grandfather</option>
-                      <option value="GRANDMOTHER">Grandmother</option>
-                      <option value="OTHER">Other</option>
+                      <option value="">Chọn quan hệ</option>
+                      <option value="FATHER">Cha</option>
+                      <option value="MOTHER">Mẹ</option>
+                      <option value="GUARDIAN">Người giám hộ</option>
+                      <option value="GRANDFATHER">Ông nội</option>
+                      <option value="GRANDMOTHER">Bà nội</option>
+                      <option value="OTHER">Khác</option>
                     </select>
                   </div>
 
@@ -343,7 +361,7 @@ const UserProfile = () => {
                       className={styles.submitBtn}
                       disabled={submitting}
                     >
-                      {submitting ? "Đang xử lý..." : "Link to Student"}
+                      {submitting ? "Đang xử lý..." : "Liên kết"}
                     </button>
                   </div>
                 </form>
@@ -352,22 +370,22 @@ const UserProfile = () => {
 
             {user.linkedToStudent && Array.isArray(studentInfo) && studentInfo.length > 0 && (
               <div className={styles.studentSection}>
-                <h2 className={styles.sectionTitle}>Linked Student Information</h2>
+                <h2 className={styles.sectionTitle}>Thông tin học sinh đã liên kết</h2>
                 <div className={styles.studentInfo}>
                   <div className={styles.infoItem}>
-                    <strong>Full Name:</strong> {studentInfo[0].fullName}
+                    <strong>Họ và tên:</strong> {studentInfo[0].fullName}
                   </div>
                   <div className={styles.infoItem}>
-                    <strong>Student Code:</strong> {studentInfo[0].id}
+                    <strong>Mã học sinh:</strong> {studentInfo[0].id}
                   </div>
                   <div className={styles.infoItem}>
-                    <strong>Class:</strong> {studentInfo[0].className}
+                    <strong>Lớp:</strong> {studentInfo[0].className}
                   </div>
                   <div className={styles.infoItem}>
-                    <strong>Date of Birth:</strong> {studentInfo[0].dateOfBirth}
+                    <strong>Ngày sinh:</strong> {studentInfo[0].dateOfBirth}
                   </div>
                   <div className={styles.infoItem}>
-                    <strong>Gender:</strong> {studentInfo[0].gender}
+                    <strong>Giới tính:</strong> {studentInfo[0].gender}
                   </div>
                 </div>
               </div>
@@ -391,38 +409,38 @@ const UserProfile = () => {
             </div>
             <form onSubmit={handlePasswordSubmit} className={styles.modalForm}>
               <div className={styles.formGroup}>
-                <label className={styles.formLabel}>Current Password</label>
+                <label className={styles.formLabel}>Mật khẩu hiện tại</label>
                 <input
                   className={styles.formInput}
                   type="password"
                   name="oldPassword"
                   value={passwordForm.oldPassword}
                   onChange={handlePasswordChange}
-                  placeholder="Enter current password"
+                  placeholder="Nhập mật khẩu hiện tại"
                   required
                 />
               </div>
               <div className={styles.formGroup}>
-                <label className={styles.formLabel}>New Password</label>
+                <label className={styles.formLabel}>Mật khẩu mới</label>
                 <input
                   className={styles.formInput}
                   type="password"
                   name="newPassword"
                   value={passwordForm.newPassword}
                   onChange={handlePasswordChange}
-                  placeholder="Enter new password"
+                  placeholder="Nhập mật khẩu mới"
                   required
                 />
               </div>
               <div className={styles.formGroup}>
-                <label className={styles.formLabel}>Confirm New Password</label>
+                <label className={styles.formLabel}>Xác nhận mật khẩu mới</label>
                 <input
                   className={styles.formInput}
                   type="password"
                   name="confirmNewPassword"
                   value={passwordForm.confirmNewPassword}
                   onChange={handlePasswordChange}
-                  placeholder="Confirm new password"
+                  placeholder="Xác nhận mật khẩu mới"
                   required
                 />
               </div>
@@ -432,14 +450,14 @@ const UserProfile = () => {
                   className={styles.submitBtn}
                   disabled={submitting}
                 >
-                  {submitting ? "Đang xử lý..." : "Update Password"}
+                  {submitting ? "Đang xử lý..." : "Cập nhật"}
                 </button>
                 <button
                   type="button"
                   className={styles.cancelBtn}
                   onClick={() => setShowPasswordModal(false)}
                 >
-                  Cancel
+                  Hủy
                 </button>
               </div>
             </form>
@@ -462,7 +480,7 @@ const UserProfile = () => {
             </div>
             <form onSubmit={handleVaccineSubmit} className={styles.modalForm}>
               <div className={styles.formGroup}>
-                <label className={styles.formLabel}>Tên vaccine *</label>
+                <label className={styles.formLabel}>Tên vaccine</label>
                 <input
                   className={styles.formInput}
                   type="text"
@@ -474,7 +492,7 @@ const UserProfile = () => {
                 />
               </div>
               <div className={styles.formGroup}>
-                <label className={styles.formLabel}>Ngày tiêm chủng *</label>
+                <label className={styles.formLabel}>Ngày tiêm chủng</label>
                 <input
                   className={styles.formInput}
                   type="date"
@@ -485,7 +503,7 @@ const UserProfile = () => {
                 />
               </div>
               <div className={styles.formGroup}>
-                <label className={styles.formLabel}>Nơi tiêm chủng *</label>
+                <label className={styles.formLabel}>Nơi tiêm chủng</label>
                 <input
                   className={styles.formInput}
                   type="text"
@@ -508,7 +526,7 @@ const UserProfile = () => {
                 />
               </div>
               <div className={styles.formGroup}>
-                <label className={styles.formLabel}>File bằng chứng *</label>
+                <label className={styles.formLabel}>File bằng chứng</label>
                 <input
                   className={styles.formInput}
                   type="file"
@@ -527,7 +545,7 @@ const UserProfile = () => {
                   className={styles.submitBtn}
                   disabled={submitting}
                 >
-                  {submitting ? "Đang xử lý..." : "Khai báo"}
+                  {submitting ? "Đang xử lý..." : "Xác nhận thông tin"}
                 </button>
                 <button
                   type="button"
