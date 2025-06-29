@@ -6,7 +6,7 @@ import api from "../../config/axios";
 import styles from "./UserProfile.module.css";
 import { isParentRole } from "../../config/AuthContext";
 
-// Doi chinh sua tu API
+
 
 const UserProfile = () => {
   const { logout } = useAuth();
@@ -20,6 +20,7 @@ const UserProfile = () => {
   });
   const [linkForm, setLinkForm] = useState({
     invitationCode: "",
+    relationshipType: "",
   });
   const [vaccineForm, setVaccineForm] = useState({
     vaccineName: "",
@@ -105,15 +106,15 @@ const UserProfile = () => {
 
   const handleLinkSubmit = async (e) => {
     e.preventDefault();
-    if (!linkForm.invitationCode) {
+    if (!linkForm.invitationCode || !linkForm.relationshipType) {
       toast.error("Vui lòng nhập đầy đủ thông tin");
       return;
     }
     setSubmitting(true);
     try {
-      await api.post("/parent/my-students", linkForm);
+      await api.post("/parent/link-student", linkForm);
       toast.success("Liên kết học sinh thành công!");
-      setLinkForm({ invitationCode: "" });
+      setLinkForm({ invitationCode: "", relationshipType: "" });
       fetchUserProfile();
     } catch (err) {
       toast.error(err.response?.data?.message || "Liên kết thất bại");
@@ -312,8 +313,28 @@ const UserProfile = () => {
                       value={linkForm.invitationCode}
                       onChange={handleLinkChange}
                       placeholder="Enter invitation code"
+                      maxLength={20}
                       required
                     />
+                  </div>
+
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Relationship Type</label>
+                    <select
+                      className={styles.formInput}
+                      name="relationshipType"
+                      value={linkForm.relationshipType}
+                      onChange={handleLinkChange}
+                      required
+                    >
+                      <option value="">Select relationship type</option>
+                      <option value="FATHER">Father</option>
+                      <option value="MOTHER">Mother</option>
+                      <option value="GUARDIAN">Guardian</option>
+                      <option value="GRANDFATHER">Grandfather</option>
+                      <option value="GRANDMOTHER">Grandmother</option>
+                      <option value="OTHER">Other</option>
+                    </select>
                   </div>
 
                   <div className={styles.formActions}>

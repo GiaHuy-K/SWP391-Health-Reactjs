@@ -103,3 +103,50 @@ export const getVaccinationDetail = async (vaccinationId) => {
     throw error;
   }
 };
+
+/**
+ * Lấy danh sách tất cả thông tin tiêm chủng (phân trang, có bộ lọc)
+ * @param {object} params - Tham số phân trang và bộ lọc: { page, size, sort, search, status, studentId, etc }
+ * @returns {Promise<object>} Đối tượng Page chứa danh sách tiêm chủng
+ */
+export const getAllVaccinations = async (params = {}) => {
+  try {
+    const response = await api.get("/vaccinations", { params });
+    console.log("Lấy danh sách tất cả tiêm chủng:", response.data);
+    return response.data;
+  } catch (error) {
+    toast.error(error.response?.data?.message || "Không thể lấy danh sách tiêm chủng");
+    throw error;
+  }
+};
+
+/**
+ * Lấy danh sách các bản ghi tiêm chủng đang chờ duyệt
+ * @param {object} params - Tham số phân trang: { page, size, sort }
+ * @returns {Promise<object>} Đối tượng Page chứa danh sách tiêm chủng chờ duyệt
+ */
+export const getPendingVaccinations = async (params = {}) => {
+  try {
+    const response = await api.get("/vaccinations/pending", { params });
+    console.log("Lấy danh sách tiêm chủng chờ duyệt:", response.data);
+    return response.data;
+  } catch (error) {
+    toast.error(error.response?.data?.message || "Không thể lấy danh sách tiêm chủng chờ duyệt");
+    throw error;
+  }
+};
+
+/**
+ * Lấy URL truy cập (đã ký) cho file bằng chứng của một bản ghi tiêm chủng
+ * @param {number|string} vaccinationId - ID bản ghi tiêm chủng
+ * @returns {Promise<string>} URL để truy cập file
+ */
+export const getVaccinationFileUrl = async (vaccinationId) => {
+  try {
+    const response = await api.get(`/vaccinations/${vaccinationId}/file-access-url`);
+    return response.data;
+  } catch (error) {
+    toast.error(error.response?.data?.message || "Không thể lấy URL file bằng chứng");
+    throw error;
+  }
+};

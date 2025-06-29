@@ -7,6 +7,9 @@ import {
   deleteStudentVaccination,
   getVaccinationDetail,
   updateVaccinationStatus,
+  getAllVaccinations,
+  getPendingVaccinations,
+  getVaccinationFileUrl,
 } from "../../services/api.vaccine";
 import {
   Table,
@@ -21,6 +24,12 @@ import {
   Upload,
   Space,
   Popconfirm,
+  Tabs,
+  Select,
+  Card,
+  Row,
+  Col,
+  Statistic,
 } from "antd";
 import {
   SearchOutlined,
@@ -28,9 +37,14 @@ import {
   EditOutlined,
   DeleteOutlined,
   EyeOutlined,
+  FilterOutlined,
+  ReloadOutlined,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { useAuth } from "../../config/AuthContext";
+
+const { TabPane } = Tabs;
+const { Option } = Select;
 
 const StudentVaccinationPage = () => {
   const [students, setStudents] = useState([]);
@@ -56,6 +70,41 @@ const StudentVaccinationPage = () => {
   const [statusAction, setStatusAction] = useState(null); // 'APPROVE' | 'REJECTED'
   const [statusVaccination, setStatusVaccination] = useState(null);
   const [approverNotes, setApproverNotes] = useState("");
+
+  // State cho chức năng xem tất cả tiêm chủng
+  const [allVaccinations, setAllVaccinations] = useState([]);
+  const [allVaccLoading, setAllVaccLoading] = useState(false);
+  const [allVaccPagination, setAllVaccPagination] = useState({
+    page: 0,
+    size: 10,
+    total: 0,
+  });
+  const [filters, setFilters] = useState({
+    search: "",
+    status: "",
+    studentId: "",
+  });
+  const [stats, setStats] = useState({
+    total: 0,
+    pending: 0,
+    approved: 0,
+    rejected: 0,
+  });
+
+  // State cho chức năng pending vaccinations
+  const [pendingVaccinations, setPendingVaccinations] = useState([]);
+  const [pendingLoading, setPendingLoading] = useState(false);
+  const [pendingPagination, setPendingPagination] = useState({
+    page: 0,
+    size: 10,
+    total: 0,
+  });
+
+  // State cho file access
+  const [fileModalVisible, setFileModalVisible] = useState(false);
+  const [fileUrl, setFileUrl] = useState("");
+  const [fileLoading, setFileLoading] = useState(false);
+
   const studentColumns = [
     { title: "Mã HS", dataIndex: "id", key: "id" },
     { title: "Họ tên", dataIndex: "fullName", key: "fullName" },
@@ -85,6 +134,152 @@ const StudentVaccinationPage = () => {
     };
     fetchStudents();
   }, []);
+
+  // Hàm fetch tất cả tiêm chủng
+  const fetchAllVaccinations = async (page = 0, size = 10) => {
+    setAllVaccLoading(true);
+    try {
+      const params = {
+        page,
+        size,
+        sort: "vaccinationDate,DESC",
+        ...filters,
+      };
+      
+      // Loại bỏ các filter rỗng
+      Object.keys(params).forEach(key => {
+        if (params[key] === "" || params[key] === null || params[key] === undefined) {
+          delete params[key];
+        }
+      });
+
+      const res = await getAllVaccinations(params);
+      setAllVaccinations(res.content || []);
+      setAllVaccPagination({
+        page: res.number,
+        size: res.size,
+        total: res.totalElements,
+      });
+    } catch (err) {
+      setAllVaccinations([]);
+      setAllVaccPagination({ page: 0, size: 10, total: 0 });
+    } finally {
+      setAllVaccLoading(false);
+    }
+  };
+
+  // Hàm fetch thống kê
+  const fetchStats = async () => {
+    try {
+      const [allRes, pendingRes] = await Promise.all([
+        getAllVaccinations({ size: 1000 }), // Lấy tất cả để đếm
+        getPendingVaccinations({ size: 1000 }),
+      ]);
+      
+      const allVaccs = allRes.content || [];
+      const pendingVaccs = pendingRes.content || [];
+      
+      setStats({
+        total: allVaccs.length,
+        pending: allVaccs.filter(v => v.status === "PENDING" || v.status === "Chờ duyệt").length,
+        approved: allVaccs.filter(v => v.status === "APPROVED" || v.status === "Chấp nhận").length,
+        rejected: allVaccs.filter(v => v.status === "REJECTED" || v.status === "Từ chối").length,
+      });
+    } catch (err) {
+      console.error("Không thể tải thống kê:", err);
+    }
+  };
+
+  // Hàm xử lý thay đổi filter
+  const handleFilterChange = (key, value) => {
+    setFilters(prev => ({ ...prev, [key]: value }));
+  };
+
+  // Hàm xử lý tìm kiếm
+  const handleSearch = () => {
+    fetchAllVaccinations(0, allVaccPagination.size);
+  };
+
+  // Hàm reset filter
+  const handleResetFilters = () => {
+    setFilters({
+      search: "",
+      status: "",
+      studentId: "",
+    });
+    fetchAllVaccinations(0, allVaccPagination.size);
+  };
+
+  // Hàm xử lý phân trang cho tất cả tiêm chủng
+  const handleAllVaccPageChange = (page, pageSize) => {
+    fetchAllVaccinations(page - 1, pageSize);
+  };
+
+  // Load dữ liệu ban đầu
+  useEffect(() => {
+    fetchAllVaccinations();
+    fetchStats();
+  }, []);
+
+  // Hàm fetch pending vaccinations
+  const fetchPendingVaccinations = async (page = 0, size = 10) => {
+    setPendingLoading(true);
+    try {
+      const params = {
+        page,
+        size,
+        sort: "vaccinationDate,DESC",
+      };
+      
+      const res = await getPendingVaccinations(params);
+      setPendingVaccinations(res.content || []);
+      setPendingPagination({
+        page: res.number,
+        size: res.size,
+        total: res.totalElements,
+      });
+    } catch (err) {
+      setPendingVaccinations([]);
+      setPendingPagination({ page: 0, size: 10, total: 0 });
+    } finally {
+      setPendingLoading(false);
+    }
+  };
+
+  // Hàm xử lý phân trang cho pending vaccinations
+  const handlePendingPageChange = (page, pageSize) => {
+    fetchPendingVaccinations(page - 1, pageSize);
+  };
+
+  // Hàm xử lý xem file bằng chứng
+  const handleViewFile = async (vaccinationId) => {
+    setFileLoading(true);
+    try {
+      const res = await getVaccinationFileUrl(vaccinationId);
+      if (!res || !res.url) {
+        message.error("Không có file bằng chứng cho bản ghi này");
+        return;
+      }
+      setFileUrl(res.url);
+      setFileModalVisible(true);
+    } catch (err) {
+      message.error("Không thể tải file bằng chứng");
+    } finally {
+      setFileLoading(false);
+    }
+  };
+
+  // Hàm xử lý download file
+  const handleDownloadFile = () => {
+    if (fileUrl) {
+      const link = document.createElement('a');
+      link.href = fileUrl;
+      link.download = 'vaccination-proof.pdf';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
 
   const handleShowVaccination = async (student) => {
     if (!student?.id) {
@@ -169,6 +364,9 @@ const StudentVaccinationPage = () => {
           vaccPagination.size
         );
       }
+      // Refresh dữ liệu tất cả tiêm chủng
+      fetchAllVaccinations(allVaccPagination.page, allVaccPagination.size);
+      fetchStats();
     } catch (err) {
       message.error("Xóa thông tin tiêm chủng thất bại");
     }
@@ -215,6 +413,9 @@ const StudentVaccinationPage = () => {
           vaccPagination.size
         );
       }
+      // Refresh dữ liệu tất cả tiêm chủng
+      fetchAllVaccinations(allVaccPagination.page, allVaccPagination.size);
+      fetchStats();
     } catch (err) {
       message.error("Thao tác thất bại");
     }
@@ -251,6 +452,11 @@ const StudentVaccinationPage = () => {
           vaccPagination.size
         );
       }
+      // Refresh dữ liệu tất cả tiêm chủng
+      fetchAllVaccinations(allVaccPagination.page, allVaccPagination.size);
+      fetchStats();
+      // Refresh pending vaccinations
+      fetchPendingVaccinations(pendingPagination.page, pendingPagination.size);
     } catch (err) {
       console.log(err);
     }
@@ -269,7 +475,6 @@ const StudentVaccinationPage = () => {
       key: "vaccinationDate",
       render: (date) => (date ? dayjs(date).format("DD/MM/YYYY") : "-"),
     },
-    { title: "Mũi số", dataIndex: "doseNumber", key: "doseNumber" },
     { title: "Nơi tiêm", dataIndex: "provider", key: "provider" },
     { title: "Ghi chú", dataIndex: "notes", key: "notes" },
     {
@@ -347,50 +552,359 @@ const StudentVaccinationPage = () => {
     },
   ];
 
+  // Columns cho bảng tất cả tiêm chủng
+  const allVaccColumns = [
+    { title: "Tên vắc xin", dataIndex: "vaccineName", key: "vaccineName" },
+    { 
+      title: "Học sinh", 
+      dataIndex: "studentFullName", 
+      key: "studentFullName",
+      render: (name, record) => (
+        <div>
+          <div>{name}</div>
+          <small style={{ color: '#666' }}>Mã: {record.studentId}</small>
+        </div>
+      )
+    },
+    { title: "Lớp", dataIndex: "studentClassName", key: "studentClassName" },
+    {
+      title: "Ngày tiêm",
+      dataIndex: "vaccinationDate",
+      key: "vaccinationDate",
+      render: (date) => (date ? dayjs(date).format("DD/MM/YYYY") : "-"),
+    },
+    { title: "Nơi tiêm", dataIndex: "provider", key: "provider" },
+    {
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status",
+      render: (status) => {
+        const statusMap = {
+          PENDING: { text: "Chờ duyệt", color: "#faad14" },
+          APPROVED: { text: "Đã duyệt", color: "#52c41a" },
+          REJECTED: { text: "Từ chối", color: "#ff4d4f" },
+        };
+        const statusInfo = statusMap[status] || { text: status, color: "#666" };
+        return (
+          <span style={{ color: statusInfo.color, fontWeight: "bold" }}>
+            {statusInfo.text}
+          </span>
+        );
+      },
+    },
+    {
+      title: "Hành động",
+      key: "action",
+      render: (_, record) => (
+        <Space>
+          <Button
+            type="link"
+            icon={<EyeOutlined />}
+            onClick={() => handleViewVaccination(record)}
+            size="small"
+          >
+            Xem
+          </Button>
+          <Button
+            type="link"
+            onClick={() => handleViewFile(record.studentVaccinationId)}
+            size="small"
+            loading={fileLoading}
+          >
+            File
+          </Button>
+          {isAdminOrNurse && (
+            <>
+              <Button
+                type="link"
+                icon={<EditOutlined />}
+                onClick={() => handleEditVaccination(record)}
+                size="small"
+              >
+                Sửa
+              </Button>
+              <Popconfirm
+                title="Bạn có chắc muốn xóa thông tin tiêm chủng này?"
+                onConfirm={() =>
+                  handleDeleteVaccination(record.studentVaccinationId)
+                }
+                okText="Có"
+                cancelText="Không"
+              >
+                <Button type="link" danger icon={<DeleteOutlined />} size="small">
+                  Xóa
+                </Button>
+              </Popconfirm>
+              {(record.status === "PENDING" || record.status === "Chờ xử lý") && (
+                <>
+                  <Button
+                    type="link"
+                    style={{ color: "#52c41a", fontWeight: 600 }}
+                    onClick={() => handleOpenStatusModal(record, "APPROVE")}
+                  >
+                    Duyệt
+                  </Button>
+                  <Button
+                    type="link"
+                    style={{ color: "#ff4d4f", fontWeight: 600 }}
+                    onClick={() => handleOpenStatusModal(record, "REJECTED")}
+                  >
+                    Từ chối
+                  </Button>
+                </>
+              )}
+            </>
+          )}
+        </Space>
+      ),
+    },
+  ];
+
+  // Columns cho bảng pending vaccinations
+  const pendingVaccColumns = [
+    { title: "Tên vắc xin", dataIndex: "vaccineName", key: "vaccineName" },
+    { 
+      title: "Học sinh", 
+      dataIndex: "studentFullName", 
+      key: "studentFullName",
+      render: (name, record) => (
+        <div>
+          <div>{name}</div>
+          <small style={{ color: '#666' }}>Mã: {record.studentId}</small>
+        </div>
+      )
+    },
+    { title: "Lớp", dataIndex: "studentClassName", key: "studentClassName" },
+    {
+      title: "Ngày tiêm",
+      dataIndex: "vaccinationDate",
+      key: "vaccinationDate",
+      render: (date) => (date ? dayjs(date).format("DD/MM/YYYY") : "-"),
+    },
+    { title: "Nơi tiêm", dataIndex: "provider", key: "provider" },
+    { title: "Ghi chú", dataIndex: "notes", key: "notes" },
+    {
+      title: "Hành động",
+      key: "action",
+      render: (_, record) => (
+        <Space>
+          <Button
+            type="link"
+            icon={<EyeOutlined />}
+            onClick={() => handleViewVaccination(record)}
+            size="small"
+          >
+            Xem
+          </Button>
+          <Button
+            type="link"
+            onClick={() => handleViewFile(record.studentVaccinationId)}
+            size="small"
+            loading={fileLoading}
+          >
+            File
+          </Button>
+          {isAdminOrNurse && (
+            <>
+              <Button
+                type="link"
+                style={{ color: "#52c41a", fontWeight: 600 }}
+                onClick={() => handleOpenStatusModal(record, "APPROVE")}
+              >
+                Duyệt
+              </Button>
+              <Button
+                type="link"
+                style={{ color: "#ff4d4f", fontWeight: 600 }}
+                onClick={() => handleOpenStatusModal(record, "REJECTED")}
+              >
+                Từ chối
+              </Button>
+            </>
+          )}
+        </Space>
+      ),
+    },
+  ];
+
   return (
     <div style={{ padding: 24 }}>
-      <h2>Danh sách học sinh</h2>
-      <div
-        style={{
-          marginBottom: 24,
-          display: "flex",
-          alignItems: "center",
-          gap: 12,
-        }}
-      >
-        <Input
-          placeholder="Tìm kiếm tên học sinh"
-          value={searchText}
-          onChange={(e) => setSearchText(e.target.value)}
-          prefix={<SearchOutlined style={{ color: "#bfbfbf" }} />}
-          allowClear
-          style={{
-            width: 320,
-            borderRadius: 24,
-            padding: "6px 16px",
-            fontSize: 16,
-          }}
-        />
-      </div>
-      <Table
-        columns={studentColumns.map((col) =>
-          col.key === "action"
-            ? {
-                ...col,
-                render: (_, record) => (
-                  <Button onClick={() => handleShowVaccination(record)}>
-                    Xem tiêm chủng
-                  </Button>
-                ),
-              }
-            : col
-        )}
-        dataSource={filteredStudents}
-        rowKey={(r) => r.id}
-        loading={loadingStudents}
-        pagination={false}
-        locale={{ emptyText: "Không có dữ liệu học sinh" }}
-      />
+      <Tabs defaultActiveKey="students" onChange={(key) => {
+        if (key === "all") {
+          fetchAllVaccinations();
+          fetchStats();
+        } else if (key === "pending") {
+          fetchPendingVaccinations();
+        }
+      }}>
+        <TabPane tab="Quản lý theo học sinh" key="students">
+          <h2>Danh sách học sinh</h2>
+          <div
+            style={{
+              marginBottom: 24,
+              display: "flex",
+              alignItems: "center",
+              gap: 12,
+            }}
+          >
+            <Input
+              placeholder="Tìm kiếm tên học sinh"
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              prefix={<SearchOutlined style={{ color: "#bfbfbf" }} />}
+              allowClear
+              style={{
+                width: 320,
+                borderRadius: 24,
+                padding: "6px 16px",
+                fontSize: 16,
+              }}
+            />
+          </div>
+          <Table
+            columns={studentColumns.map((col) =>
+              col.key === "action"
+                ? {
+                    ...col,
+                    render: (_, record) => (
+                      <Button onClick={() => handleShowVaccination(record)}>
+                        Xem tiêm chủng
+                      </Button>
+                    ),
+                  }
+                : col
+            )}
+            dataSource={filteredStudents}
+            rowKey={(r) => r.id}
+            loading={loadingStudents}
+            pagination={false}
+            locale={{ emptyText: "Không có dữ liệu học sinh" }}
+          />
+        </TabPane>
+
+        <TabPane tab="Tất cả tiêm chủng" key="all">
+          <div style={{ marginBottom: 24 }}>
+            <Row gutter={16} style={{ marginBottom: 16 }}>
+              <Col span={6}>
+                <Card>
+                  <Statistic title="Tổng số" value={stats.total} />
+                </Card>
+              </Col>
+              <Col span={6}>
+                <Card>
+                  <Statistic title="Chờ duyệt" value={stats.pending} valueStyle={{ color: '#faad14' }} />
+                </Card>
+              </Col>
+              <Col span={6}>
+                <Card>
+                  <Statistic title="Đã duyệt" value={stats.approved} valueStyle={{ color: '#52c41a' }} />
+                </Card>
+              </Col>
+              <Col span={6}>
+                <Card>
+                  <Statistic title="Từ chối" value={stats.rejected} valueStyle={{ color: '#ff4d4f' }} />
+                </Card>
+              </Col>
+            </Row>
+
+            <div style={{ 
+              display: "flex", 
+              alignItems: "center", 
+              gap: 12, 
+              marginBottom: 16,
+              flexWrap: "wrap"
+            }}>
+              <Input
+                placeholder="Tìm kiếm theo tên vaccine, học sinh..."
+                value={filters.search}
+                onChange={(e) => handleFilterChange("search", e.target.value)}
+                prefix={<SearchOutlined style={{ color: "#bfbfbf" }} />}
+                style={{ width: 300 }}
+                onPressEnter={handleSearch}
+              />
+              <Select
+                placeholder="Trạng thái"
+                value={filters.status}
+                onChange={(value) => handleFilterChange("status", value)}
+                style={{ width: 150 }}
+                allowClear
+              >
+                <Option value="PENDING">Chờ duyệt</Option>
+                <Option value="APPROVED">Đã duyệt</Option>
+                <Option value="REJECTED">Từ chối</Option>
+              </Select>
+              <Select
+                placeholder="Học sinh"
+                value={filters.studentId}
+                onChange={(value) => handleFilterChange("studentId", value)}
+                style={{ width: 200 }}
+                allowClear
+                showSearch
+                filterOption={(input, option) =>
+                  option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                }
+              >
+                {students.map(student => (
+                  <Option key={student.id} value={student.id}>
+                    {student.fullName} - {student.id}
+                  </Option>
+                ))}
+              </Select>
+              <Button type="primary" onClick={handleSearch} icon={<SearchOutlined />}>
+                Tìm kiếm
+              </Button>
+              <Button onClick={handleResetFilters} icon={<ReloadOutlined />}>
+                Làm mới
+              </Button>
+            </div>
+          </div>
+
+          <Table
+            columns={allVaccColumns}
+            dataSource={allVaccinations}
+            rowKey={(r) => r.studentVaccinationId || r.id}
+            loading={allVaccLoading}
+            pagination={false}
+            locale={{ emptyText: "Không có dữ liệu tiêm chủng" }}
+          />
+          <Pagination
+            style={{ marginTop: 16, textAlign: "right" }}
+            current={allVaccPagination.page + 1}
+            pageSize={allVaccPagination.size}
+            total={allVaccPagination.total}
+            onChange={handleAllVaccPageChange}
+            showSizeChanger
+            pageSizeOptions={["10", "20", "50", "100"]}
+          />
+        </TabPane>
+
+        <TabPane tab={`Chờ duyệt (${stats.pending})`} key="pending">
+          <div style={{ marginBottom: 24 }}>
+            <h2>Danh sách tiêm chủng chờ duyệt</h2>
+            <p style={{ color: '#666', marginBottom: 16 }}>
+              Có {stats.pending} bản ghi tiêm chủng đang chờ xử lý
+            </p>
+          </div>
+
+          <Table
+            columns={pendingVaccColumns}
+            dataSource={pendingVaccinations}
+            rowKey={(r) => r.studentVaccinationId || r.id}
+            loading={pendingLoading}
+            pagination={false}
+            locale={{ emptyText: "Không có bản ghi chờ duyệt" }}
+          />
+          <Pagination
+            style={{ marginTop: 16, textAlign: "right" }}
+            current={pendingPagination.page + 1}
+            pageSize={pendingPagination.size}
+            total={pendingPagination.total}
+            onChange={handlePendingPageChange}
+            showSizeChanger
+            pageSizeOptions={["10", "20", "50", "100"]}
+          />
+        </TabPane>
+      </Tabs>
 
       <Drawer
         title={`Thông tin tiêm chủng: ${selectedStudent?.fullName || ""}`}
@@ -588,6 +1102,45 @@ const StudentVaccinationPage = () => {
             placeholder="Nhập ghi chú xác minh hoặc lý do từ chối (nếu có)"
           />
         </div>
+      </Modal>
+
+      {/* Modal xem file bằng chứng */}
+      <Modal
+        title="File bằng chứng tiêm chủng"
+        open={fileModalVisible}
+        onCancel={() => setFileModalVisible(false)}
+        footer={[
+          <Button key="close" onClick={() => setFileModalVisible(false)}>
+            Đóng
+          </Button>,
+          <Button 
+            key="download" 
+            type="primary" 
+            onClick={handleDownloadFile}
+            disabled={!fileUrl}
+          >
+            Tải xuống
+          </Button>,
+        ]}
+        width={800}
+      >
+        {fileUrl ? (
+          <div style={{ textAlign: 'center' }}>
+            <iframe
+              src={fileUrl}
+              style={{ width: '100%', height: '500px', border: 'none' }}
+              title="File bằng chứng"
+            />
+          </div>
+        ) : (
+          <div style={{ textAlign: 'center', padding: '50px' }}>
+            {fileLoading ? (
+              <div>Đang tải file...</div>
+            ) : (
+              <div>Không thể hiển thị file</div>
+            )}
+          </div>
+        )}
       </Modal>
     </div>
   );
