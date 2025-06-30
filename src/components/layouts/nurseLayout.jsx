@@ -4,10 +4,10 @@ import {
   FileOutlined,
   LogoutOutlined,
   PieChartOutlined,
-  TeamOutlined,
   UserOutlined,
   ProfileOutlined,
   DashboardOutlined,
+  HomeOutlined,
 } from "@ant-design/icons";
 import {
   Avatar,
@@ -34,6 +34,12 @@ function getItem(label, key, icon, children) {
 const items = [
   getItem("Sự kiện y tế", "event-Nurse", <PieChartOutlined />),
   getItem("Vật tư", "medicalSupply-Nurse", <DesktopOutlined />),
+  getItem(
+    <Link to="/">Về trang chủ</Link>,
+    "home",
+    <HomeOutlined />,
+    undefined
+  ),
 ];
 
 const NurseLayout = () => {
@@ -97,7 +103,17 @@ const NurseLayout = () => {
         collapsed={collapsed}
         onCollapse={(value) => setCollapsed(value)}
       >
-        <div className="demo-logo-vertical" />
+        <div
+          style={{
+            height: 32,
+            margin: 16,
+            color: "white",
+            fontWeight: "bold",
+            textAlign: "center",
+          }}
+        >
+          Y Tá
+        </div>
         <Menu
           theme="dark"
           defaultSelectedKeys={["1"]}
