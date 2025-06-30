@@ -123,7 +123,6 @@ const HomePage = () => {
                         ) : (
                           <>
                             <button onClick={handleDashboardClick}>Dashboard</button>
-                            <button onClick={handleDashboardClick}>Dashboard</button>
                             <button onClick={handleProfileClick}>Hồ sơ</button>
                             <button onClick={handleLogout}>Đăng xuất</button>
                           </>

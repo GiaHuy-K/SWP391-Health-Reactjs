@@ -110,7 +110,25 @@ function DashboardTemplate({ columns, uri }) {
         dataSource={data}
         rowKey="userId"
         onRow={(record) => ({
-          onClick: () => handleViewDetail(record.userId),
+          onClick: (event) => {
+            const tagName = event.target.tagName;
+            const className = event.target.className;
+
+            // Nếu người dùng click vào Switch, Button, Tag... thì không mở modal
+            if (
+              tagName === "BUTTON" ||
+              tagName === "INPUT" || // Switch là input
+              tagName === "SPAN" || // Một số component con trong Switch
+              String(className).includes("ant-switch") ||
+              String(className).includes("ant-btn") ||
+              String(className).includes("ant-tag")
+            ) {
+              return;
+            }
+
+            // Ngược lại mới mở modal
+            handleViewDetail(record.userId);
+          },
         })}
         pagination={{ pageSize: 10 }}
       />

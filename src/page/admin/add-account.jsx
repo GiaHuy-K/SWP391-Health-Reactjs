@@ -10,8 +10,8 @@ import {
 import api from "../../config/axios";
 import {
   PlusOutlined,
-  SolutionOutlined,
   MedicineBoxOutlined,
+  TeamOutlined,
   ReloadOutlined,
 } from "@ant-design/icons";
 import { toast } from "react-toastify";
@@ -35,11 +35,13 @@ const AddAccount = () => {
   // Dựa trên giá trị nhập vào, nó sẽ cập nhật state errors
   // Nếu trường hợp không hợp lệ, nó sẽ thêm thông báo lỗi vào errors
   // Nếu hợp lệ, nó sẽ xóa thông báo lỗi tương ứng
+
   const validateField = (name, value) => {
     const newErrors = { ...errors };
     // Kiểm tra từng trường hợp dựa trên tên trường
     // name: tên trường cần kiểm tra (ví dụ: fullName, email, phoneNumber, role)
     // value: giá trị nhập vào của trường đó
+
     switch (name) {
       case "fullName":
         if (!value) newErrors.fullName = "Họ và tên là bắt buộc";
@@ -49,6 +51,7 @@ const AddAccount = () => {
           newErrors.fullName = "Chỉ cho phép chữ cái và khoảng trắng (có dấu)";
         else delete newErrors.fullName;
         break;
+
       // Kiểm tra định dạng email
       // Sử dụng regex để kiểm tra định dạng email hợp lệ
       case "email":
@@ -201,7 +204,7 @@ const AddAccount = () => {
               <MedicineBoxOutlined /> Nhân viên y tế
             </Option>
             <Option value="Quản lý Nhân sự/Nhân viên">
-              <SolutionOutlined /> Quản lý y tế
+              <TeamOutlined /> Quản lý y tế
             </Option>
           </Select>
         </Form.Item>
