@@ -248,16 +248,16 @@ const UserProfile = () => {
       <div className={styles.layoutContainer}>
         <header className={styles.header}>
           <div className={styles.headerContent}>
-            <div className={styles.logoSection} onClick={handleLogoClick} style={{ cursor: 'pointer' }}>
-            <div className={styles.logoIcon}>
-            <img
-              src="/logo_medical_health_system.jpg"
-              alt="SchoolMed Logo"
-              style={{ width: 48, height: 48, objectFit: "contain" }}
-            />
-          </div>
-              <h2 className={styles.logoText}>SchoolMed</h2>
+          <div className="flex items-center mr-10 cursor-pointer" onClick={handleLogoClick}>
+            <div style={{ width: 48, height: 48 }}>
+              <img
+                src="/logo_medical_health_system.jpg"
+                alt="SchoolMed Logo"
+                style={{ width: 48, height: 48, objectFit: "contain" }}
+              />
             </div>
+            <h2 className="ml-3 text-2xl font-['Pacifico'] text-primary">SchoolMed</h2>
+          </div>
             <div className={styles.navSection}>
               <div className={styles.navLinks}>
                 <a className={styles.navLink} href="#" onClick={handleGoHome}>Trang chủ</a>
