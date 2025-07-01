@@ -2,10 +2,10 @@ import { toast } from "react-toastify";
 import api from "../config/axios";
 
 // Lấy danh sách sự cố sức khỏe
-export const getHealthIncidents = async () => {
+export const getHealthIncidents = async (params = {}) => {
   try {
-    const res = await api.get("/health-incidents");
-    return res.data.content || [];
+    const res = await api.get("/health-incidents", { params });
+    return res.data;
   } catch (error) {
     toast.error("Không thể lấy danh sách sự cố");
     throw error;

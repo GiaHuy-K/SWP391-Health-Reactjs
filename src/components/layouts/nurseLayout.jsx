@@ -142,7 +142,7 @@ const NurseLayout = () => {
             }}
           >
             <span style={{ fontSize: 22 }}>👋</span> Xin chào,{" "}
-            <strong>Y tá</strong>
+            <strong>{user?.fullName || "Y Tá"}</strong>
           </div>
           <Dropdown menu={userMenu} placement="bottomRight">
             <Space style={{ cursor: "pointer" }}>
@@ -150,7 +150,9 @@ const NurseLayout = () => {
                 style={{ backgroundColor: "#1890ff" }}
                 icon={<UserOutlined />}
               />
-              <span style={{ fontWeight: 500 }}>Y Tá</span>
+              <span style={{ fontWeight: 500 }}>
+                {user?.fullName || "Y Tá"}
+              </span>
             </Space>
           </Dropdown>
         </Header>

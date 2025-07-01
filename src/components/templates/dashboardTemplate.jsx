@@ -132,7 +132,7 @@ function DashboardTemplate({ columns, uri }) {
         })}
         pagination={{
           showSizeChanger: true,
-          pageSizeOptions: ["5", "10", "20", "50"],
+          pageSizeOptions: ["5", "10"],
           defaultPageSize: 10,
         }}
       />

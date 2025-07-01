@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import {
-  DesktopOutlined,
-  FileOutlined,
   PieChartOutlined,
   UserOutlined,
   LogoutOutlined,
@@ -9,59 +7,57 @@ import {
   DashboardOutlined,
   BranchesOutlined,
   HomeOutlined,
+  MedicineBoxOutlined,
 } from "@ant-design/icons";
-import {
-  Breadcrumb,
-  Layout,
-  Menu,
-  theme,
-  Avatar,
-  Dropdown,
-  Space,
-  message,
-} from "antd";
-import { Link, Outlet, useNavigate } from "react-router-dom";
+import { Layout, Menu, theme, Avatar, Dropdown, Space, message } from "antd";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../config/AuthContext";
 import { isParentRole } from "../../config/AuthContext";
 
 const { Header, Content, Footer, Sider } = Layout;
 
-function getItem(label, key, icon, children) {
-  return {
-    key,
-    icon,
-    children,
-    label: Link ? <Link to={`/dashboardManager/${key}`}>{label}</Link> : label,
-  };
-}
-
-const items = [
-  getItem("Quản lý sự cố", "event-Manager", <PieChartOutlined />),
-  //supply-Manager
-  getItem("Quản lý vật tư y tế", "supply-Manager", <DesktopOutlined />),
-  getItem(
-    "Thông tin tiêm chủng học sinh",
-    "student-vaccination",
-    <BranchesOutlined />
-  ),
-  getItem(
-    <Link to="/">Về trang chủ</Link>,
-    "home",
-    <HomeOutlined />,
-    undefined
-  ),
-];
-
 const ManagerLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { logout, user } = useAuth();
 
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
+  const menuItems = [
+    {
+      key: "event-Manager",
+      icon: <PieChartOutlined />,
+      label: "Quản lý sự cố",
+    },
+    {
+      key: "supply-Manager",
+      icon: <MedicineBoxOutlined />,
+      label: "Quản lý vật tư y tế",
+    },
+    {
+      key: "student-vaccination",
+      icon: <BranchesOutlined />,
+      label: "Thông tin tiêm chủng học sinh",
+    },
+    {
+      key: "home",
+      icon: <HomeOutlined />,
+      label: "Về trang chủ",
+    },
+  ];
+
   const handleMenuClick = ({ key }) => {
+    if (key === "home") {
+      navigate("/");
+    } else {
+      navigate(`/dashboardManager/${key}`);
+    }
+  };
+
+  const handleUserMenuClick = ({ key }) => {
     if (key === "logout") {
       logout();
       message.success("Đã đăng xuất");
@@ -106,8 +102,11 @@ const ManagerLayout = () => {
             danger: true,
           },
         ],
-    onClick: handleMenuClick,
+    onClick: handleUserMenuClick,
   };
+
+  // Lấy key đang active từ URL path
+  const currentPath = location.pathname.split("/")[2] || "event-Manager";
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
@@ -125,13 +124,14 @@ const ManagerLayout = () => {
             textAlign: "center",
           }}
         >
-          Quản lý 
+          Quản lý
         </div>
         <Menu
           theme="dark"
-          defaultSelectedKeys={["1"]}
           mode="inline"
-          items={items}
+          selectedKeys={[currentPath]}
+          onClick={handleMenuClick}
+          items={menuItems}
         />
       </Sider>
       <Layout>
@@ -155,7 +155,7 @@ const ManagerLayout = () => {
             }}
           >
             <span style={{ fontSize: 22 }}>👋</span> Xin chào,{" "}
-            <strong>Quản lý</strong>
+            <strong>{user?.fullName || "Quản lý"}</strong>
           </div>
 
           <Dropdown menu={userMenu} placement="bottomRight">
@@ -164,7 +164,9 @@ const ManagerLayout = () => {
                 style={{ backgroundColor: "#1890ff" }}
                 icon={<UserOutlined />}
               />
-              <span style={{ fontWeight: 500 }}>Quản lý</span>
+              <span style={{ fontWeight: 500 }}>
+                {user?.fullName || "Quản lý"}
+              </span>
             </Space>
           </Dropdown>
         </Header>

@@ -20,7 +20,7 @@ const MedicalSupplyTableTemplate = ({
   onAdjust,
   pagination = {
     showSizeChanger: true,
-    pageSizeOptions: ["5", "10", "20", "50"],
+    pageSizeOptions: ["5", "10"],
   },
 }) => {
   const [selectedId, setSelectedId] = useState(null);
@@ -178,7 +178,7 @@ const MedicalSupplyTableTemplate = ({
         loading={loading}
         pagination={{
           showSizeChanger: true,
-          pageSizeOptions: ["5", "10", "20", "50"],
+          pageSizeOptions: ["5", "10"],
           defaultPageSize: 10,
           ...pagination, 
         }}
