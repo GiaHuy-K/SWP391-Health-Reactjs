@@ -30,12 +30,26 @@ const UserDetailModal = ({ userId, open, onClose }) => {
         <Descriptions column={1}>
           <Descriptions.Item label="Họ tên">{user.fullName}</Descriptions.Item>
           <Descriptions.Item label="Email">{user.email}</Descriptions.Item>
-          <Descriptions.Item label="Số điện thoại">{user.phoneNumber}</Descriptions.Item>
-          <Descriptions.Item label="Vai trò">{user.role}</Descriptions.Item>
-          <Descriptions.Item label="Trạng thái">{user.isActive ? "Hoạt động" : "Bị khóa"}</Descriptions.Item>
-          <Descriptions.Item label="Liên kết học sinh">
-            {user.linkedToStudent ? "✅ Có" : "🚫 Không"}
+          <Descriptions.Item label="Số điện thoại">
+            {user.phoneNumber}
           </Descriptions.Item>
+          <Descriptions.Item label="Vai trò">{user.role}</Descriptions.Item>
+          <Descriptions.Item label="Trạng thái">
+            <span
+              style={{
+                color: user.isActive ? "green" : "red",
+                fontWeight: "bold",
+              }}
+            >
+              {user.isActive ? "Hoạt động" : "Bị khóa"}
+            </span>
+          </Descriptions.Item>
+          {/* Chỉ hiện với phụ huynh */}
+          {user.role === "Phụ huynh" && (
+            <Descriptions.Item label="Liên kết học sinh">
+              {user.linkedToStudent ? "✅ Có" : "🚫 Không"}
+            </Descriptions.Item>
+          )}
         </Descriptions>
       )}
     </Modal>
