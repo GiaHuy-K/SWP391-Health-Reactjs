@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Table, Button, Tag, Space } from "antd";
 import MedicalSupplyDrawer from "../medicalSupply/medicalSupplyDrawer";
 import EditMedicalSupplyModal from "../medicalSupply/medicalSupplyEditModal";
+import AdjustStockModal from "../medicalSupply/medical-adjustStockModal";
 
 const MedicalSupplyTableTemplate = ({
   data,
@@ -16,6 +17,7 @@ const MedicalSupplyTableTemplate = ({
     canEdit: false,
     canAdjustStock: false,
   },
+  onAdjust,
 }) => {
   const [selectedId, setSelectedId] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -23,9 +25,27 @@ const MedicalSupplyTableTemplate = ({
   const [editingSupply, setEditingSupply] = useState(null);
   const [editModalOpen, setEditModalOpen] = useState(false);
 
+  const [adjustModalOpen, setAdjustModalOpen] = useState(false);
+  const [adjustingSupply, setAdjustingSupply] = useState(null);
+
   const handleView = (id) => {
     setSelectedId(id);
     setDrawerOpen(true);
+  };
+
+  const handleAdjustClick = (record) => {
+    setAdjustingSupply(record);
+    setAdjustModalOpen(true);
+  };
+
+  const handleAdjustSubmit = async (data) => {
+    try {
+      await onAdjust?.(adjustingSupply.supplyId, data);
+      setAdjustModalOpen(false);
+      setAdjustingSupply(null);
+    } catch (error) {
+      console.error("Lỗi điều chỉnh tồn kho:", error);
+    }
   };
 
   const columns = [
@@ -105,7 +125,7 @@ const MedicalSupplyTableTemplate = ({
               size="small"
               onClick={(e) => {
                 e.stopPropagation();
-                console.log("Điều chỉnh", record.supplyId);
+                handleAdjustClick(record);
               }}
             >
               Điều chỉnh
@@ -166,6 +186,13 @@ const MedicalSupplyTableTemplate = ({
           setEditingSupply(null);
           onReload?.();
         }}
+      />
+
+      <AdjustStockModal
+        open={adjustModalOpen}
+        onClose={() => setAdjustModalOpen(false)}
+        onSubmit={handleAdjustSubmit}
+        supplyName={adjustingSupply?.name}
       />
     </div>
   );

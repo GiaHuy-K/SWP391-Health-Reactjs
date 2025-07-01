@@ -3,6 +3,7 @@ import {
   getMedicalSupplies,
   createMedicalSupply,
   softDeleteMedicalSupply,
+  adjustMedicalSupplyStock,
 } from "../../services/api.medicalSupply";
 import MedicalSupplyTableTemplate from "../../components/templates/medicalSupplyTableTemplate";
 import { toast } from "react-toastify";
@@ -26,7 +27,6 @@ const ManageMedicalSupplyM = () => {
     setLoading(true);
     try {
       const response = await getMedicalSupplies();
-      console.log(response);
       setMedicalList(response);
     } catch (error) {
       console.log(error);
@@ -42,11 +42,11 @@ const ManageMedicalSupplyM = () => {
 
   const handleSoftDelete = async (id) => {
     try {
-    await softDeleteMedicalSupply(id);
-    fetchSupply(); // Gọi lại danh sách sau khi xóa mềm
-  } catch (err) {
-    console.error(err);
-  }
+      await softDeleteMedicalSupply(id);
+      fetchSupply();
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const handleCreate = async () => {
@@ -62,6 +62,17 @@ const ManageMedicalSupplyM = () => {
     }
   };
 
+  const handleAdjustSubmit = async (supplyId, data) => {
+    try {
+      await adjustMedicalSupplyStock(supplyId, data);
+      toast.success("Điều chỉnh tồn kho thành công");
+      fetchSupply();
+    } catch (error) {
+      console.error(error);
+      toast.error("Lỗi điều chỉnh tồn kho");
+    }
+  };
+
   return (
     <>
       <MedicalSupplyTableTemplate
@@ -69,8 +80,9 @@ const ManageMedicalSupplyM = () => {
         loading={loading}
         onDelete={handleSoftDelete}
         onCreateClick={() => setCreateModalOpen(true)}
-        onReload={fetchSupply} 
+        onReload={fetchSupply}
         permissions={permissions}
+        onAdjust={handleAdjustSubmit}
       />
 
       <Modal
@@ -92,7 +104,11 @@ const ManageMedicalSupplyM = () => {
           <Form.Item name="unit" label="Đơn vị" rules={[{ required: true }]}>
             <Input />
           </Form.Item>
-          <Form.Item name="initialStock" label="Tồn kho ban đầu" rules={[{ required: true }]}>
+          <Form.Item
+            name="initialStock"
+            label="Tồn kho ban đầu"
+            rules={[{ required: true }]}
+          >
             <Input type="number" />
           </Form.Item>
           <Form.Item name="description" label="Mô tả">
