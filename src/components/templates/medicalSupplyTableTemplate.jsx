@@ -22,6 +22,7 @@ const MedicalSupplyTableTemplate = ({
     showSizeChanger: true,
     pageSizeOptions: ["5", "10"],
   },
+  onStatusFilterChange,
 }) => {
   const [selectedId, setSelectedId] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -77,6 +78,13 @@ const MedicalSupplyTableTemplate = ({
       title: "Trạng thái",
       dataIndex: "status",
       key: "status",
+      filters: [
+        { text: "Sẵn có", value: "SẴN CÓ" },
+        { text: "Hết hàng", value: "HẾT HÀNG" },
+        { text: "Hết hạn", value: "HẾT HẠN" },
+        { text: "Không còn sử dụng", value: "KHÔNG CÒN SỬ DỤNG" },
+      ],
+      filterMultiple: false,
       render: (status) => {
         let color = "default";
         switch (status.toLowerCase()) {
@@ -180,11 +188,16 @@ const MedicalSupplyTableTemplate = ({
           showSizeChanger: true,
           pageSizeOptions: ["5", "10"],
           defaultPageSize: 10,
-          ...pagination, 
+          ...pagination,
         }}
         onRow={(record) => ({
           onClick: () => handleView(record.supplyId),
         })}
+        onChange={(pagination, filters) => {
+    const statusValue = filters.status?.[0] || null;
+    onStatusFilterChange?.(statusValue); //  Gửi sự kiện lên để lọc
+    pagination.onChange?.(pagination.current, pagination.pageSize); // giữ phân trang nếu có custom
+  }}
       />
 
       <MedicalSupplyDrawer
