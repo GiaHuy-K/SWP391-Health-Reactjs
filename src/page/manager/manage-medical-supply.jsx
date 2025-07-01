@@ -27,6 +27,7 @@ const ManageMedicalSupplyM = () => {
     setLoading(true);
     try {
       const response = await getMedicalSupplies();
+      console.log(response);
       setMedicalList(response);
     } catch (error) {
       console.log(error);
@@ -83,6 +84,10 @@ const ManageMedicalSupplyM = () => {
         onReload={fetchSupply}
         permissions={permissions}
         onAdjust={handleAdjustSubmit}
+        pagination={{
+          showSizeChanger: true, // Hiển thị tùy chọn thay đổi số lượng trên mỗi trang
+          pageSizeOptions: ["5", "10", "20", "50"], // Các tùy chọn số lượng trên mỗi trang
+        }}
       />
 
       <Modal

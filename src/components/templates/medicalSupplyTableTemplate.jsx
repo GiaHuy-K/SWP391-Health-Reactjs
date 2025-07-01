@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Table, Button, Tag, Space } from "antd";
+import { Table, Button, Tag, Space, Popconfirm } from "antd";
 import MedicalSupplyDrawer from "../medicalSupply/medicalSupplyDrawer";
 import EditMedicalSupplyModal from "../medicalSupply/medicalSupplyEditModal";
 import AdjustStockModal from "../medicalSupply/medical-adjustStockModal";
@@ -18,6 +18,10 @@ const MedicalSupplyTableTemplate = ({
     canAdjustStock: false,
   },
   onAdjust,
+  pagination = {
+    showSizeChanger: true,
+    pageSizeOptions: ["5", "10", "20", "50"],
+  },
 }) => {
   const [selectedId, setSelectedId] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -132,17 +136,23 @@ const MedicalSupplyTableTemplate = ({
             </Button>
           )}
           {permissions.canDelete && (
-            <Button
-              type="primary"
-              size="small"
-              danger
-              onClick={(e) => {
-                e.stopPropagation();
-                onDelete?.(record.supplyId);
-              }}
+            <Popconfirm
+              title="Xác nhận ngưng sử dụng?"
+              description="Bạn có chắc chắn muốn ngưng sử dụng vật tư này không?"
+              okText="Đồng ý"
+              cancelText="Huỷ"
+              onConfirm={() => onDelete?.(record.supplyId)}
+              onCancel={(e) => e.stopPropagation()}
             >
-              Ngưng sử dụng
-            </Button>
+              <Button
+                type="primary"
+                size="small"
+                danger
+                onClick={(e) => e.stopPropagation()}
+              >
+                Ngưng sử dụng
+              </Button>
+            </Popconfirm>
           )}
         </Space>
       ),
@@ -166,6 +176,12 @@ const MedicalSupplyTableTemplate = ({
         columns={columns}
         dataSource={data}
         loading={loading}
+        pagination={{
+          showSizeChanger: true,
+          pageSizeOptions: ["5", "10", "20", "50"],
+          defaultPageSize: 10,
+          ...pagination, 
+        }}
         onRow={(record) => ({
           onClick: () => handleView(record.supplyId),
         })}
