@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react'
 import { toast } from 'react-toastify';
 import { getHealthIncidents } from '../../services/api.healthIncident';
 import EventHealthIncidentTemplate from '../../components/templates/eventHealthIncidientTemplate';
+import { Form } from 'antd';
 
 function ManageEventM() {
   const [loading, setLoading] = useState(false);
   const [eventList, setEventList] = useState([]);
-
   const fetchEvent = async () => {
     setLoading(true);
         try {
