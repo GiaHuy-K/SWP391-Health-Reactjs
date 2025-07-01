@@ -30,6 +30,7 @@ import ManageMedicalSupply from "./page/schoolnurse/manage-medicalSupply.jsx";
 import ManageEventM from "./page/manager/manage-event.jsx";
 import ManageMedicalSupplyM from "./page/manager/manage-medical-supply.jsx";
 import StudentVaccinationPage from './page/manager/manage-student-inf-vc.jsx';
+import ManageStudentInfVc from "./page/schoolnurse/manage-studentInfVc.jsx";
 
 // Component bảo vệ route yêu cầu đăng nhập
 const PrivateRoute = ({ children }) => {
@@ -97,7 +98,8 @@ const router = createBrowserRouter([
     ), 
     children: [
       {path:"event-Nurse", element:<ManageEvent/>},
-      {path :"medicalSupply-Nurse", element: <ManageMedicalSupply/>}
+      {path :"medicalSupply-Nurse", element: <ManageMedicalSupply/>},
+      { path: "student-vaccination", element: <ManageStudentInfVc/> },
     ] 
   },
 

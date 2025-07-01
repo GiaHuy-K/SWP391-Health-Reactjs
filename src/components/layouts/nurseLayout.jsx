@@ -8,6 +8,7 @@ import {
   ProfileOutlined,
   DashboardOutlined,
   HomeOutlined,
+  BranchesOutlined,
 } from "@ant-design/icons";
 import {
   Avatar,
@@ -34,6 +35,7 @@ function getItem(label, key, icon, children) {
 const items = [
   getItem("Sự kiện y tế", "event-Nurse", <PieChartOutlined />),
   getItem("Vật tư", "medicalSupply-Nurse", <DesktopOutlined />),
+  getItem('Thông tin tiêm chủng học sinh', 'student-vaccination', <BranchesOutlined />),
   getItem(
     <Link to="/">Về trang chủ</Link>,
     "home",
