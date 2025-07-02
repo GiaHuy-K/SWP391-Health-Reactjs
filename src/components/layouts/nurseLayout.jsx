@@ -32,6 +32,7 @@ function getItem(label, key, icon, children) {
   };
 }
 const items = [
+  getItem("Dashboard", "DashboardN", <DashboardOutlined />),
   getItem("Sự kiện y tế", "event-Nurse", <PieChartOutlined />),
   getItem("Vật tư", "medicalSupply-Nurse", <DesktopOutlined />),
   getItem(
