@@ -69,7 +69,7 @@ const MedicalSupplyTransaction = ({ supplyId }) => {
       columns={columns}
       dataSource={transactions}
       loading={loading}
-      pagination={{ pageSize: 5 }}
+      pagination={{  showSizeChanger: true, pageSizeOptions: ["5","10", "20", "50"] }}
     />
   );
 };

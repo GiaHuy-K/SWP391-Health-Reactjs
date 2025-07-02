@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { Table, Button, Tag, Space } from "antd";
+import { Table, Button, Tag, Space, Popconfirm } from "antd";
 import MedicalSupplyDrawer from "../medicalSupply/medicalSupplyDrawer";
 import EditMedicalSupplyModal from "../medicalSupply/medicalSupplyEditModal";
+import AdjustStockModal from "../medicalSupply/medical-adjustStockModal";
 
 const MedicalSupplyTableTemplate = ({
   data,
@@ -16,6 +17,12 @@ const MedicalSupplyTableTemplate = ({
     canEdit: false,
     canAdjustStock: false,
   },
+  onAdjust,
+  pagination = {
+    showSizeChanger: true,
+    pageSizeOptions: ["5", "10"],
+  },
+  onStatusFilterChange,
 }) => {
   const [selectedId, setSelectedId] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -23,9 +30,27 @@ const MedicalSupplyTableTemplate = ({
   const [editingSupply, setEditingSupply] = useState(null);
   const [editModalOpen, setEditModalOpen] = useState(false);
 
+  const [adjustModalOpen, setAdjustModalOpen] = useState(false);
+  const [adjustingSupply, setAdjustingSupply] = useState(null);
+
   const handleView = (id) => {
     setSelectedId(id);
     setDrawerOpen(true);
+  };
+
+  const handleAdjustClick = (record) => {
+    setAdjustingSupply(record);
+    setAdjustModalOpen(true);
+  };
+
+  const handleAdjustSubmit = async (data) => {
+    try {
+      await onAdjust?.(adjustingSupply.supplyId, data);
+      setAdjustModalOpen(false);
+      setAdjustingSupply(null);
+    } catch (error) {
+      console.error("Lỗi điều chỉnh tồn kho:", error);
+    }
   };
 
   const columns = [
@@ -53,6 +78,13 @@ const MedicalSupplyTableTemplate = ({
       title: "Trạng thái",
       dataIndex: "status",
       key: "status",
+      filters: [
+        { text: "Sẵn có", value: "SẴN CÓ" },
+        { text: "Hết hàng", value: "HẾT HÀNG" },
+        { text: "Hết hạn", value: "HẾT HẠN" },
+        { text: "Không còn sử dụng", value: "KHÔNG CÒN SỬ DỤNG" },
+      ],
+      filterMultiple: false,
       render: (status) => {
         let color = "default";
         switch (status.toLowerCase()) {
@@ -105,24 +137,30 @@ const MedicalSupplyTableTemplate = ({
               size="small"
               onClick={(e) => {
                 e.stopPropagation();
-                console.log("Điều chỉnh", record.supplyId);
+                handleAdjustClick(record);
               }}
             >
               Điều chỉnh
             </Button>
           )}
           {permissions.canDelete && (
-            <Button
-              type="primary"
-              size="small"
-              danger
-              onClick={(e) => {
-                e.stopPropagation();
-                onDelete?.(record.supplyId);
-              }}
+            <Popconfirm
+              title="Xác nhận ngưng sử dụng?"
+              description="Bạn có chắc chắn muốn ngưng sử dụng vật tư này không?"
+              okText="Đồng ý"
+              cancelText="Huỷ"
+              onConfirm={() => onDelete?.(record.supplyId)}
+              onCancel={(e) => e.stopPropagation()}
             >
-              Ngưng sử dụng
-            </Button>
+              <Button
+                type="primary"
+                size="small"
+                danger
+                onClick={(e) => e.stopPropagation()}
+              >
+                Ngưng sử dụng
+              </Button>
+            </Popconfirm>
           )}
         </Space>
       ),
@@ -146,9 +184,20 @@ const MedicalSupplyTableTemplate = ({
         columns={columns}
         dataSource={data}
         loading={loading}
+        pagination={{
+          showSizeChanger: true,
+          pageSizeOptions: ["5", "10"],
+          defaultPageSize: 10,
+          ...pagination,
+        }}
         onRow={(record) => ({
           onClick: () => handleView(record.supplyId),
         })}
+        onChange={(pagination, filters) => {
+          const statusValue = filters.status?.[0] || null;
+          onStatusFilterChange?.(statusValue); //  Gửi sự kiện lên để lọc
+          pagination.onChange?.(pagination.current, pagination.pageSize); // giữ phân trang nếu có custom
+        }}
       />
 
       <MedicalSupplyDrawer
@@ -166,6 +215,13 @@ const MedicalSupplyTableTemplate = ({
           setEditingSupply(null);
           onReload?.();
         }}
+      />
+
+      <AdjustStockModal
+        open={adjustModalOpen}
+        onClose={() => setAdjustModalOpen(false)}
+        onSubmit={handleAdjustSubmit}
+        supplyName={adjustingSupply?.name}
       />
     </div>
   );

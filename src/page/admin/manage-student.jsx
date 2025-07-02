@@ -42,7 +42,7 @@ function ManageStudent() {
     const data = await getStudent();
     setStudentList(data);
   };
-  
+
   useEffect(() => {
     fetchStudent();
   }, []);
@@ -142,14 +142,19 @@ function ManageStudent() {
 
       {/* Bảng danh sách học sinh */}
       <Table
-  dataSource={studentList}
-  columns={columns}
-  rowKey="id"
-  onRow={(record) => ({
-    onClick: () => handleRowClick(record),
-  })}
-  rowClassName={() => styles.clickableRow}
-/>
+        dataSource={studentList}
+        columns={columns}
+        rowKey="id"
+        pagination={{
+          showSizeChanger: true,
+          pageSizeOptions: ["5", "10"],
+          defaultPageSize: 10,
+        }}
+        onRow={(record) => ({
+          onClick: () => handleRowClick(record),
+        })}
+        rowClassName={() => styles.clickableRow}
+      />
 
       {/* Modal tạo mới học sinh */}
       <Modal
