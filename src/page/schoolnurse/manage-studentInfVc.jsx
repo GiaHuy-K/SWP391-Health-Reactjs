@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getAllVaccinations } from "../../services/api.vaccine";
 import { message } from "antd";
-import StudentVaccinationTableTemplate from "../../components/templates/StudentVaccinationTableTemplate";
+import StudentVaccinationTableTemplate from "../../components/templates/studentVaccinationTableTemplate";
 
 function ManageStudentInfVc() {
   const [data, setData] = useState([]);

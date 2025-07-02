@@ -99,7 +99,7 @@ const router = createBrowserRouter([
     children: [
       {path:"event-Nurse", element:<ManageEvent/>},
       {path :"medicalSupply-Nurse", element: <ManageMedicalSupply/>},
-      { path: "student-vaccination", element: <ManageStudentInfVc/> },
+      {path: "student-vaccination", element: <ManageStudentInfVc/>},
     ] 
   },
 

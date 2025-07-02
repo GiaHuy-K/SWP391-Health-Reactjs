@@ -69,7 +69,7 @@ const HomePage = () => {
 
   const isParent = isParentRole(user);
 
-  // Smooth scroll for anchor links
+  
   useEffect(() => {
     const handleSmoothScroll = (e) => {
       if (e.target.hash) {
@@ -98,7 +98,7 @@ const HomePage = () => {
     };
   }, []);
 
-  // Contact form handling
+  
   const handleContactSubmit = (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
@@ -107,13 +107,13 @@ const HomePage = () => {
     const phone = formData.get('phone');
     const message = formData.get('message');
 
-    // Simple validation
+    
     if (!name || !email || !message) {
       alert('Vui lòng điền đầy đủ thông tin bắt buộc');
       return;
     }
 
-    // Show success message
+    
     const formContainer = e.target.parentElement;
     formContainer.innerHTML = `
       <div class="text-center py-8">
@@ -129,7 +129,7 @@ const HomePage = () => {
 
   return (
     <div className="bg-white">
-      {/* Header */}
+      
       <header className="sticky top-0 z-50 bg-white shadow-sm">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center mr-10 cursor-pointer" onClick={handleLogoClick}>
