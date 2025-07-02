@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Descriptions, Spin, message } from "antd";
+import { Modal, Descriptions, Spin, message, Tag } from "antd";
 import api from "../../config/axios";
+import {
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+  LinkOutlined,
+  StopOutlined,
+} from "@ant-design/icons";
 
 const UserDetailModal = ({ userId, open, onClose }) => {
   const [user, setUser] = useState(null);
@@ -33,21 +39,59 @@ const UserDetailModal = ({ userId, open, onClose }) => {
           <Descriptions.Item label="Số điện thoại">
             {user.phoneNumber}
           </Descriptions.Item>
-          <Descriptions.Item label="Vai trò">{user.role}</Descriptions.Item>
+          <Descriptions.Item label="Vai trò">
+            {(() => {
+              let color = "default";
+              let label = user.role;
+
+              switch (user.role) {
+                case "Nhân viên Y tế":
+                  color = "green";
+                  label = "Y tá";
+                  break;
+                case "Phụ huynh":
+                  color = "purple";
+                  label = "Phụ huynh";
+                  break;
+                case "Quản lý Nhân sự/Nhân viên":
+                  color = "volcano";
+                  label = "Quản Lý";
+                  break;
+                default:
+                  color = "default";
+                  label = user.role;
+              }
+
+              return <Tag color={color}>{label}</Tag>;
+            })()}
+          </Descriptions.Item>
+
           <Descriptions.Item label="Trạng thái">
-            <span
-              style={{
-                color: user.isActive ? "green" : "red",
-                fontWeight: "bold",
-              }}
+            <Tag
+              color={user.isActive ? "green" : "red"}
+              icon={
+                user.isActive ? (
+                  <CheckCircleOutlined />
+                ) : (
+                  <CloseCircleOutlined />
+                )
+              }
             >
               {user.isActive ? "Hoạt động" : "Bị khóa"}
-            </span>
+            </Tag>
           </Descriptions.Item>
+
           {/* Chỉ hiện với phụ huynh */}
           {user.role === "Phụ huynh" && (
             <Descriptions.Item label="Liên kết học sinh">
-              {user.linkedToStudent ? "✅ Có" : "🚫 Không"}
+              <Tag
+                color={user.linkedToStudent ? "green" : "red"}
+                icon={
+                  user.linkedToStudent ? <LinkOutlined /> : <StopOutlined />
+                }
+              >
+                {user.linkedToStudent ? "Có" : "Không"}
+              </Tag>
             </Descriptions.Item>
           )}
         </Descriptions>

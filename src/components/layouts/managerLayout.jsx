@@ -28,6 +28,11 @@ const ManagerLayout = () => {
 
   const menuItems = [
     {
+      key: "dashboardM",
+      icon: <DashboardOutlined />,
+      label: "Dashboard",
+    },
+    {
       key: "event-Manager",
       icon: <PieChartOutlined />,
       label: "Quản lý sự cố",
