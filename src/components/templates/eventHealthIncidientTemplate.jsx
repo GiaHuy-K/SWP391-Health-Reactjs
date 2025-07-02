@@ -143,8 +143,21 @@ const EventHealthIncidentTemplate = () => {
       key: "action",
       render: (_, record) => (
         <Space>
-          <Button type="primary">Sửa</Button>
-          <Button type="primary" danger>
+          <Button
+            type="primary"
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            Sửa
+          </Button>
+          <Button
+            type="primary"
+            danger
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
             Xóa
           </Button>
         </Space>
@@ -172,7 +185,7 @@ const EventHealthIncidentTemplate = () => {
         open={createModalOpen}
         onCancel={() => setCreateModalOpen(false)}
         footer={null}
-        destroyOnClose
+        destroyOnHidden
       >
         <Form
           form={createForm}

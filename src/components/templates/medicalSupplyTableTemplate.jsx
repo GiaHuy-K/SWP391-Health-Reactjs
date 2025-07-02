@@ -194,10 +194,10 @@ const MedicalSupplyTableTemplate = ({
           onClick: () => handleView(record.supplyId),
         })}
         onChange={(pagination, filters) => {
-    const statusValue = filters.status?.[0] || null;
-    onStatusFilterChange?.(statusValue); //  Gửi sự kiện lên để lọc
-    pagination.onChange?.(pagination.current, pagination.pageSize); // giữ phân trang nếu có custom
-  }}
+          const statusValue = filters.status?.[0] || null;
+          onStatusFilterChange?.(statusValue); //  Gửi sự kiện lên để lọc
+          pagination.onChange?.(pagination.current, pagination.pageSize); // giữ phân trang nếu có custom
+        }}
       />
 
       <MedicalSupplyDrawer
