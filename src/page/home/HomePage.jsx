@@ -143,7 +143,6 @@ const HomePage = () => {
             <h2 className="ml-3 text-2xl font-['Pacifico'] text-primary">SchoolMed</h2>
           </div>
           <nav className="hidden md:flex space-x-8 flex-1 justify-center">
-            <a href="#" className="text-gray-900 font-medium hover:text-primary transition">Trang chủ</a>
             <a href="#features" className="text-gray-600 hover:text-primary transition">Tính năng</a>
             <a href="#contact" className="text-gray-600 hover:text-primary transition">Liên hệ</a>
             <a href="#about" className="text-gray-600 hover:text-primary transition">Về chúng tôi</a>
@@ -628,7 +627,6 @@ const HomePage = () => {
             <div>
               <h3 className="text-lg font-semibold mb-6">Liên kết nhanh</h3>
               <ul className="space-y-3">
-                <li><a href="#" className="text-gray-400 hover:text-white transition">Trang chủ</a></li>
                 <li><a href="#features" className="text-gray-400 hover:text-white transition">Tính năng</a></li>
                 <li><a href="#about" className="text-gray-400 hover:text-white transition">Về chúng tôi</a></li>
                 <li><a href="#blog" className="text-gray-400 hover:text-white transition">Blog sức khỏe</a></li>

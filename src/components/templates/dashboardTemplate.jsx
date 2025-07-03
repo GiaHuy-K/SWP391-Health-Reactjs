@@ -130,7 +130,11 @@ function DashboardTemplate({ columns, uri }) {
             handleViewDetail(record.userId);
           },
         })}
-        pagination={{ pageSize: 10 }}
+        pagination={{
+          showSizeChanger: true,
+          pageSizeOptions: ["5", "10"],
+          defaultPageSize: 10,
+        }}
       />
       {/* Modal xem chi tiết */}
       <UserDetailModal

@@ -1,54 +1,52 @@
 import React, { useEffect, useState } from "react";
-import { Card, Spin, Row, Col } from "antd";
+import { Card, Spin, Row, Col, Typography } from "antd";
 import {
   PieChart,
   Pie,
   Cell,
   Tooltip,
   Legend,
-  BarChart,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Bar,
   ResponsiveContainer,
 } from "recharts";
 import api from "../../config/axios";
+import { TeamOutlined, UserOutlined } from "@ant-design/icons";
+import CountUp from "react-countup";
 
-// Xanh lá cho hoạt động, đỏ cho vô hiệu hóa
+const { Text, Title } = Typography;
+
 const STATUS_COLORS = ["#4caf50", "#f44336"];
 
 const DashboardOverview = () => {
-  // State để lưu trữ dữ liệu người dùng theo trạng thái và vai trò
-  // Sử dụng useState để quản lý trạng thái của component
   const [userStatusData, setUserStatusData] = useState([]);
-  // userStatusData: lưu trữ số lượng người dùng theo trạng thái (hoạt động, vô hiệu hóa)
-  // roleData: lưu trữ số lượng người dùng theo vai trò (quản lý, y tá, phụ huynh)
-  // Sử dụng useState để quản lý trạng thái của component 
-  const [roleData, setRoleData] = useState([]);
-  // loading: để hiển thị spinner khi đang fetch dữ liệu
-  // Sử dụng useState để quản lý trạng thái của component
+  const [totalUsers, setTotalUsers] = useState(0);
+  const [totalStudents, setTotalStudents] = useState(0);
   const [loading, setLoading] = useState(true);
-
+  const [parentLinkData, setParentLinkData] = useState([]);
+  const PARENT_LINK_COLORS = ["#1890ff", "#faad14"];
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [staffRes, medicalRes, parentRes] = await Promise.all([
-          
-          api.get("admin/users/staff-managers"),
-          api.get("admin/users/medical-staff"),
-          api.get("admin/users/parents"),
+        const [staffRes, medicalRes, parentRes, studentRes] = await Promise.all(
+          [
+            api.get("admin/users/staff-managers"),
+            api.get("admin/users/medical-staff"),
+            api.get("admin/users/parents"),
+            api.get("/students"),
+          ]
+        );
+
+        const staff = staffRes.data.content || [];
+        const medical = medicalRes.data.content || [];
+        const parents = parentRes.data.content || [];
+        console.log(parents)
+        const allUsers = [...staff, ...medical, ...parents];
+        const linkedParents = parents.filter((p) => p.linkedToStudent).length;
+        const unlinkedParents = parents.length - linkedParents;
+
+        setParentLinkData([
+          { name: "Đã liên kết", value: linkedParents },
+          { name: "Chưa liên kết", value: unlinkedParents },
         ]);
-        // staffRes: dữ liệu người dùng quản lý
-        // medicalRes: dữ liệu người dùng y tá  
-        // parentRes: dữ liệu người dùng phụ huynh
-        // Sử dụng Promise.all để fetch đồng thời dữ liệu từ 3 API
-        // Kết hợp dữ liệu từ 3 API để tính toán số lượng người dùng theo trạng thái
-        const allUsers = [
-          ...staffRes.data.content,
-          ...medicalRes.data.content,
-          ...parentRes.data.content,
-        ];
 
         const activeCount = allUsers.filter((u) => u.isActive).length;
         const inactiveCount = allUsers.length - activeCount;
@@ -58,11 +56,8 @@ const DashboardOverview = () => {
           { name: "Vô hiệu hóa", value: inactiveCount },
         ]);
 
-        setRoleData([
-          { role: "Quản lý", value: staffRes.data.totalElements || 0 },
-          { role: "Y tá", value: medicalRes.data.totalElements || 0 },
-          { role: "Phụ huynh", value: parentRes.data.totalElements || 0 },
-        ]);
+        setTotalUsers(allUsers.length);
+        setTotalStudents(studentRes.data.totalElements || 0);
       } catch (err) {
         console.error("Lỗi khi fetch dữ liệu dashboard:", err);
       } finally {
@@ -72,8 +67,7 @@ const DashboardOverview = () => {
 
     fetchData();
   }, []);
-  // Hàm render biểu đồ tròn với tiêu đề và dữ liệu
-  // Sử dụng Card từ Ant Design để hiển thị biểu đồ
+
   const renderPieChart = (title, data) => (
     <Card title={title} style={{ width: "100%" }}>
       <ResponsiveContainer width="100%" height={250}>
@@ -101,6 +95,52 @@ const DashboardOverview = () => {
       </ResponsiveContainer>
     </Card>
   );
+  const renderPieChartParent = (title, data) => (
+    <Card title={title} style={{ width: "100%" }}>
+      <ResponsiveContainer width="100%" height={250}>
+        <PieChart>
+          <Pie
+            data={data}
+            dataKey="value"
+            nameKey="name"
+            cx="50%"
+            cy="50%"
+            outerRadius={80}
+            label={({ name, value }) => `${name}: ${value}`}
+            labelLine={false}
+          >
+            {data.map((entry, index) => {
+              const LINK_COLORS = {
+                "Đã liên kết": "#1890ff",
+                "Chưa liên kết": "#ff4d4f",
+              };
+              return (
+                <Cell
+                  key={`parent-cell-${index}`}
+                  fill={LINK_COLORS[entry.name] || "#8884d8"}
+                />
+              );
+            })}
+          </Pie>
+          <Tooltip />
+          <Legend />
+        </PieChart>
+      </ResponsiveContainer>
+    </Card>
+  );
+
+  const kpiCardStyle = {
+    borderRadius: 16,
+    boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
+    padding: 24,
+    display: "flex",
+    alignItems: "center",
+    gap: 16,
+  };
+
+  const iconStyle = {
+    fontSize: 40,
+  };
 
   return (
     <div style={{ padding: 24 }}>
@@ -108,38 +148,44 @@ const DashboardOverview = () => {
         <Spin size="large" style={{ display: "block", margin: "100px auto" }} />
       ) : (
         <>
+          {/* KPI Cards */}
+          <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+            <Col xs={24} md={12}>
+              <Card style={kpiCardStyle}>
+                <UserOutlined style={{ ...iconStyle, color: "#1890ff" }} />
+                <div>
+                  <Text type="secondary">Tổng người dùng hệ thống</Text>
+                  <Title level={3}>
+                    <CountUp end={totalUsers} separator="," duration={1.5} />
+                  </Title>
+                </div>
+              </Card>
+            </Col>
+
+            <Col xs={24} md={12}>
+              <Card style={kpiCardStyle}>
+                <TeamOutlined style={{ ...iconStyle, color: "#52c41a" }} />
+                <div>
+                  <Text type="secondary">Tổng số học sinh</Text>
+                  <Title level={3}>
+                    <CountUp end={totalStudents} separator="," duration={1.5} />
+                  </Title>
+                </div>
+              </Card>
+            </Col>
+          </Row>
+
           <Row gutter={[16, 16]}>
             <Col xs={24} md={12}>
               {renderPieChart("Trạng thái người dùng", userStatusData)}
             </Col>
+            <Col xs={24} md={12}>
+              {renderPieChartParent(
+                "Phụ huynh đã liên kết với học sinh",
+                parentLinkData
+              )}
+            </Col>
           </Row>
-
-          <Card title="Người dùng theo vai trò" style={{ marginTop: 24 }}>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={roleData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="role" />
-                <YAxis allowDecimals={false} />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="value" name="Số lượng">
-                  {roleData.map((entry, index) => {
-                    const colors = {
-                      "Quản lý": "#4caf50",
-                      "Y tá": "#2196f3",
-                      "Phụ huynh": "#ff9800",
-                    };
-                    return (
-                      <Cell
-                        key={index}
-                        fill={colors[entry.role] || "#8884d8"}
-                      />
-                    );
-                  })}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </Card>
         </>
       )}
     </div>

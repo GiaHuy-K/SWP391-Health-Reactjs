@@ -1,26 +1,18 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   DesktopOutlined,
   FileOutlined,
   PieChartOutlined,
+  TeamOutlined,
   UserOutlined,
   LogoutOutlined,
   ProfileOutlined,
   DashboardOutlined,
   BranchesOutlined,
-  HomeOutlined,
-} from "@ant-design/icons";
-import {
-  Breadcrumb,
-  Layout,
-  Menu,
-  theme,
-  Avatar,
-  Dropdown,
-  Space,
-  message,
-} from "antd";
-import { Link, Outlet, useNavigate } from "react-router-dom";
+  InsuranceOutlined,
+} from '@ant-design/icons';
+import { Breadcrumb, Layout, Menu, theme, Avatar, Dropdown, Space, message } from 'antd';
+import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from "../../config/AuthContext";
 import { isParentRole } from "../../config/AuthContext";
 
@@ -31,32 +23,23 @@ function getItem(label, key, icon, children) {
     key,
     icon,
     children,
-    label: Link ? <Link to={`/dashboardManager/${key}`}>{label}</Link> : label,
+    label,
   };
 }
 
 const items = [
-  getItem("Quản lý sự cố", "event-Manager", <PieChartOutlined />),
+  getItem('Quản lý sự cố', 'event-Manager', <PieChartOutlined />),
   //supply-Manager
-  getItem("Quản lý vật tư y tế", "supply-Manager", <DesktopOutlined />),
-  getItem(
-    "Thông tin tiêm chủng học sinh",
-    "student-vaccination",
-    <BranchesOutlined />
-  ),
-  getItem(
-    <Link to="/">Về trang chủ</Link>,
-    "home",
-    <HomeOutlined />,
-    undefined
-  ),
+  getItem('Quản lý vật tư y tế', 'supply-Manager', <DesktopOutlined />),
+  getItem('Thông tin tiêm chủng học sinh', 'student-vaccination', <BranchesOutlined />),
+  getItem('Thông tin bệnh mãn tính học sinh', 'student-chronic-disease', <InsuranceOutlined />),
 ];
 
 const ManagerLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
-  const navigate = useNavigate();
+  const navigate = useNavigate(); 
   const { logout, user } = useAuth();
-
+  
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
@@ -70,6 +53,10 @@ const ManagerLayout = () => {
       navigate("/profile");
     } else if (key === "dashboard") {
       navigate("/dashboardManager/event-Manager");
+    } else if (key === "student-chronic-disease") {
+      navigate("/dashboardManager/student-chronic-disease");
+    } else if (key === "student-vaccination") {
+      navigate("/dashboardManager/student-vaccination");
     }
   };
 
@@ -110,34 +97,21 @@ const ManagerLayout = () => {
   };
 
   return (
-    <Layout style={{ minHeight: "100vh" }}>
-      <Sider
-        collapsible
-        collapsed={collapsed}
-        onCollapse={(value) => setCollapsed(value)}
-      >
-        <div
-          style={{
-            height: 32,
-            margin: 16,
-            color: "white",
-            fontWeight: "bold",
-            textAlign: "center",
-          }}
-        >
-          Quản lý 
-        </div>
-        <Menu
-          theme="dark"
-          defaultSelectedKeys={["1"]}
-          mode="inline"
-          items={items}
+    <Layout style={{ minHeight: '100vh' }}>
+      <Sider collapsible collapsed={collapsed} onCollapse={value => setCollapsed(value)}>
+        <div className="demo-logo-vertical" />
+        <Menu 
+          theme="dark" 
+          defaultSelectedKeys={['event-Manager']} 
+          mode="inline" 
+          items={items} 
+          onClick={({ key }) => navigate(`/dashboardManager/${key}`)}
         />
       </Sider>
       <Layout>
-        <Header
-          style={{
-            padding: "0 24px",
+        <Header 
+          style={{ 
+            padding: "0 24px", 
             background: colorBgContainer,
             display: "flex",
             justifyContent: "space-between",
@@ -180,7 +154,7 @@ const ManagerLayout = () => {
             <Outlet />
           </div>
         </Content>
-        <Footer style={{ textAlign: "center" }}>
+        <Footer style={{ textAlign: 'center' }}>
           Ant Design ©{new Date().getFullYear()} Created by Ant UED
         </Footer>
       </Layout>
