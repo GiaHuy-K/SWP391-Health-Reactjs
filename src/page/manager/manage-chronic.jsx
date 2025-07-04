@@ -79,7 +79,19 @@ const ManageChronic = () => {
         if (params[k] === undefined) delete params[k];
       });
       const res = await getAllChronicDiseases(params);
-      setChronicList(res.content || []);
+      let list = res.content || [];
+      // Nếu đã chọn học sinh, filter chính xác theo studentId
+      if (selectedStudent?.id) {
+        list = list.filter(item => item.studentId === selectedStudent.id);
+      } else if (searchText) {
+        // Nếu không chọn học sinh, filter theo searchText trên cả tên học sinh và tên bệnh (không phân biệt hoa thường)
+        const lowerSearch = searchText.toLowerCase();
+        list = list.filter(item =>
+          (item.studentFullName && item.studentFullName.toLowerCase().includes(lowerSearch)) ||
+          (item.diseaseName && item.diseaseName.toLowerCase().includes(lowerSearch))
+        );
+      }
+      setChronicList(list);
       setPagination({ page: res.number, size: res.size, total: res.totalElements });
     } catch (err) {
       setChronicList([]);
@@ -213,7 +225,6 @@ const ManageChronic = () => {
           PENDING: { text: "Chờ duyệt", color: "#faad14" },
           APPROVED: { text: "Đã duyệt", color: "#52c41a" },
           REJECTED: { text: "Từ chối", color: "#ff4d4f" },
-          INACTIVE: { text: "Vô hiệu hóa", color: "#666" },
         };
         const info = statusMap[status] || { text: status, color: "#666" };
         return <span style={{ color: info.color, fontWeight: "bold" }}>{info.text}</span>;
@@ -246,6 +257,8 @@ const ManageChronic = () => {
     s.fullName.toLowerCase().includes(searchText.toLowerCase())
   );
 
+  console.log("chronicList", chronicList);
+
   return (
     <div style={{ padding: 24 }}>
       <Title level={3}>Quản lý bệnh mãn tính học sinh</Title>
@@ -265,9 +278,9 @@ const ManageChronic = () => {
           allowClear
         >
           <Option value="PENDING">Chờ duyệt</Option>
-          <Option value="APPROVED">Đã duyệt</Option>
+          <Option value="APPROVE">Đã duyệt</Option>
           <Option value="REJECTED">Từ chối</Option>
-          <Option value="INACTIVE">Vô hiệu hóa</Option>
+          
         </Select>
         <Select
           placeholder="Học sinh"

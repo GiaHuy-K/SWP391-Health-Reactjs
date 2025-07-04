@@ -181,7 +181,7 @@ const StudentVaccinationPage = () => {
       
       setStats({
         total: allVaccs.length,
-        pending: allVaccs.filter(v => v.status === "PENDING" || v.status === "Chờ duyệt").length,
+        pending: allVaccs.filter(v => v.status === "PENDING" || v.status === "Chờ xử lý").length,
         approved: allVaccs.filter(v => v.status === "APPROVED" || v.status === "Chấp nhận").length,
         rejected: allVaccs.filter(v => v.status === "REJECTED" || v.status === "Từ chối").length,
       });
@@ -483,7 +483,7 @@ const StudentVaccinationPage = () => {
       key: "status",
       render: (status) => {
         const statusMap = {
-          PENDING: { text: "Chờ duyệt", color: "#faad14" },
+          PENDING: { text: "Chờ xử lý", color: "#faad14" },
           APPROVED: { text: "Đã duyệt", color: "#52c41a" },
           REJECTED: { text: "Từ chối", color: "#ff4d4f" },
         };
@@ -580,7 +580,7 @@ const StudentVaccinationPage = () => {
       key: "status",
       render: (status) => {
         const statusMap = {
-          PENDING: { text: "Chờ duyệt", color: "#faad14" },
+          PENDING: { text: "Chờ xử lý", color: "#faad14" },
           APPROVED: { text: "Đã duyệt", color: "#52c41a" },
           REJECTED: { text: "Từ chối", color: "#ff4d4f" },
         };
@@ -792,7 +792,7 @@ const StudentVaccinationPage = () => {
               </Col>
               <Col span={6}>
                 <Card>
-                  <Statistic title="Chờ duyệt" value={stats.pending} valueStyle={{ color: '#faad14' }} />
+                  <Statistic title="Chờ xử lý" value={stats.pending} valueStyle={{ color: '#faad14' }} />
                 </Card>
               </Col>
               <Col span={6}>
@@ -829,7 +829,7 @@ const StudentVaccinationPage = () => {
                 style={{ width: 150 }}
                 allowClear
               >
-                <Option value="PENDING">Chờ duyệt</Option>
+                <Option value="PENDING">Chờ xử lý</Option>
                 <Option value="APPROVED">Đã duyệt</Option>
                 <Option value="REJECTED">Từ chối</Option>
               </Select>
@@ -878,9 +878,9 @@ const StudentVaccinationPage = () => {
           />
         </TabPane>
 
-        <TabPane tab={`Chờ duyệt (${stats.pending})`} key="pending">
+        <TabPane tab={`Chờ xử lý (${stats.pending})`} key="pending">
           <div style={{ marginBottom: 24 }}>
-            <h2>Danh sách tiêm chủng chờ duyệt</h2>
+            <h2>Danh sách tiêm chủng chờ xử lý</h2>
             <p style={{ color: '#666', marginBottom: 16 }}>
               Có {stats.pending} bản ghi tiêm chủng đang chờ xử lý
             </p>
@@ -892,7 +892,7 @@ const StudentVaccinationPage = () => {
             rowKey={(r) => r.studentVaccinationId || r.id}
             loading={pendingLoading}
             pagination={false}
-            locale={{ emptyText: "Không có bản ghi chờ duyệt" }}
+            locale={{ emptyText: "Không có bản ghi chờ xử lý" }}
           />
           <Pagination
             style={{ marginTop: 16, textAlign: "right" }}
