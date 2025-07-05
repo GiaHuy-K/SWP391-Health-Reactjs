@@ -9,7 +9,9 @@ const MedicalSupplyTableTemplate = ({
   loading,
   onDelete,
   onCreateClick,
-  onReload,
+  onReload, 
+  // Permissions lúc đầu luôn là view true, còn lại là false
+  // nếu có quyền thì sẽ hiện nút tương ứng
   permissions = {
     canView: true,
     canCreate: false,
@@ -196,16 +198,16 @@ const MedicalSupplyTableTemplate = ({
         onChange={(pagination, filters) => {
           const statusValue = filters.status?.[0] || null;
           onStatusFilterChange?.(statusValue); //  Gửi sự kiện lên để lọc
-          pagination.onChange?.(pagination.current, pagination.pageSize); // giữ phân trang nếu có custom
+          pagination.onChange?.(pagination.current, pagination.pageSize); // giữ phân trang nếu có custom sau này 
         }}
       />
-
+      {/* Drawer coi chi tiết vật tư y tế */}
       <MedicalSupplyDrawer
         supplyId={selectedId}
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
       />
-
+      {/* Modal chỉnh sửa vật tư y tế */}
       <EditMedicalSupplyModal
         open={editModalOpen}
         onClose={() => setEditModalOpen(false)}
@@ -216,7 +218,7 @@ const MedicalSupplyTableTemplate = ({
           onReload?.();
         }}
       />
-
+      {/* Modal điều chỉnh tồn kho */}
       <AdjustStockModal
         open={adjustModalOpen}
         onClose={() => setAdjustModalOpen(false)}

@@ -100,7 +100,17 @@ const ManagerLayout = () => {
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <Sider collapsible collapsed={collapsed} onCollapse={value => setCollapsed(value)}>
-        <div className="demo-logo-vertical" />
+        <div
+          style={{
+            height: 32,
+            margin: 16,
+            color: "white",
+            fontWeight: "bold",
+            textAlign: "center",
+          }}
+        >
+          Quản Lý
+        </div>
         <Menu 
           theme="dark" 
           defaultSelectedKeys={['event-Manager']} 
@@ -130,7 +140,9 @@ const ManagerLayout = () => {
             }}
           >
             <span style={{ fontSize: 22 }}>👋</span> Xin chào,{" "}
-            <strong>Quản lý</strong>
+            <strong>{user?.fullName || "Quản Lý"}</strong>
+
+            
           </div>
 
           <Dropdown menu={userMenu} placement="bottomRight">
