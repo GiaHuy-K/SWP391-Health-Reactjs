@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   createBrowserRouter,
   Navigate,
@@ -32,7 +32,12 @@ import ManageMedicalSupplyM from "./page/manager/manage-medical-supply.jsx";
 import StudentVaccinationPage from './page/manager/manage-student-inf-vc.jsx';
 import DashboardM from "./page/manager/dashboardM.jsx";
 import DashboardN from "./page/schoolnurse/dashboardN.jsx";
+<<<<<<< HEAD
 import Notification from "./components/notification/notification.jsx";
+=======
+import ManageStudentInfVc from "./page/schoolnurse/manage-studentInfVc.jsx";
+import ManageChronic from "./page/manager/manage-chronic.jsx";
+>>>>>>> a5ee8e4fb14ff3420a33f0fb7d5f79dd5879d6d1
 
 // Component bảo vệ route yêu cầu đăng nhập
 const PrivateRoute = ({ children }) => {
@@ -90,6 +95,7 @@ const router = createBrowserRouter([
       {path: "event-Manager", element: <ManageEventM/>},
       {path: "supply-Manager", element: <ManageMedicalSupplyM/>},
       {path: "student-vaccination", element: <StudentVaccinationPage/>},
+      {path: "student-chronic-disease", element: <ManageChronic />},
     ] 
   },
   
@@ -105,7 +111,8 @@ const router = createBrowserRouter([
       {index: true, element: <Navigate to="dashboardN" replace />}, // lần đầu vào trang sẽ cho coi dashboardNurse
       {path:"dashboardN", element:<DashboardN/>},
       {path:"event-Nurse", element:<ManageEvent/>},
-      {path :"medicalSupply-Nurse", element: <ManageMedicalSupply/>}
+      {path :"medicalSupply-Nurse", element: <ManageMedicalSupply/>},
+      {path: "student-vaccination", element: <ManageStudentInfVc/>},
     ] 
   },
 
@@ -138,6 +145,8 @@ const router = createBrowserRouter([
 ]);
 
 export default function App() {
+  const [addErrors, setAddErrors] = useState({});
+
   return (
     <AuthProvider>
       <RouterProvider router={router} />
