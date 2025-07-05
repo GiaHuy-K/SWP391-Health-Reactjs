@@ -23,13 +23,13 @@ const HomePage = () => {
     // Điều hướng đến dashboard tương ứng với role
     switch (user?.role) {
       case "Quản trị viên Trường học":
-        navigate('/dashboard/overview');
+        navigate('/dashboard');
         break;
       case "Quản lý Nhân sự/Nhân viên":
-        navigate('/dashboardManager/event-Manager');
+        navigate('/dashboardManager');
         break;
       case "Nhân viên Y tế":
-        navigate('/dashboardNurse/event-Nurse');
+        navigate('/dashboardNurse');
         break;
       default:
         // Parent không có dashboard riêng
@@ -66,7 +66,11 @@ const HomePage = () => {
       navigate('/login');
     }
   };
-
+  const handleNotificationClick = () => {
+    // Điều hướng đến trang thông báo 
+    navigate('/notifications');
+    setShowDropdown(false);
+  };
   const handleLogoClick = () => {
     navigate('/');
   };
@@ -118,12 +122,15 @@ const HomePage = () => {
                         {isParent ? (
                           <>
                             <button onClick={handleProfileClick}>Hồ sơ</button>
+                            <button onClick={handleNotificationClick}>Thông Báo</button>
                             <button onClick={handleLogout}>Đăng xuất</button>
+                            
                           </>
                         ) : (
                           <>
                             <button onClick={handleDashboardClick}>Dashboard</button>
                             <button onClick={handleProfileClick}>Hồ sơ</button>
+                            <button onClick={handleNotificationClick}>Thông Báo</button>
                             <button onClick={handleLogout}>Đăng xuất</button>
                           </>
                         )}
