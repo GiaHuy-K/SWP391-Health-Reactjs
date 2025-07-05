@@ -144,45 +144,7 @@ const HomePage = () => {
                 style={{ width: 48, height: 48, objectFit: "contain" }}
               />
             </div>
-<<<<<<< HEAD
-            <div className={styles.navSection}>
-              <div className={styles.navLinks}>
-                <a className={styles.navLink} href="#home">Trang chủ</a>
-                <a className={styles.navLink} href="#features">Tính năng</a>
-                <a className={styles.navLink} href="#contact">Liên hệ</a>
-                <a className={styles.navLink} href="#about">Về chúng tôi</a>
-                <a className={styles.navLink} href="#blog">Blog sức khỏe</a>
-              </div>
-              <div className={styles.authSection}>
-                {!isAuthenticated ? (
-                  <button className={styles.loginBtn} onClick={handleLogin}>
-                    <span>Đăng nhập</span>
-                  </button>
-                ) : (
-                  <div className={styles.profileSection}>
-                    <FaUserCircle 
-                      className={styles.profileIcon} 
-                      onClick={() => setShowDropdown(!showDropdown)}
-                    />
-                    {showDropdown && (
-                      <div className={styles.dropdownMenu}>
-                        {isParent ? (
-                          <>
-                            <button onClick={handleProfileClick}>Hồ sơ</button>
-                            <button onClick={handleNotificationClick}>Thông Báo</button>
-                            <button onClick={handleLogout}>Đăng xuất</button>
-                            
-                          </>
-                        ) : (
-                          <>
-                            <button onClick={handleDashboardClick}>Dashboard</button>
-                            <button onClick={handleProfileClick}>Hồ sơ</button>
-                            <button onClick={handleNotificationClick}>Thông Báo</button>
-                            <button onClick={handleLogout}>Đăng xuất</button>
-                          </>
-                        )}
-                      </div>
-=======
+
             <h2 className="ml-3 text-2xl font-['Pacifico'] text-primary">SchoolMed</h2>
           </div>
           <nav className="hidden md:flex space-x-8 flex-1 justify-center">
@@ -243,7 +205,6 @@ const HomePage = () => {
                           Đăng xuất
                         </button>
                       </>
->>>>>>> a5ee8e4fb14ff3420a33f0fb7d5f79dd5879d6d1
                     )}
                   </div>
                 )}

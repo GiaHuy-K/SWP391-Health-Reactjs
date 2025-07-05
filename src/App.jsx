@@ -32,12 +32,12 @@ import ManageMedicalSupplyM from "./page/manager/manage-medical-supply.jsx";
 import StudentVaccinationPage from './page/manager/manage-student-inf-vc.jsx';
 import DashboardM from "./page/manager/dashboardM.jsx";
 import DashboardN from "./page/schoolnurse/dashboardN.jsx";
-<<<<<<< HEAD
+
 import Notification from "./components/notification/notification.jsx";
-=======
+
 import ManageStudentInfVc from "./page/schoolnurse/manage-studentInfVc.jsx";
 import ManageChronic from "./page/manager/manage-chronic.jsx";
->>>>>>> a5ee8e4fb14ff3420a33f0fb7d5f79dd5879d6d1
+
 
 // Component bảo vệ route yêu cầu đăng nhập
 const PrivateRoute = ({ children }) => {

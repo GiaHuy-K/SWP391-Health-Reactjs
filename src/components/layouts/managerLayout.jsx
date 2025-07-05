@@ -28,6 +28,7 @@ function getItem(label, key, icon, children) {
 }
 
 const items = [
+  getItem('Dashboard', 'dashboardM', <DashboardOutlined />),
   getItem('Quản lý sự cố', 'event-Manager', <PieChartOutlined />),
   //supply-Manager
   getItem('Quản lý vật tư y tế', 'supply-Manager', <DesktopOutlined />),
