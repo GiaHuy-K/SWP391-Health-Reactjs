@@ -22,13 +22,13 @@ const HomePage = () => {
   const handleDashboardClick = () => {
     switch (user?.role) {
       case "Quản trị viên Trường học":
-        navigate('/dashboard/overview');
+        navigate('/dashboard');
         break;
       case "Quản lý Nhân sự/Nhân viên":
-        navigate('/dashboardManager/event-Manager');
+        navigate('/dashboardManager');
         break;
       case "Nhân viên Y tế":
-        navigate('/dashboardNurse/event-Nurse');
+        navigate('/dashboardNurse');
         break;
       default:
         break;
@@ -62,7 +62,11 @@ const HomePage = () => {
       navigate('/login');
     }
   };
-
+  const handleNotificationClick = () => {
+    // Điều hướng đến trang thông báo 
+    navigate('/notifications');
+    setShowDropdown(false);
+  };
   const handleLogoClick = () => {
     navigate('/');
   };
@@ -140,6 +144,7 @@ const HomePage = () => {
                 style={{ width: 48, height: 48, objectFit: "contain" }}
               />
             </div>
+
             <h2 className="ml-3 text-2xl font-['Pacifico'] text-primary">SchoolMed</h2>
           </div>
           <nav className="hidden md:flex space-x-8 flex-1 justify-center">
