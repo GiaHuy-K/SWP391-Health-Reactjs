@@ -10,6 +10,7 @@ import {
   HomeOutlined,
   BranchesOutlined,
   InsuranceOutlined,
+  FileTextOutlined,
 } from "@ant-design/icons";
 import {
   Avatar,
@@ -30,7 +31,7 @@ function getItem(label, key, icon, children) {
     key,
     icon,
     children,
-    label: Link ? <Link to={`/dashboardNurse/${key}`}>{label}</Link> : label,
+    label: typeof label === "string" ? <Link to={`/dashboardNurse/${key}`}>{label}</Link> : label,
   };
 }
 const items = [
@@ -39,6 +40,8 @@ const items = [
   getItem("Vật tư", "medicalSupply-Nurse", <DesktopOutlined />),
   getItem('Thông tin tiêm chủng học sinh', 'student-vaccination', <BranchesOutlined />),
   getItem('Thông tin bệnh mãn tính học sinh', 'student-chronic-disease', <InsuranceOutlined />),
+  getItem('Tạo Blog', 'blog/create', <FileOutlined />),
+  getItem('Quản lý Blog', 'manage-blogs', <FileTextOutlined />),
   getItem(
     <Link to="/">Về trang chủ</Link>,
     "home",

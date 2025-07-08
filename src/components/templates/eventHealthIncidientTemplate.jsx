@@ -77,10 +77,11 @@ const EventHealthIncidentTemplate = () => {
         getStudent(),
         getMedicalSupplies(),
       ]);
+      console.log("✅ API supplies:", supplyRes);
       setStudents(Array.isArray(studentRes) ? studentRes : []);
       setSupplies(
-        Array.isArray(supplyRes)
-          ? supplyRes.filter((s) => s.status === "Sẵn có")
+        Array.isArray(supplyRes.content)
+          ? supplyRes.content.filter((s) => s.status === "Sẵn có")
           : []
       );
     } catch (err) {
@@ -158,7 +159,7 @@ const EventHealthIncidentTemplate = () => {
               e.stopPropagation();
             }}
           >
-            Xóa
+            Xóa mềm
           </Button>
         </Space>
       ),

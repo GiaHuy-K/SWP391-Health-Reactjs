@@ -3,9 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../config/AuthContext';
 import { isParentRole } from '../../config/AuthContext';
 import { FaUserCircle } from 'react-icons/fa';
+import NotificationDropdown from '../../components/notification/NotificationDropdown';
+import NotificationIcon from '../../components/notification/NotificationIcon';
 
 const HomePage = () => {
   const [showDropdown, setShowDropdown] = useState(false);
+  const [showNotificationDropdown, setShowNotificationDropdown] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const { isAuthenticated, logout, user } = useAuth();
   const navigate = useNavigate();
@@ -22,13 +25,13 @@ const HomePage = () => {
   const handleDashboardClick = () => {
     switch (user?.role) {
       case "Quản trị viên Trường học":
-        navigate('/dashboard/overview');
+        navigate('/dashboard');
         break;
       case "Quản lý Nhân sự/Nhân viên":
-        navigate('/dashboardManager/event-Manager');
+        navigate('/dashboardManager');
         break;
       case "Nhân viên Y tế":
-        navigate('/dashboardNurse/event-Nurse');
+        navigate('/dashboardNurse');
         break;
       default:
         break;
@@ -62,7 +65,11 @@ const HomePage = () => {
       navigate('/login');
     }
   };
-
+  const handleNotificationClick = () => {
+    // Điều hướng đến trang thông báo 
+    navigate('/notifications');
+    setShowDropdown(false);
+  };
   const handleLogoClick = () => {
     navigate('/');
   };
@@ -97,6 +104,23 @@ const HomePage = () => {
       });
     };
   }, []);
+
+  // Đóng dropdown khi click ra ngoài
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showDropdown && !event.target.closest('.user-dropdown')) {
+        setShowDropdown(false);
+      }
+      if (showNotificationDropdown && !event.target.closest('.notification-dropdown')) {
+        setShowNotificationDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showDropdown, showNotificationDropdown]);
 
   
   const handleContactSubmit = (e) => {
@@ -140,13 +164,13 @@ const HomePage = () => {
                 style={{ width: 48, height: 48, objectFit: "contain" }}
               />
             </div>
+
             <h2 className="ml-3 text-2xl font-['Pacifico'] text-primary">SchoolMed</h2>
           </div>
           <nav className="hidden md:flex space-x-8 flex-1 justify-center">
             <a href="#features" className="text-gray-600 hover:text-primary transition">Tính năng</a>
             <a href="#contact" className="text-gray-600 hover:text-primary transition">Liên hệ</a>
             <a href="#about" className="text-gray-600 hover:text-primary transition">Về chúng tôi</a>
-            <a href="#blog" className="text-gray-600 hover:text-primary transition">Blog sức khỏe</a>
           </nav>
           <div className="flex items-center space-x-4">
             {!isAuthenticated ? (
@@ -157,7 +181,20 @@ const HomePage = () => {
                 Đăng nhập
               </button>
             ) : (
-              <div className="relative">
+              <>
+                {/* Notification Icon */}
+                <div className="relative notification-dropdown">
+                  <NotificationIcon 
+                    onClick={() => setShowNotificationDropdown(!showNotificationDropdown)}
+                  />
+                  <NotificationDropdown 
+                    isVisible={showNotificationDropdown}
+                    onClose={() => setShowNotificationDropdown(false)}
+                  />
+                </div>
+                
+                {/* User Profile */}
+                <div className="relative user-dropdown">
                 <FaUserCircle 
                   className="w-8 h-8 text-primary cursor-pointer" 
                   onClick={() => setShowDropdown(!showDropdown)}
@@ -204,6 +241,7 @@ const HomePage = () => {
                   </div>
                 )}
               </div>
+              </>
             )}
             <button 
               className="md:hidden w-10 h-10 flex items-center justify-center text-gray-700"
@@ -213,6 +251,98 @@ const HomePage = () => {
             </button>
           </div>
         </div>
+        
+        {/* Mobile Menu */}
+        {showMobileMenu && (
+          <div className="md:hidden bg-white border-t border-gray-200 py-4">
+            <div className="container mx-auto px-4">
+              <nav className="space-y-4">
+                <a href="#features" className="block text-gray-600 hover:text-primary transition py-2">Tính năng</a>
+                <a href="#contact" className="block text-gray-600 hover:text-primary transition py-2">Liên hệ</a>
+                <a href="#about" className="block text-gray-600 hover:text-primary transition py-2">Về chúng tôi</a>
+                
+                {isAuthenticated && (
+                  <>
+                    <hr className="border-gray-200" />
+                    <div className="flex items-center space-x-3 py-2">
+                      <NotificationIcon 
+                        onClick={() => {
+                          setShowNotificationDropdown(!showNotificationDropdown);
+                          setShowMobileMenu(false);
+                        }}
+                      />
+                      <span className="text-gray-600">Thông báo</span>
+                    </div>
+                    {isParent ? (
+                      <>
+                        <button 
+                          onClick={() => {
+                            handleProfileClick();
+                            setShowMobileMenu(false);
+                          }}
+                          className="block w-full text-left text-gray-600 hover:text-primary transition py-2"
+                        >
+                          Hồ sơ
+                        </button>
+                        <button 
+                          onClick={() => {
+                            handleLogout();
+                            setShowMobileMenu(false);
+                          }}
+                          className="block w-full text-left text-gray-600 hover:text-primary transition py-2"
+                        >
+                          Đăng xuất
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <button 
+                          onClick={() => {
+                            handleDashboardClick();
+                            setShowMobileMenu(false);
+                          }}
+                          className="block w-full text-left text-gray-600 hover:text-primary transition py-2"
+                        >
+                          Dashboard
+                        </button>
+                        <button 
+                          onClick={() => {
+                            handleProfileClick();
+                            setShowMobileMenu(false);
+                          }}
+                          className="block w-full text-left text-gray-600 hover:text-primary transition py-2"
+                        >
+                          Hồ sơ
+                        </button>
+                        <button 
+                          onClick={() => {
+                            handleLogout();
+                            setShowMobileMenu(false);
+                          }}
+                          className="block w-full text-left text-gray-600 hover:text-primary transition py-2"
+                        >
+                          Đăng xuất
+                        </button>
+                      </>
+                    )}
+                  </>
+                )}
+                
+                {!isAuthenticated && (
+                  <button 
+                    onClick={() => {
+                      handleLogin();
+                      setShowMobileMenu(false);
+                    }}
+                    className="w-full bg-primary text-white px-5 py-2 rounded-button font-medium hover:bg-indigo-600 transition"
+                  >
+                    Đăng nhập
+                  </button>
+                )}
+              </nav>
+            </div>
+          </div>
+        )}
       </header>
 
       {/* Hero Section */}
@@ -423,78 +553,7 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Blog Section */}
-      <section id="blog" className="py-16 md:py-24 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Blog sức khỏe</h2>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Cập nhật những kiến thức, tin tức mới nhất về sức khỏe học đường và cách chăm sóc sức khỏe cho học sinh.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Blog Post 1 */}
-            <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition">
-              <img 
-                src="https://readdy.ai/api/search-image?query=School%20nurse%20checking%20temperature%20of%20elementary%20school%20student%20in%20bright%2C%20clean%20school%20infirmary%2C%20caring%20medical%20professional%2C%20child%20health%20checkup%20in%20educational%20setting&width=400&height=250&seq=blog1&orientation=landscape" 
-                alt="Kiểm tra sức khỏe định kỳ" 
-                className="w-full h-48 object-cover object-top"
-              />
-              <div className="p-6">
-                <div className="text-sm text-gray-500 mb-2">30 Tháng 6, 2025</div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                  5 chỉ số sức khỏe quan trọng cần theo dõi ở trẻ em độ tuổi học đường
-                </h3>
-                <p className="text-gray-600 mb-4">
-                  Tìm hiểu những chỉ số sức khỏe quan trọng cần được theo dõi định kỳ để đảm bảo sự phát triển toàn diện của trẻ em trong độ tuổi học đường.
-                </p>
-                <a href="#" className="text-primary font-medium hover:underline">Đọc tiếp →</a>
-              </div>
-            </div>
-            {/* Blog Post 2 */}
-            <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition">
-              <img 
-                src="https://readdy.ai/api/search-image?query=Healthy%20school%20lunch%20with%20fresh%20vegetables%2C%20fruits%2C%20and%20balanced%20nutrition%20on%20cafeteria%20tray%2C%20colorful%20nutritious%20meal%20for%20students%2C%20school%20food%20program&width=400&height=250&seq=blog2&orientation=landscape" 
-                alt="Dinh dưỡng học đường" 
-                className="w-full h-48 object-cover object-top"
-              />
-              <div className="p-6">
-                <div className="text-sm text-gray-500 mb-2">25 Tháng 6, 2025</div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                  Dinh dưỡng học đường: Xây dựng thực đơn cân bằng cho học sinh
-                </h3>
-                <p className="text-gray-600 mb-4">
-                  Hướng dẫn chi tiết về cách xây dựng thực đơn cân bằng dinh dưỡng cho học sinh, giúp nâng cao sức khỏe và khả năng học tập.
-                </p>
-                <a href="#" className="text-primary font-medium hover:underline">Đọc tiếp →</a>
-              </div>
-            </div>
-            {/* Blog Post 3 */}
-            <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition">
-              <img 
-                src="https://readdy.ai/api/search-image?query=Teacher%20leading%20students%20in%20physical%20exercise%20in%20school%20gymnasium%2C%20children%20doing%20morning%20workout%20in%20bright%20school%20gym%2C%20active%20healthy%20lifestyle%20in%20education&width=400&height=250&seq=blog3&orientation=landscape" 
-                alt="Hoạt động thể chất" 
-                className="w-full h-48 object-cover object-top"
-              />
-              <div className="p-6">
-                <div className="text-sm text-gray-500 mb-2">20 Tháng 6, 2025</div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                  Tầm quan trọng của hoạt động thể chất đối với sự phát triển của học sinh
-                </h3>
-                <p className="text-gray-600 mb-4">
-                  Nghiên cứu mới nhất về tác động của hoạt động thể chất đối với sự phát triển thể chất và tinh thần của học sinh các cấp.
-                </p>
-                <a href="#" className="text-primary font-medium hover:underline">Đọc tiếp →</a>
-              </div>
-            </div>
-          </div>
-          <div className="mt-12 text-center">
-            <a href="#" className="bg-white text-primary border border-primary px-6 py-3 rounded-button font-medium hover:bg-primary hover:text-white transition inline-block whitespace-nowrap">
-              Xem tất cả bài viết
-            </a>
-          </div>
-        </div>
-      </section>
+
 
       {/* Contact Section */}
       <section id="contact" className="py-16 md:py-24 bg-gray-50">
@@ -629,7 +688,6 @@ const HomePage = () => {
               <ul className="space-y-3">
                 <li><a href="#features" className="text-gray-400 hover:text-white transition">Tính năng</a></li>
                 <li><a href="#about" className="text-gray-400 hover:text-white transition">Về chúng tôi</a></li>
-                <li><a href="#blog" className="text-gray-400 hover:text-white transition">Blog sức khỏe</a></li>
                 <li><a href="#contact" className="text-gray-400 hover:text-white transition">Liên hệ</a></li>
               </ul>
             </div>
@@ -678,6 +736,29 @@ const HomePage = () => {
           </div>
         </div>
       </footer>
+      
+      {/* Mobile Notification Dropdown */}
+      {showNotificationDropdown && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 md:hidden">
+          <div className="absolute top-0 right-0 w-80 h-full bg-white shadow-xl">
+            <div className="flex items-center justify-between p-4 border-b border-gray-100">
+              <h3 className="text-lg font-semibold text-gray-900">Thông báo</h3>
+              <button
+                onClick={() => setShowNotificationDropdown(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <i className="ri-close-line ri-lg"></i>
+              </button>
+            </div>
+            <div className="h-full overflow-y-auto">
+              <NotificationDropdown 
+                isVisible={showNotificationDropdown}
+                onClose={() => setShowNotificationDropdown(false)}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

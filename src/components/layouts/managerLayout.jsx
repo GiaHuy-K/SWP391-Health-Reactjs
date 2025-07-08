@@ -11,6 +11,8 @@ import {
   BranchesOutlined,
   InsuranceOutlined,
   HomeOutlined,
+  SolutionOutlined,
+  FileTextOutlined,
 } from '@ant-design/icons';
 import { Breadcrumb, Layout, Menu, theme, Avatar, Dropdown, Space, message } from 'antd';
 import { Link, Outlet, useNavigate } from 'react-router-dom';
@@ -29,11 +31,13 @@ function getItem(label, key, icon, children, link = true) {
 }
 
 const items = [
+  getItem('Dashboard', 'dashboardM', <DashboardOutlined />),
   getItem('Quản lý sự cố', 'event-Manager', <PieChartOutlined />),
   //supply-Manager
   getItem('Quản lý vật tư y tế', 'supply-Manager', <DesktopOutlined />),
   getItem('Thông tin tiêm chủng học sinh', 'student-vaccination', <BranchesOutlined />),
   getItem('Thông tin bệnh mãn tính học sinh', 'student-chronic-disease', <InsuranceOutlined />),
+  getItem('Quản lý Blog', 'manage-blogs', <FileTextOutlined />),
   getItem(
     "Về trang chủ",
     "home",
@@ -109,7 +113,17 @@ const ManagerLayout = () => {
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <Sider collapsible collapsed={collapsed} onCollapse={value => setCollapsed(value)}>
-        <div className="demo-logo-vertical" />
+        <div
+          style={{
+            height: 32,
+            margin: 16,
+            color: "white",
+            fontWeight: "bold",
+            textAlign: "center",
+          }}
+        >
+          Quản Lý
+        </div>
         <Menu 
           theme="dark" 
           defaultSelectedKeys={['event-Manager']} 
@@ -142,7 +156,9 @@ const ManagerLayout = () => {
             }}
           >
             <span style={{ fontSize: 22 }}>👋</span> Xin chào,{" "}
-            <strong>Quản lý</strong>
+            <strong>{user?.fullName || "Quản Lý"}</strong>
+
+            
           </div>
 
           <Dropdown menu={userMenu} placement="bottomRight">

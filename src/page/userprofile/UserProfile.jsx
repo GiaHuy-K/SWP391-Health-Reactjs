@@ -1009,7 +1009,7 @@ const Footer = () => (
           <ul className="space-y-3">
             <li><a href="#features" className="text-gray-400 hover:text-white transition">Tính năng</a></li>
             <li><a href="#about" className="text-gray-400 hover:text-white transition">Về chúng tôi</a></li>
-            <li><a href="#blog" className="text-gray-400 hover:text-white transition">Blog sức khỏe</a></li>
+            
             <li><a href="#contact" className="text-gray-400 hover:text-white transition">Liên hệ</a></li>
           </ul>
         </div>

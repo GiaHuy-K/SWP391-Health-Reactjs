@@ -69,14 +69,6 @@ const EditMedicalSupplyModal = ({ open, onClose, supply, onSuccess }) => {
         <Form.Item label="Hạn sử dụng" name="expiredDate">
           <DatePicker format="YYYY-MM-DD" style={{ width: "100%" }} />
         </Form.Item>
-
-        <Form.Item label="Trạng thái" name="status" rules={[{ required: true }]}>
-          <Select>
-            <Option value="AVAILABLE">Sẵn có</Option>
-            <Option value="OUT_OF_STOCK">Hết hàng</Option>
-            <Option value="DISPOSE">Không còn sử dụng</Option>
-          </Select>
-        </Form.Item>
       </Form>
     </Modal>
   );
