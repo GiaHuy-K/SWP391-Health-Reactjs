@@ -43,6 +43,7 @@ import CreateBlogPage from "./page/blog/create-blog.jsx";
 import BlogDetailPage from "./page/blog/blog-detail.jsx";
 import ManageBlogsNurse from "./page/schoolnurse/manage-blogs.jsx";
 import EditBlogPage from "./page/blog/edit-blog.jsx";
+import PublicBlogList from "./page/blog/public-blog-list.jsx";
 
 // Component bảo vệ route yêu cầu đăng nhập
 const PrivateRoute = ({ children }) => {
@@ -85,6 +86,8 @@ const router = createBrowserRouter([
   { path: "/forgot-password", element: <ForgotPassword /> },
   { path: "/reset-password", element: <ResetPassword /> },
   { path: "/notifications", element: <Notification /> }, // tạm thời để thông báo, sau này sẽ làm lại
+  { path: "/blogs", element: <PublicBlogList /> }, // Public blog list
+  { path: "/blogs/:blogId", element: <BlogDetailPage /> }, // Route public blog detail
 
   //dashboard của manager (Quản lý Nhân sự/Nhân viên)
   { 

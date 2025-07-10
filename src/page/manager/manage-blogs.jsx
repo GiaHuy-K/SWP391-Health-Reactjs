@@ -45,6 +45,7 @@ import { CategoryTag, StatusTag } from "../../components/blog/EnumDisplay";
 import dayjs from "dayjs";
 import "dayjs/locale/vi";
 import { useAuth } from "../../config/AuthContext";
+import { useBlogPermissions, BlogPermissionGuard } from "../../utils/blogPermissions";
 
 dayjs.locale("vi");
 
@@ -55,6 +56,7 @@ const { Title, Text, Paragraph } = Typography;
 const ManageBlogs = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const permissions = useBlogPermissions();
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState({
@@ -116,8 +118,8 @@ const ManageBlogs = () => {
       const allBlogs = response.content || [];
       setStats({
         total: allBlogs.length,
-        published: allBlogs.filter(b => b.status === "published").length,
-        draft: allBlogs.filter(b => b.status === "draft").length,
+        published: allBlogs.filter(b => b.status === "Công khai").length,
+        draft: allBlogs.filter(b => b.status === "Riêng tư").length,
       });
     } catch (error) {
       console.error("Lỗi khi tải danh sách blog:", error);
@@ -131,7 +133,11 @@ const ManageBlogs = () => {
 
   // Handle actions
   const handleCreateBlog = () => {
-    navigate("/dashboardManager/blog/create");
+    if (permissions.canCreateBlog()) {
+      navigate("/dashboardManager/blog/create");
+    } else {
+      message.error("Bạn không có quyền tạo blog!");
+    }
   };
 
   const handleViewBlog = (blogId) => {
@@ -142,7 +148,12 @@ const ManageBlogs = () => {
     navigate(`/dashboardManager/blog/edit/${blogId}`);
   };
 
-  const handleDeleteBlog = async (blogId) => {
+  const handleDeleteBlog = async (blogId, blogData) => {
+    if (!permissions.canDeleteBlog(blogData)) {
+      message.error("Bạn không có quyền xóa blog này!");
+      return;
+    }
+    
     try {
       await deleteBlog(blogId);
       message.success("Xóa blog thành công");
@@ -153,8 +164,13 @@ const ManageBlogs = () => {
   };
 
   const handleStatusChange = async (blogId, newStatus) => {
+    if (!permissions.canUpdateBlogStatus()) {
+      message.error("Bạn không có quyền cập nhật trạng thái blog!");
+      return;
+    }
+    
     try {
-      await updateBlogStatus(blogId, newStatus);
+      await updateBlogStatus(blogId, { status: newStatus }); // SỬA: truyền object thay vì string
       message.success("Cập nhật trạng thái thành công");
       fetchBlogs();
     } catch (error) {
@@ -273,33 +289,38 @@ const ManageBlogs = () => {
               onClick={() => handleEditBlog(record.id)}
             />
           </Tooltip>
-          {user?.role === "Quản lý Nhân sự/Nhân viên" && record.status === "Riêng tư" && (
-            <Tooltip title="Duyệt bài (Công khai)">
+          {/* Sửa logic ở đây: StaffManager có quyền cập nhật status thì luôn thấy nút này */}
+          <BlogPermissionGuard action="updateStatus" blogData={record} fallback={null}>
+            <Tooltip title="Cập nhật trạng thái">
               <Button
                 type="text"
                 icon={<CheckCircleOutlined />}
                 size="small"
-                onClick={() => handleStatusChange(record.id, "Công khai")}
-              />
+                onClick={() => handleStatusChange(record.id, record.status === "Công khai" ? "Riêng tư" : "Công khai")}
+              >
+                {record.status === "Công khai" ? "Ẩn" : "Duyệt"}
+              </Button>
             </Tooltip>
-          )}
-          <Tooltip title="Xóa">
-            <Popconfirm
-              title="Bạn có chắc muốn xóa blog này?"
-              description="Hành động này không thể hoàn tác."
-              onConfirm={() => handleDeleteBlog(record.id)}
-              okText="Xóa"
-              cancelText="Hủy"
-              okType="danger"
-            >
-              <Button
-                type="text"
-                icon={<DeleteOutlined />}
-                size="small"
-                danger
-              />
-            </Popconfirm>
-          </Tooltip>
+          </BlogPermissionGuard>
+          <BlogPermissionGuard action="delete" blogData={record} fallback={null}>
+            <Tooltip title="Xóa">
+              <Popconfirm
+                title="Bạn có chắc muốn xóa blog này?"
+                description="Hành động này không thể hoàn tác."
+                onConfirm={() => handleDeleteBlog(record.id, record)}
+                okText="Xóa"
+                cancelText="Hủy"
+                okType="danger"
+              >
+                <Button
+                  type="text"
+                  icon={<DeleteOutlined />}
+                  size="small"
+                  danger
+                />
+              </Popconfirm>
+            </Tooltip>
+          </BlogPermissionGuard>
         </Space>
       ),
     },
@@ -403,14 +424,16 @@ const ManageBlogs = () => {
             </Button>
           </Col>
           <Col span={4}>
+            <BlogPermissionGuard action="create" fallback={null}>
               <Button
                 type="primary"
                 icon={<PlusOutlined />}
                 onClick={handleCreateBlog}
-              style={{ width: "100%" }}
+                style={{ width: "100%" }}
               >
                 Tạo Blog
               </Button>
+            </BlogPermissionGuard>
           </Col>
         </Row>
       </Card>

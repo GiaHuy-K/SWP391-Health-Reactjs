@@ -10,10 +10,12 @@ import {
   deleteEditorImage
 } from "../../services/api.blog";
 import { toast } from "react-toastify";
+import { useBlogPermissions } from "../../utils/blogPermissions";
 import "./BlogCreateForm.css";
 
 const BlogCreateForm = ({ onSuccess, onCancel, mode = "create", initialData }) => {
   const editorRef = useRef(null);
+  const permissions = useBlogPermissions();
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState([]);
   const [statuses, setStatuses] = useState([]);
@@ -83,6 +85,11 @@ const BlogCreateForm = ({ onSuccess, onCancel, mode = "create", initialData }) =
   const handleThumbnailUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
+
+    if (!permissions.canUploadThumbnail()) {
+      toast.error("Bạn không có quyền upload thumbnail!");
+      return;
+    }
 
     if (!file.type.startsWith("image/")) {
       toast.error("Vui lòng chọn file ảnh!");
@@ -169,7 +176,13 @@ const BlogCreateForm = ({ onSuccess, onCancel, mode = "create", initialData }) =
     try {
       let createdOrUpdatedBlog;
       setLoading(true);
+      
+      // Kiểm tra permission trước khi thực hiện action
       if (mode === "edit") {
+        if (!permissions.canUpdateBlog(initialData)) {
+          toast.error("Bạn không có quyền cập nhật blog này!");
+          return;
+        }
         // Gọi updateBlog
         const { updateBlog } = await import("../../services/api.blog");
         createdOrUpdatedBlog = await updateBlog(initialData.id, {
@@ -182,6 +195,10 @@ const BlogCreateForm = ({ onSuccess, onCancel, mode = "create", initialData }) =
         });
         toast.success("Cập nhật blog thành công!");
       } else {
+        if (!permissions.canCreateBlog()) {
+          toast.error("Bạn không có quyền tạo blog!");
+          return;
+        }
         // Gọi createBlog
         createdOrUpdatedBlog = await createBlog({
           title: form.title.trim(),

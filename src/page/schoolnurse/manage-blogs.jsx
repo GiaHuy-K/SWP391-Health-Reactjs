@@ -30,6 +30,8 @@ import {
   ClockCircleOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../config/AuthContext";
+import { useBlogPermissions, BlogPermissionGuard } from "../../utils/blogPermissions";
 import {
   getMyBlogs,
   deleteBlog,
@@ -50,6 +52,8 @@ const { Title, Text } = Typography;
 
 const ManageBlogsNurse = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const permissions = useBlogPermissions();
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState({
@@ -112,7 +116,11 @@ const ManageBlogsNurse = () => {
   };
 
   const handleCreateBlog = () => {
-    navigate("/dashboardNurse/blog/create");
+    if (permissions.canCreateBlog()) {
+      navigate("/dashboardNurse/blog/create");
+    } else {
+      message.error("Bạn không có quyền tạo blog!");
+    }
   };
 
   const handleViewBlog = (blogId) => {
@@ -123,7 +131,12 @@ const ManageBlogsNurse = () => {
     navigate(`/dashboardNurse/blog/edit/${blogId}`);
   };
 
-  const handleDeleteBlog = async (blogId) => {
+  const handleDeleteBlog = async (blogId, blogData) => {
+    if (!permissions.canDeleteBlog(blogData)) {
+      message.error("Bạn không có quyền xóa blog này!");
+      return;
+    }
+    
     try {
       await deleteBlog(blogId);
       message.success("Xóa blog thành công");
@@ -234,23 +247,25 @@ const ManageBlogsNurse = () => {
               onClick={() => handleEditBlog(record.id)}
             />
           </Tooltip>
-          <Tooltip title="Xóa">
-            <Popconfirm
-              title="Bạn có chắc muốn xóa blog này?"
-              description="Hành động này không thể hoàn tác."
-              onConfirm={() => handleDeleteBlog(record.id)}
-              okText="Xóa"
-              cancelText="Hủy"
-              okType="danger"
-            >
-              <Button
-                type="text"
-                icon={<DeleteOutlined />}
-                size="small"
-                danger
-              />
-            </Popconfirm>
-          </Tooltip>
+          <BlogPermissionGuard action="delete" blogData={record} fallback={null}>
+            <Tooltip title="Xóa">
+              <Popconfirm
+                title="Bạn có chắc muốn xóa blog này?"
+                description="Hành động này không thể hoàn tác."
+                onConfirm={() => handleDeleteBlog(record.id, record)}
+                okText="Xóa"
+                cancelText="Hủy"
+                okType="danger"
+              >
+                <Button
+                  type="text"
+                  icon={<DeleteOutlined />}
+                  size="small"
+                  danger
+                />
+              </Popconfirm>
+            </Tooltip>
+          </BlogPermissionGuard>
         </Space>
       ),
     },
