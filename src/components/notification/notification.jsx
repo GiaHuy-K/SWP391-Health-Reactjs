@@ -80,9 +80,6 @@ function Notification() {
             <a className={styles.navLink} href="#about">
               Về chúng tôi
             </a>
-            <a className={styles.navLink} href="#blog">
-              Blog sức khỏe
-            </a>
           </div>
           <div className={styles.authSection}>
             {!isAuthenticated ? (

@@ -37,7 +37,13 @@ import Notification from "./components/notification/notification.jsx";
 
 import ManageStudentInfVc from "./page/schoolnurse/manage-studentInfVc.jsx";
 import ManageChronic from "./page/manager/manage-chronic.jsx";
-
+import ManageChronicNurse from "./page/schoolnurse/manage-chronicDia.jsx";
+import ManageBlogs from "./page/manager/manage-blogs.jsx";
+import CreateBlogPage from "./page/blog/create-blog.jsx";
+import BlogDetailPage from "./page/blog/blog-detail.jsx";
+import ManageBlogsNurse from "./page/schoolnurse/manage-blogs.jsx";
+import EditBlogPage from "./page/blog/edit-blog.jsx";
+import PublicBlogList from "./page/blog/public-blog-list.jsx";
 
 // Component bảo vệ route yêu cầu đăng nhập
 const PrivateRoute = ({ children }) => {
@@ -80,6 +86,8 @@ const router = createBrowserRouter([
   { path: "/forgot-password", element: <ForgotPassword /> },
   { path: "/reset-password", element: <ResetPassword /> },
   { path: "/notifications", element: <Notification /> }, // tạm thời để thông báo, sau này sẽ làm lại
+  { path: "/blogs", element: <PublicBlogList /> }, // Public blog list
+  { path: "/blogs/:blogId", element: <BlogDetailPage /> }, // Route public blog detail
 
   //dashboard của manager (Quản lý Nhân sự/Nhân viên)
   { 
@@ -96,6 +104,10 @@ const router = createBrowserRouter([
       {path: "supply-Manager", element: <ManageMedicalSupplyM/>},
       {path: "student-vaccination", element: <StudentVaccinationPage/>},
       {path: "student-chronic-disease", element: <ManageChronic />},
+      {path: "manage-blogs", element: <ManageBlogs />},
+      {path: "blog/create", element: <CreateBlogPage /> },
+      { path: "blog/:blogId", element: <BlogDetailPage /> },
+      {path: "blog/edit/:blogId", element: <EditBlogPage /> },
     ] 
   },
   
@@ -113,6 +125,11 @@ const router = createBrowserRouter([
       {path:"event-Nurse", element:<ManageEvent/>},
       {path :"medicalSupply-Nurse", element: <ManageMedicalSupply/>},
       {path: "student-vaccination", element: <ManageStudentInfVc/>},
+      {path: "student-chronic-disease", element: <ManageChronicNurse /> },
+      {path: "blog/create", element: <CreateBlogPage /> },
+      {path: "manage-blogs", element: <ManageBlogsNurse /> },
+      {path: "blog/edit/:blogId", element: <EditBlogPage /> },
+      {path: "blog/:blogId", element: <BlogDetailPage /> },
     ] 
   },
 

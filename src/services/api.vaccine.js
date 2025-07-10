@@ -1,7 +1,8 @@
 import { toast } from "react-toastify";
 import api from "../config/axios";
 
-  
+const isDev = process.env.NODE_ENV === "development";
+
 /**
  * Lấy danh sách tất cả thông tin tiêm chủng của một học sinh (phân trang)
  * @param {number|string} id - ID học sinh
@@ -11,10 +12,10 @@ import api from "../config/axios";
 export const getStudentVaccinations = async (id, params = {}) => {
   try {
     const response = await api.get(`/students/${id}/vaccinations`, { params });
-    console.log("Lấy danh sách tiêm chủng cho học sinh:", response.data);
+    if (isDev) console.log("Lấy danh sách tiêm chủng cho học sinh:", response.data);
     return response.data;
   } catch (error) {
-    toast.error(error.response?.data?.message || "Không thể lấy danh sách tiêm chủng");
+    toast.error(error?.response?.data?.message || "Không thể lấy danh sách tiêm chủng");
     throw error;
   }
 };
@@ -31,7 +32,7 @@ export const addStudentVaccination = async (studentId, data) => {
     toast.success("Thêm mới thông tin tiêm chủng thành công!");
     return response.data;
   } catch (error) {
-    toast.error(error.response?.data?.message || "Không thể thêm mới thông tin tiêm chủng");
+    toast.error(error?.response?.data?.message || "Không thể thêm mới thông tin tiêm chủng");
     throw error;
   }
 };
@@ -48,7 +49,7 @@ export const updateStudentVaccination = async (vaccinationId, data) => {
     toast.success("Cập nhật thông tin tiêm chủng thành công!");
     return response.data;
   } catch (error) {
-    toast.error(error.response?.data?.message || "Không thể cập nhật thông tin tiêm chủng");
+    toast.error(error?.response?.data?.message || "Không thể cập nhật thông tin tiêm chủng");
     throw error;
   }
 };
@@ -63,7 +64,7 @@ export const deleteStudentVaccination = async (vaccinationId) => {
     await api.delete(`/vaccinations/${vaccinationId}`);
     toast.success("Xoá thông tin tiêm chủng thành công!");
   } catch (error) {
-    toast.error(error.response?.data?.message || "Không thể xoá thông tin tiêm chủng");
+    toast.error(error?.response?.data?.message || "Không thể xoá thông tin tiêm chủng");
     throw error;
   }
 };
@@ -84,7 +85,7 @@ export const updateVaccinationStatus = async (vaccinationId, newStatus, approver
     toast.success("Cập nhật trạng thái tiêm chủng thành công!");
     return response.data;
   } catch (error) {
-    toast.error(error.response?.data?.message || "Không thể cập nhật trạng thái tiêm chủng");
+    toast.error(error?.response?.data?.message || "Không thể cập nhật trạng thái tiêm chủng");
     throw error;
   }
 };
@@ -99,7 +100,7 @@ export const getVaccinationDetail = async (vaccinationId) => {
     const response = await api.get(`/vaccinations/${vaccinationId}`);
     return response.data;
   } catch (error) {
-    toast.error(error.response?.data?.message || "Không thể lấy chi tiết tiêm chủng");
+    toast.error(error?.response?.data?.message || "Không thể lấy chi tiết tiêm chủng");
     throw error;
   }
 };
@@ -112,10 +113,10 @@ export const getVaccinationDetail = async (vaccinationId) => {
 export const getAllVaccinations = async (params = {}) => {
   try {
     const response = await api.get("/vaccinations", { params });
-    console.log("Lấy danh sách tất cả tiêm chủng:", response.data);
+    if (isDev) console.log("Lấy danh sách tất cả tiêm chủng:", response.data);
     return response.data;
   } catch (error) {
-    toast.error(error.response?.data?.message || "Không thể lấy danh sách tiêm chủng");
+    toast.error(error?.response?.data?.message || "Không thể lấy danh sách tiêm chủng");
     throw error;
   }
 };
@@ -128,10 +129,10 @@ export const getAllVaccinations = async (params = {}) => {
 export const getPendingVaccinations = async (params = {}) => {
   try {
     const response = await api.get("/vaccinations/pending", { params });
-    console.log("Lấy danh sách tiêm chủng chờ duyệt:", response.data);
+    if (isDev) console.log("Lấy danh sách tiêm chủng chờ duyệt:", response.data);
     return response.data;
   } catch (error) {
-    toast.error(error.response?.data?.message || "Không thể lấy danh sách tiêm chủng chờ duyệt");
+    toast.error(error?.response?.data?.message || "Không thể lấy danh sách tiêm chủng chờ duyệt");
     throw error;
   }
 };
@@ -146,7 +147,7 @@ export const getVaccinationFileUrl = async (vaccinationId) => {
     const response = await api.get(`/vaccinations/${vaccinationId}/file-access-url`);
     return response.data;
   } catch (error) {
-    toast.error(error.response?.data?.message || "Không thể lấy URL file bằng chứng");
+    toast.error(error?.response?.data?.message || "Không thể lấy URL file bằng chứng");
     throw error;
   }
 };

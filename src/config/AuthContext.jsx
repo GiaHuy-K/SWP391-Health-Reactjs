@@ -18,7 +18,10 @@ export const AuthProvider = ({ children }) => {
 
       try {
         const profileResponse = await api.get("/user/profile/me");
-        setUser(profileResponse.data);
+        setUser({
+          ...profileResponse.data,
+          id: profileResponse.data.id || profileResponse.data.userId,
+        });
         setIsAuthenticated(true);
       } catch (error) {
         console.warn("Không lấy được profile:", error);
@@ -64,7 +67,10 @@ export const AuthProvider = ({ children }) => {
     }
 
     console.log("Dữ liệu người dùng sau login:", profileData);
-    setUser(profileData);
+    setUser({
+      ...profileData,
+      id: profileData.id || profileData.userId,
+    });
     setIsAuthenticated(true);
   };
 

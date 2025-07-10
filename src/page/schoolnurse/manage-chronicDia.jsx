@@ -1,44 +1,44 @@
 import React, { useEffect, useState } from "react";
-import { getAllVaccinations } from "../../services/api.vaccine";
+import { getAllChronicDiseases } from "../../services/api.chronic";
 import { message, Input, Button, Space } from "antd";
-import StudentVaccinationTableTemplate from "../../components/templates/studentVaccinationTableTemplate";
+import ChronicDiseaseTableTemplate from "../../components/templates/chronicDiseaseTableTemplate";
 
-const ManageStudentInfVc = () => {
-  const [vaccinationList, setVaccinationList] = useState([]);
+const ManageChronicDia = () => {
+  const [chronicList, setChronicList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
   const [filteredList, setFilteredList] = useState([]);
 
   useEffect(() => {
-    console.log("Khởi tạo trang quản lý tiêm chủng học sinh (Y tá)");
-    const fetchVaccinationList = async () => {
+    console.log("Khởi tạo trang quản lý bệnh mãn tính học sinh (Y tá)");
+    const fetchChronicList = async () => {
       setLoading(true);
       try {
-        const res = await getAllVaccinations();
-        setVaccinationList(res.content || []);
+        const res = await getAllChronicDiseases();
+        setChronicList(res.content || []);
         setFilteredList(res.content || []);
-        console.log("Lấy danh sách tiêm chủng thành công:", res.content?.length || 0);
+        console.log("Lấy danh sách bệnh mãn tính thành công:", res.content?.length || 0);
       } catch (err) {
-        message.error("Lỗi khi lấy dữ liệu tiêm chủng!");
-        console.error("Lỗi khi lấy danh sách tiêm chủng:", err);
+        message.error("Lỗi khi lấy dữ liệu bệnh mãn tính!");
+        console.error("Lỗi khi lấy danh sách bệnh mãn tính:", err);
       } finally {
         setLoading(false);
       }
     };
-    fetchVaccinationList();
+    fetchChronicList();
     return () => {
-      console.log("Rời khỏi trang quản lý tiêm chủng học sinh (Y tá)");
+      console.log("Rời khỏi trang quản lý bệnh mãn tính học sinh (Y tá)");
     };
   }, []);
 
   const handleSearch = () => {
     if (!search.trim()) {
-      setFilteredList(vaccinationList);
+      setFilteredList(chronicList);
       return;
     }
     const keyword = search.trim().toLowerCase();
     setFilteredList(
-      vaccinationList.filter(item =>
+      chronicList.filter(item =>
         item.studentFullName && item.studentFullName.toLowerCase().includes(keyword)
       )
     );
@@ -59,9 +59,9 @@ const ManageStudentInfVc = () => {
           Tìm kiếm
         </Button>
       </Space>
-      <StudentVaccinationTableTemplate data={filteredList} loading={loading} />
+      <ChronicDiseaseTableTemplate data={filteredList} loading={loading} />
     </div>
   );
 };
 
-export default ManageStudentInfVc;
+export default ManageChronicDia;

@@ -10,6 +10,9 @@ import {
   DashboardOutlined,
   BranchesOutlined,
   InsuranceOutlined,
+  HomeOutlined,
+  SolutionOutlined,
+  FileTextOutlined,
 } from '@ant-design/icons';
 import { Breadcrumb, Layout, Menu, theme, Avatar, Dropdown, Space, message } from 'antd';
 import { Link, Outlet, useNavigate } from 'react-router-dom';
@@ -18,12 +21,12 @@ import { isParentRole } from "../../config/AuthContext";
 
 const { Header, Content, Footer, Sider } = Layout;
 
-function getItem(label, key, icon, children) {
+function getItem(label, key, icon, children, link = true) {
   return {
     key,
     icon,
     children,
-    label,
+    label: link ? <Link to={`/dashboardManager/${key}`}>{label}</Link> : label,
   };
 }
 
@@ -34,6 +37,14 @@ const items = [
   getItem('Quản lý vật tư y tế', 'supply-Manager', <DesktopOutlined />),
   getItem('Thông tin tiêm chủng học sinh', 'student-vaccination', <BranchesOutlined />),
   getItem('Thông tin bệnh mãn tính học sinh', 'student-chronic-disease', <InsuranceOutlined />),
+  getItem('Quản lý Blog', 'manage-blogs', <FileTextOutlined />),
+  getItem(
+    "Về trang chủ",
+    "home",
+    <HomeOutlined />,
+    undefined,
+    false
+  ),
 ];
 
 const ManagerLayout = () => {
@@ -58,6 +69,8 @@ const ManagerLayout = () => {
       navigate("/dashboardManager/student-chronic-disease");
     } else if (key === "student-vaccination") {
       navigate("/dashboardManager/student-vaccination");
+    } else if (key === "home") {
+      navigate("/");
     }
   };
 
@@ -116,7 +129,10 @@ const ManagerLayout = () => {
           defaultSelectedKeys={['event-Manager']} 
           mode="inline" 
           items={items} 
-          onClick={({ key }) => navigate(`/dashboardManager/${key}`)}
+          onClick={({ key }) => {
+            if (key === "home") navigate("/");
+            // các xử lý khác
+          }}
         />
       </Sider>
       <Layout>
