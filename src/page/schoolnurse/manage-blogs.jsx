@@ -117,7 +117,7 @@ const ManageBlogsNurse = () => {
 
   const handleCreateBlog = () => {
     if (permissions.canCreateBlog()) {
-      navigate("/dashboardNurse/blog/create");
+    navigate("/dashboardNurse/blog/create");
     } else {
       message.error("Bạn không có quyền tạo blog!");
     }
@@ -248,23 +248,23 @@ const ManageBlogsNurse = () => {
             />
           </Tooltip>
           <BlogPermissionGuard action="delete" blogData={record} fallback={null}>
-            <Tooltip title="Xóa">
-              <Popconfirm
-                title="Bạn có chắc muốn xóa blog này?"
-                description="Hành động này không thể hoàn tác."
+          <Tooltip title="Xóa">
+            <Popconfirm
+              title="Bạn có chắc muốn xóa blog này?"
+              description="Hành động này không thể hoàn tác."
                 onConfirm={() => handleDeleteBlog(record.id, record)}
-                okText="Xóa"
-                cancelText="Hủy"
-                okType="danger"
-              >
-                <Button
-                  type="text"
-                  icon={<DeleteOutlined />}
-                  size="small"
-                  danger
-                />
-              </Popconfirm>
-            </Tooltip>
+              okText="Xóa"
+              cancelText="Hủy"
+              okType="danger"
+            >
+              <Button
+                type="text"
+                icon={<DeleteOutlined />}
+                size="small"
+                danger
+              />
+            </Popconfirm>
+          </Tooltip>
           </BlogPermissionGuard>
         </Space>
       ),
