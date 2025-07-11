@@ -68,9 +68,9 @@ const NotificationDropdown = ({ isVisible, onClose, onUnreadCountChange }) => {
       await markAsRead(item.id);
     }
 
-    if (item.link && typeof item.link === "string" && item.link.startsWith("/")) {
-      window.open(item.link, "_blank");
-    }
+    // if (item.link && typeof item.link === "string" && item.link.startsWith("/")) {
+    //   window.open(item.link, "_blank");
+    // }
     onClose();
   };
 
