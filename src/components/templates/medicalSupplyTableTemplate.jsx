@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Table, Button, Tag, Space, Popconfirm } from "antd";
 import MedicalSupplyDrawer from "../medicalSupply/medicalSupplyDrawer";
 import EditMedicalSupplyModal from "../medicalSupply/medicalSupplyEditModal";
-import AdjustStockModal from "../medicalSupply/medical-adjustStockModal";
+import AdjustStockModal from "../medicalSupply/medical-AdjustStockModal";
 
 const MedicalSupplyTableTemplate = ({
   data,
