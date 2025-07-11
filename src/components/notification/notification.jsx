@@ -184,9 +184,9 @@ function Notification() {
       );
     }
 
-    if (item.link && typeof item.link === "string" && item.link.startsWith("/")) {
-      window.open(item.link, "_blank");
-    }
+    // if (item.link && typeof item.link === "string" && item.link.startsWith("/")) {
+    //   window.open(item.link, "_blank");
+    // }
   };
 
   useEffect(() => {
