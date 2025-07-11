@@ -168,7 +168,7 @@ const EventHealthIncidentTemplate = () => {
 
   return (
     <div>
-      <h2 style={{ marginBottom: 16 }}>Danh sách sự cố sức khỏe</h2>
+
       <div>
         <Button
           type="primary"
