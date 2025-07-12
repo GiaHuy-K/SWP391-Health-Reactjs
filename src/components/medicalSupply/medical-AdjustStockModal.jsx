@@ -50,7 +50,7 @@ const AdjustStockModal = ({ open, onClose, onSubmit, supplyName }) => {
             value={form.getFieldValue("transactionType")}
             onChange={(value) => form.setFieldValue("transactionType", value)}
           >
-            <Option value="Nhập kho mới">Nhập kho mới</Option>       
+            <Option value="Điều chỉnh tăng">Nhập kho mới</Option>       
             <Option value="Điều chỉnh giảm">Điều chỉnh giảm</Option>
           </Select>
         </Form.Item>

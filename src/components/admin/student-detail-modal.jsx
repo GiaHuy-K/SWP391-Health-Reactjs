@@ -1,10 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Spin, Tag } from "antd";
+import { Col, Modal, Row, Spin, Tag } from "antd";
 import { getStudentById } from "../../services/api.student";
 
 const StudentDetailModal = ({ open, onClose, studentId }) => {
   const [student, setStudent] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  const renderGender = (gender) => {
+    switch (gender?.toLowerCase()) {
+      case "nam":
+        return <Tag color="blue">Nam</Tag>;
+      case "nữ":
+        return <Tag color="magenta">Nữ</Tag>;
+      default:
+        return <Tag>{gender}</Tag>;
+    }
+  };
+
   // Hàm để render trạng thái học sinh với màu sắc tương ứng
   const renderStatus = (status) => {
     let color;
@@ -50,24 +62,42 @@ const StudentDetailModal = ({ open, onClose, studentId }) => {
         <Spin />
       ) : student ? (
         <div>
-          <p>
-            <strong>Họ tên:</strong> {student.fullName}
-          </p>
-          <p>
-            <strong>Ngày sinh:</strong> {student.dateOfBirth}
-          </p>
-          <p>
-            <strong>Giới tính:</strong> {student.gender}
-          </p>
-          <p>
-            <strong>Lớp:</strong> {student.className}
-          </p>
-          <p>
-            <strong>Trạng thái:</strong> {renderStatus(student.status)}
-          </p>
-          <p>
-            <strong>Mã mời:</strong> {student.invitationCode}
-          </p>
+          <Row gutter={[16, 8]}>
+            <Col span={12}>
+              <strong>Họ tên:</strong> {student.fullName}
+            </Col>
+            <Col span={12}>
+              <strong>Giới tính:</strong> {renderGender(student.gender)}
+            </Col>
+
+            <Col span={12}>
+              <strong>Ngày sinh:</strong>{" "}
+              {new Date(student.dateOfBirth).toLocaleDateString("vi-VN")}
+            </Col>
+            <Col span={12}>
+              <strong>Trạng thái:</strong> {renderStatus(student.status)}
+            </Col>
+
+            <Col span={12}>
+              <strong>Khối:</strong> {student.classGroup}
+            </Col>
+            <Col span={12}>
+              <strong>Lớp:</strong> {student.className}
+            </Col>
+
+            <Col span={12}>
+              <strong>Mã mời:</strong> {student.invitationCode}
+            </Col>
+            <Col span={12}>
+              <strong>Ngày tạo:</strong>{" "}
+              {new Date(student.createdAt).toLocaleString("vi-VN")}
+            </Col>
+
+            <Col span={12}>
+              <strong>Cập nhật lần cuối:</strong>{" "}
+              {new Date(student.updatedAt).toLocaleString("vi-VN")}
+            </Col>
+          </Row>
         </div>
       ) : (
         <p>Không tìm thấy dữ liệu học sinh.</p>
