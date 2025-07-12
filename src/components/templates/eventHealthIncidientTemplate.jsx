@@ -15,14 +15,14 @@ import {
 } from "antd";
 import dayjs from "dayjs";
 import {
-  createHealthIncident,
+  deleteHealthIncident,
   getHealthIncidents,
 } from "../../services/api.healthIncident";
 import { getStudent } from "../../services/api.student";
 import { getMedicalSupplies } from "../../services/api.medicalSupply";
-import { PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
-import { toast } from "react-toastify";
 import HealthIncidentDetailModal from "../healthIncident/healthIncidentDetailModal";
+import CreateHealthIncidentModal from "../healthIncident/createHealthIncidentModal";
+import EditHealthIncidentModal from "../healthIncident/editHealthIncidentModal";
 
 const { TextArea } = Input;
 const { RangePicker } = DatePicker;
@@ -52,6 +52,9 @@ const EventHealthIncidentTemplate = () => {
   const [supplies, setSupplies] = useState([]);
   const [detailModalOpen, setDetailModalOpen] = useState(false);
   const [selectedIncidentId, setSelectedIncidentId] = useState(null);
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [selectedIncident, setSelectedIncident] = useState(null);
+
   const fetchIncidents = async () => {
     setLoading(true);
     try {
@@ -68,24 +71,6 @@ const EventHealthIncidentTemplate = () => {
       console.error("Lỗi khi lấy danh sách sự cố:", err);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const fetchFormData = async () => {
-    try {
-      const [studentRes, supplyRes] = await Promise.all([
-        getStudent(),
-        getMedicalSupplies(),
-      ]);
-      console.log("✅ API supplies:", supplyRes);
-      setStudents(Array.isArray(studentRes) ? studentRes : []);
-      setSupplies(
-        Array.isArray(supplyRes.content)
-          ? supplyRes.content.filter((s) => s.status === "Sẵn có")
-          : []
-      );
-    } catch (err) {
-      console.error("Lỗi khi load dữ liệu dropdown:", err);
     }
   };
 
@@ -148,15 +133,32 @@ const EventHealthIncidentTemplate = () => {
             type="primary"
             onClick={(e) => {
               e.stopPropagation();
+              setSelectedIncident(record);
+              setModalOpen(true);
             }}
           >
-            Sửa
+            Cập Nhật
           </Button>
+
           <Button
             type="primary"
             danger
             onClick={(e) => {
               e.stopPropagation();
+              Modal.confirm({
+                title: "Xác nhận xóa",
+                content: "Bạn có chắc chắn muốn xóa sự cố này?",
+                okText: "Xóa",
+                cancelText: "Hủy",
+                onOk: async () => {
+                  try {
+                    await deleteHealthIncident(record.incidentId);
+                    fetchIncidents(); // reload danh sách
+                  } catch (error) {
+                    console.error("Lỗi khi xóa sự cố:", error);
+                  }
+                },
+              });
             }}
           >
             Xóa mềm
@@ -165,10 +167,12 @@ const EventHealthIncidentTemplate = () => {
       ),
     },
   ];
+  const fetchDataAgain = () => {
+    fetchIncidents();
+  };
 
   return (
     <div>
-
       <div>
         <Button
           type="primary"
@@ -180,171 +184,20 @@ const EventHealthIncidentTemplate = () => {
           Thêm sự cố sức khỏe
         </Button>
       </div>
+      {/* Modal Thêm sự cố sức khỏe */}
 
-      <Modal
-        title="Thêm sự cố sức khỏe"
+      <CreateHealthIncidentModal
         open={createModalOpen}
-        onCancel={() => setCreateModalOpen(false)}
-        footer={null}
-        destroyOnHidden
-      >
-        <Form
-          form={createForm}
-          layout="vertical"
-          onFinish={async (values) => {
-            const payload = {
-              studentId: values.studentId,
-              incidentDateTime: values.incidentDateTime.toISOString(),
-              incidentType: values.incidentType,
-              description: values.description,
-              actionTaken: values.actionTaken,
-              location: values.location,
-              supplyUsages: values.supplyUsages.map((item) => ({
-                supplyId: item.supplyId,
-                quantityUsed: item.quantityUsed,
-                note: item.note,
-              })),
-            };
-            try {
-              await createHealthIncident(payload);
-              toast.success("Tạo sự cố thành công");
-              setCreateModalOpen(false);
-              createForm.resetFields();
-              fetchIncidents();
-            } catch (err) {
-              const msg =
-                err?.response?.data?.validationErrors?.incidentDateTime?.[0] ||
-                err?.response?.data?.message ||
-                "Đã xảy ra lỗi";
-              toast.error(msg);
-              console.error("Lỗi khi tạo sự cố:", err);
-            }
-          }}
-        >
-          <Form.Item
-            label="Học sinh"
-            name="studentId"
-            rules={[{ required: true, message: "Vui lòng chọn học sinh" }]}
-          >
-            <Select placeholder="Chọn học sinh">
-              {students.map((s) => (
-                <Option key={s.id} value={s.id}>
-                  {s.fullName} ({s.className})
-                </Option>
-              ))}
-            </Select>
-          </Form.Item>
-
-          <Form.Item
-            label="Thời gian sự cố"
-            name="incidentDateTime"
-            rules={[{ required: true, message: "Chọn thời gian sự cố" }]}
-          >
-            <DatePicker showTime style={{ width: "100%" }} />
-          </Form.Item>
-
-          <Form.Item
-            label="Loại sự cố"
-            name="incidentType"
-            rules={[{ required: true, message: "Chọn loại sự cố" }]}
-          >
-            <Select placeholder="Chọn loại">
-              {incidentTypes.map((type) => (
-                <Option key={type} value={type}>
-                  {type}
-                </Option>
-              ))}
-            </Select>
-          </Form.Item>
-
-          <Form.Item
-            label="Mô tả"
-            name="description"
-            rules={[{ required: true, message: "Nhập mô tả" }]}
-          >
-            <TextArea rows={3} />
-          </Form.Item>
-
-          <Form.Item
-            label="Hành động xử lý"
-            name="actionTaken"
-            rules={[{ required: true, message: "Nhập hành động xử lý" }]}
-          >
-            <TextArea rows={2} />
-          </Form.Item>
-
-          <Form.Item
-            label="Địa điểm"
-            name="location"
-            rules={[{ required: true, message: "Nhập địa điểm xảy ra sự cố" }]}
-          >
-            <Input />
-          </Form.Item>
-
-          <h4>Vật tư y tế sử dụng</h4>
-          <Form.List name="supplyUsages" initialValue={[{}]}>
-            {(fields, { add, remove }) => (
-              <>
-                {fields.map(({ key, name, ...restField }) => (
-                  <Space
-                    key={key}
-                    style={{ display: "flex", marginBottom: 8 }}
-                    align="baseline"
-                  >
-                    <Form.Item
-                      {...restField}
-                      name={[name, "supplyId"]}
-                      rules={[{ required: true, message: "Chọn vật tư" }]}
-                    >
-                      <Select placeholder="Vật tư" style={{ width: 160 }}>
-                        {supplies.map((s) => (
-                          <Option key={s.supplyId} value={s.supplyId}>
-                            {s.name}
-                          </Option>
-                        ))}
-                      </Select>
-                    </Form.Item>
-                    <Form.Item
-                      {...restField}
-                      name={[name, "quantityUsed"]}
-                      rules={[{ required: true, message: "Nhập số lượng" }]}
-                    >
-                      <InputNumber placeholder="SL" min={1} />
-                    </Form.Item>
-                    <Form.Item
-                      {...restField}
-                      name={[name, "note"]}
-                      rules={[{ required: true, message: "Nhập ghi chú" }]}
-                    >
-                      <Input placeholder="Ghi chú" />
-                    </Form.Item>
-                    {fields.length > 1 && (
-                      <MinusCircleOutlined onClick={() => remove(name)} />
-                    )}
-                  </Space>
-                ))}
-                <Form.Item>
-                  <Button
-                    type="dashed"
-                    onClick={() => add()}
-                    icon={<PlusOutlined />}
-                    block
-                  >
-                    Thêm vật tư
-                  </Button>
-                </Form.Item>
-              </>
-            )}
-          </Form.List>
-
-          <Form.Item>
-            <Button type="primary" htmlType="submit" block>
-              Lưu sự cố
-            </Button>
-          </Form.Item>
-        </Form>
-      </Modal>
-
+        onClose={() => setCreateModalOpen(false)}
+        onSuccess={() => {
+          fetchIncidents();
+          setCreateModalOpen(false);
+        }}
+        students={students}
+        supplies={supplies}
+        incidentTypes={incidentTypes}
+      />
+      {/* Thanh lọc thông tin sự cố sức khỏe */}
       <Form
         layout="vertical"
         onFinish={handleSearch}
@@ -409,8 +262,9 @@ const EventHealthIncidentTemplate = () => {
           }}
           onRow={(record) => ({
             onClick: () => {
-              console.log("🖱️ Dòng được click:", record);
-              console.log("🆔 incidentId =", record.incidentId);
+              // dùng để fix bug
+              // console.log("🖱️ Dòng được click:", record);
+              // console.log("🆔 incidentId =", record.incidentId);
               setSelectedIncidentId(record.incidentId);
               setDetailModalOpen(true);
             },
@@ -418,10 +272,26 @@ const EventHealthIncidentTemplate = () => {
           })}
         />
       </Spin>
+      {/* Modal Chi tiết sự cố sức khỏe */}
       <HealthIncidentDetailModal
         open={detailModalOpen}
         onClose={() => setDetailModalOpen(false)}
         incidentId={selectedIncidentId}
+      />
+      <EditHealthIncidentModal
+        open={isModalOpen}
+        onClose={() => setModalOpen(false)}
+        incidentData={selectedIncident}
+        onSuccess={fetchDataAgain}
+        incidentTypes={[
+          "Chấn thương nhẹ",
+          "Ốm đau",
+          "Phản ứng dị ứng",
+          "Chấn thương đầu",
+          "Sốt",
+          "Đau bụng",
+          "Khác",
+        ]}
       />
     </div>
   );

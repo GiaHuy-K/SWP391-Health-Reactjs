@@ -6,11 +6,8 @@ export const getStudent = async (params = { page: 0, size: 10 }) => {
   try {
     const response = await api.get("students", { params });
     const raw = response.data;
-    // vì kiểu trả về là content array nên cần hàm này
-    const content = Array.isArray(raw.content) ? raw.content : [];
-    //console.log(raw);
-    console.log(content);
-    return content;
+    console.log("📦 getStudent data:", raw);
+    return raw; 
   } catch (error) {
     toast.error(error.response.data);
   }
