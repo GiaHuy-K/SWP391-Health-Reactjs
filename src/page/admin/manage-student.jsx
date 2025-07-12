@@ -21,6 +21,7 @@ import {
 } from "../../services/api.student";
 import StudentDetailModal from "../../components/admin/student-detail-modal";
 import styles from "./ManageStudent.module.css";
+import EditStudentModal from "../../components/admin/editStudentModal";
 
 const { Option } = Select;
 
@@ -29,7 +30,8 @@ function ManageStudent() {
   // Sử dụng useState để quản lý trạng thái của component
   // studentList: lưu trữ danh sách học sinh từ API
   const [studentList, setStudentList] = useState([]);
-
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingStudentId, setEditingStudentId] = useState(null);
   // Modal tạo mới học sinh
   // Sử dụng useState để quản lý trạng thái mở/đóng modal
   // isCreateModalOpen: true nếu modal đang mở, false nếu đóng
@@ -217,26 +219,43 @@ function ManageStudent() {
       title: "Hành động",
       key: "action",
       render: (_, record) => {
+        const menuItems = [];
+
+        if (record.status !== "Thôi học") {
+          menuItems.push({
+            key: "WITHDRAWN",
+            label: "Đánh dấu thôi học",
+          });
+        }
+
+        if (record.status !== "Tốt nghiệp") {
+          menuItems.push({
+            key: "GRADUATED",
+            label: "Đánh dấu tốt nghiệp",
+          });
+        }
+
+        menuItems.push({
+          key: "EDIT",
+          label: "Cập nhật thông tin",
+        });
+
         const handleMenuClick = ({ key }) => {
           if (key === "WITHDRAWN" || key === "GRADUATED") {
             handleStatusChange(key, record);
           }
+          if (key === "EDIT") {
+            setEditingStudentId(record.id);
+            setIsEditModalOpen(true);
+          }
         };
-
-        const menu = (
-          <Menu onClick={handleMenuClick}>
-            {record.status !== "Thôi học" && (
-              <Menu.Item key="WITHDRAWN">Đánh dấu thôi học</Menu.Item>
-            )}
-            {record.status !== "Tốt nghiệp" && (
-              <Menu.Item key="GRADUATED">Đánh dấu tốt nghiệp</Menu.Item>
-            )}
-          </Menu>
-        );
 
         return (
           <div onClick={(e) => e.stopPropagation()}>
-            <Dropdown overlay={menu} trigger={["click"]}>
+            <Dropdown
+              menu={{ items: menuItems, onClick: handleMenuClick }}
+              trigger={["click"]}
+            >
               <Button type="link">Hành động ▾</Button>
             </Dropdown>
           </div>
@@ -438,6 +457,15 @@ function ManageStudent() {
         open={isDetailModalOpen}
         onClose={() => setIsDetailModalOpen(false)}
         studentId={selectedStudentId}
+      />
+      {/* Modal chỉnh sửa thông tin học sinh */}
+      <EditStudentModal
+        open={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        studentId={editingStudentId}
+        onSuccess={() =>
+          fetchStudent(pagination.current, pagination.pageSize, filters)
+        }
       />
     </div>
   );

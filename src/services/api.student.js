@@ -53,3 +53,15 @@ export const graduateStudent = async (studentId) => {
     throw error;
   }
 };
+// Cập nhật thông tin học sinh theo ID
+export const updateStudentById = async (studentId, payload) => {
+  try {
+    const res = await api.put(`students/${studentId}`, payload);
+    toast.success("Cập nhật thông tin học sinh thành công");
+    return res.data;
+  } catch (error) {
+    toast.error("Cập nhật thông tin học sinh thất bại");
+    console.error(error);
+    throw error;
+  }
+};
