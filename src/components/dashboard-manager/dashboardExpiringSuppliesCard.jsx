@@ -12,7 +12,7 @@ const DashboardExpiringSuppliesCard = () => {
       try {
         const data = await getMedicalSupplies();
         const today = dayjs();
-        const soon = today.add(7, "day"); // vật tư hết hạn trong 7 ngày tới
+        const soon = today.add(60, "day"); // vật tư hết hạn trong 60 ngày tới
 
         const expiring = data.content.filter((item) =>
           item.expiredDate && dayjs(item.expiredDate).isBefore(soon)
