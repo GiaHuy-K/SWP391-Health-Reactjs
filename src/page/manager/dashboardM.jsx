@@ -5,6 +5,7 @@ import RecentHealthIncidents from "../../components/dashboard-manager/recentHeal
 import HealthIncidentLineChart from "../../components/dashboard-manager/healthIncidentLineChart";
 import MedicalSupplyStatusPieChart from "../../components/dashboard-manager/medicalSupplyStatusPieChart";
 import DashboardKPI from "../../components/dashboard-manager/KPI";
+import DashboardExpiringSuppliesCard from "../../components/dashboard-manager/dashboardExpiringSuppliesCard";
 
 const { Title } = Typography;
 
@@ -19,7 +20,7 @@ function DashboardM() {
           <MedicalSupplyStatusPieChart />
         </Col>
         <Col xs={24} md={12}>
-          <DashboardLowStockCard />
+          <DashboardExpiringSuppliesCard />
         </Col>
       </Row>
 

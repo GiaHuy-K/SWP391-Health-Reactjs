@@ -27,10 +27,16 @@ export const getHealthIncidentById = async (id) => {
 export const createHealthIncident = async (data) => {
   try {
     const res = await api.post("/health-incidents", data);
-    toast.success("Tạo sự cố thành công");
     return res.data;
   } catch (error) {
-    toast.error("Tạo sự cố thất bại");
+    toast.error(
+      error?.response?.data?.message ||
+        error?.response?.data?.validationErrors?.[
+          Object.keys(error.response.data.validationErrors)[0]
+        ]?.[0] ||
+        "Cập nhật thất bại"
+    );
+
     throw error;
   }
 };
@@ -39,10 +45,16 @@ export const createHealthIncident = async (data) => {
 export const updateHealthIncident = async (id, data) => {
   try {
     const res = await api.put(`/health-incidents/${id}`, data);
-    toast.success("Cập nhật thành công");
     return res.data;
   } catch (error) {
-    toast.error("Cập nhật thất bại");
+    toast.error(
+      error?.response?.data?.message ||
+        error?.response?.data?.validationErrors?.[
+          Object.keys(error.response.data.validationErrors)[0]
+        ]?.[0] ||
+        "Cập nhật thất bại"
+    );
+
     throw error;
   }
 };
@@ -53,7 +65,13 @@ export const deleteHealthIncident = async (id) => {
     await api.delete(`/health-incidents/${id}`);
     toast.success("Xóa sự cố thành công");
   } catch (error) {
-    toast.error("Xóa thất bại");
+    toast.error(
+      error?.response?.data?.message ||
+        error?.response?.data?.validationErrors?.[
+          Object.keys(error.response.data.validationErrors)[0]
+        ]?.[0] ||
+        "Xóa thất bại"
+    );
     throw error;
   }
 };

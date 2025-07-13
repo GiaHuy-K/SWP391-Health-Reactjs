@@ -23,7 +23,7 @@ const HealthIncidentDetailModal = ({ open, onClose, incidentId }) => {
       onCancel={onClose}
       footer={null}
       title="Chi tiết sự cố sức khỏe"
-      destroyOnClose
+      destroyOnHidden
     >
       {loading || !incident ? (
         <Spin />

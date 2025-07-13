@@ -23,23 +23,42 @@ const DashboardOverview = () => {
   const [loading, setLoading] = useState(true);
   const [parentLinkData, setParentLinkData] = useState([]);
   const PARENT_LINK_COLORS = ["#1890ff", "#faad14"];
+
+  const fetchAllPages = async (endpoint) => {
+    const pageSize = 20; // số phần tử mỗi trang
+    let page = 0;
+    let allItems = [];
+    let isLastPage = false;
+
+    while (!isLastPage) {
+      const res = await api.get(`${endpoint}?page=${page}&size=${pageSize}`);
+      const data = res.data;
+      const content = data.content || [];
+
+      allItems = [...allItems, ...content];
+      isLastPage = data.last; // nếu là trang cuối thì dừng
+      page++;
+    }
+
+    return allItems;
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [staffRes, medicalRes, parentRes, studentRes] = await Promise.all(
-          [
-            api.get("admin/users/staff-managers"),
-            api.get("admin/users/medical-staff"),
-            api.get("admin/users/parents"),
-            api.get("/students"),
-          ]
-        );
+        const [staff, medical, parents, students] = await Promise.all([
+          fetchAllPages("/admin/users/staff-managers"),
+          fetchAllPages("/admin/users/medical-staff"),
+          fetchAllPages("/admin/users/parents"),
+          fetchAllPages("/students"),
+        ]);
 
-        const staff = staffRes.data.content || [];
-        const medical = medicalRes.data.content || [];
-        const parents = parentRes.data.content || [];
-        console.log(parents)
-        const allUsers = [...staff, ...medical, ...parents];
+        // dùng để fix bug
+        // console.log("staff", staff);
+        // console.log("medical", medical);
+        // console.log("parents", parents);
+        // console.log("students", students);
+
         const linkedParents = parents.filter((p) => p.linkedToStudent).length;
         const unlinkedParents = parents.length - linkedParents;
 
@@ -48,6 +67,7 @@ const DashboardOverview = () => {
           { name: "Chưa liên kết", value: unlinkedParents },
         ]);
 
+        const allUsers = [...staff, ...medical, ...parents];
         const activeCount = allUsers.filter((u) => u.isActive).length;
         const inactiveCount = allUsers.length - activeCount;
 
@@ -57,7 +77,7 @@ const DashboardOverview = () => {
         ]);
 
         setTotalUsers(allUsers.length);
-        setTotalStudents(studentRes.data.totalElements || 0);
+        setTotalStudents(students.length); // vì mình gộp rồi nên dùng length
       } catch (err) {
         console.error("Lỗi khi fetch dữ liệu dashboard:", err);
       } finally {

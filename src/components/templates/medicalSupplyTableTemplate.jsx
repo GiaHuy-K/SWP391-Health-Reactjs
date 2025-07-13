@@ -9,9 +9,7 @@ const MedicalSupplyTableTemplate = ({
   loading,
   onDelete,
   onCreateClick,
-  onReload, 
-  // Permissions lúc đầu luôn là view true, còn lại là false
-  // nếu có quyền thì sẽ hiện nút tương ứng
+  onReload,
   permissions = {
     canView: true,
     canCreate: false,
@@ -21,8 +19,12 @@ const MedicalSupplyTableTemplate = ({
   },
   onAdjust,
   pagination = {
+    current: 1,
+    pageSize: 10,
+    total: 0,
     showSizeChanger: true,
     pageSizeOptions: ["5", "10"],
+    onChange: () => {},
   },
   onStatusFilterChange,
 }) => {
@@ -84,7 +86,7 @@ const MedicalSupplyTableTemplate = ({
         { text: "Sẵn có", value: "SẴN CÓ" },
         { text: "Hết hàng", value: "HẾT HÀNG" },
         { text: "Hết hạn", value: "HẾT HẠN" },
-        { text: "Không còn sử dụng", value: "KHÔNG CÒN SỬ DỤNG" },
+        { text: "Đã loại bỏ ra khỏi kho", value: "Đã loại bỏ ra khỏi kho" },
       ],
       filterMultiple: false,
       render: (status) => {
@@ -99,7 +101,7 @@ const MedicalSupplyTableTemplate = ({
           case "hết hạn":
             color = "volcano";
             break;
-          case "không còn sử dụng":
+          case "đã loại bỏ ra khỏi kho":
             color = "red";
             break;
           default:
@@ -187,27 +189,33 @@ const MedicalSupplyTableTemplate = ({
         dataSource={data}
         loading={loading}
         pagination={{
-          showSizeChanger: true,
-          pageSizeOptions: ["5", "10"],
-          defaultPageSize: 10,
-          ...pagination,
+          current: pagination.current,
+          pageSize: pagination.pageSize,
+          total: pagination.total,
+          showSizeChanger: pagination.showSizeChanger,
+          pageSizeOptions: pagination.pageSizeOptions,
         }}
         onRow={(record) => ({
           onClick: () => handleView(record.supplyId),
         })}
-        onChange={(pagination, filters) => {
+        onChange={(paginationInfo, filters) => {
           const statusValue = filters.status?.[0] || null;
-          onStatusFilterChange?.(statusValue); //  Gửi sự kiện lên để lọc
-          pagination.onChange?.(pagination.current, pagination.pageSize); // giữ phân trang nếu có custom sau này 
+          onStatusFilterChange?.(statusValue);
+          pagination.onChange?.(
+            paginationInfo.current,
+            paginationInfo.pageSize
+          );
         }}
       />
-      {/* Drawer coi chi tiết vật tư y tế */}
+
+      {/* Drawer chi tiết */}
       <MedicalSupplyDrawer
         supplyId={selectedId}
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
       />
-      {/* Modal chỉnh sửa vật tư y tế */}
+
+      {/* Modal chỉnh sửa */}
       <EditMedicalSupplyModal
         open={editModalOpen}
         onClose={() => setEditModalOpen(false)}
@@ -218,6 +226,7 @@ const MedicalSupplyTableTemplate = ({
           onReload?.();
         }}
       />
+
       {/* Modal điều chỉnh tồn kho */}
       <AdjustStockModal
         open={adjustModalOpen}
