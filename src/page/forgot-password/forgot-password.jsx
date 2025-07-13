@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import api from '../../config/axios';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
-import styles from './ForgotPassword.module.css';
+import styles from './forgotPassword.module.css';
 const ForgotPassword = () => {
   // State để lưu trữ email người dùng nhập vào
   // Sử dụng useState để quản lý trạng thái email

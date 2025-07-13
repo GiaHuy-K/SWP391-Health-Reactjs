@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../config/axios';
 import { toast } from 'react-toastify';
-import styles from './ResetPassword.module.css';
+import styles from './resetPassword.module.css'; 
+
 
 const ResetPassword = () => {
   // State để lưu trữ thông tin người dùng nhập vào

@@ -35,6 +35,7 @@ const items = [
   getItem('Quản lý sự cố', 'event-Manager', <PieChartOutlined />),
   //supply-Manager
   getItem('Quản lý vật tư y tế', 'supply-Manager', <DesktopOutlined />),
+  getItem('Quản lý chiến dịch tiêm chủng', 'manage-campaigns', <SolutionOutlined />),
   getItem('Thông tin tiêm chủng học sinh', 'student-vaccination', <BranchesOutlined />),
   getItem('Thông tin bệnh mãn tính học sinh', 'student-chronic-disease', <InsuranceOutlined />),
   getItem('Quản lý Blog', 'manage-blogs', <FileTextOutlined />),
