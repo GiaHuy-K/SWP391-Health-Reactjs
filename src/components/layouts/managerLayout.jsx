@@ -39,6 +39,7 @@ const items = [
   getItem('Chiến dịch tiêm chủng', 'vaccination-campaigns', <SafetyCertificateOutlined />),
   getItem('Bệnh mãn tính', 'student-chronic-disease', <ExperimentOutlined />),
   getItem('Quản lý Blog', 'manage-blogs', <FileTextOutlined />),
+  //getItem('Tiêm chủng tại trường', 'vaccineAtSchoolM', <SolutionOutlined />),
   getItem(
     'Về trang chủ',
     'home',
