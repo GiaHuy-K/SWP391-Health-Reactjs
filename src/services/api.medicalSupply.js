@@ -2,10 +2,12 @@ import api from "../config/axios";
 import { toast } from "react-toastify";
 
 // Lấy danh sách tất cả vật tư y tế (phân trang)
-export const getMedicalSupplies = async (params = {}) => {
+export const getMedicalSupplies = async (params = { page: 0, size: 10 }) => {
   try {
     const response = await api.get("medical-supplies", { params });
-    return response.data;
+    const raw = response.data;
+    console.log("📦 getMedicalSupplies data:", raw);
+    return raw; // Trả nguyên cả object: { content, totalElements, totalPages, ... }
   } catch (error) {
     toast.error("Không thể tải danh sách vật tư y tế");
     throw error;

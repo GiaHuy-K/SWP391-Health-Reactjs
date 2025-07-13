@@ -44,7 +44,8 @@ import BlogDetailPage from "./page/blog/blog-detail.jsx";
 import ManageBlogsNurse from "./page/schoolnurse/manage-blogs.jsx";
 import EditBlogPage from "./page/blog/edit-blog.jsx";
 import PublicBlogList from "./page/blog/public-blog-list.jsx";
-import ManageCampaigns from "./page/manager/manage-campaigns.jsx";
+import ManageVaccinationCampaigns from "./page/manager/manage-vaccination-campaigns.jsx";
+import VaccinationCampaignDetail from "./page/manager/vaccination-campaign-detail.jsx";
 
 // Component bảo vệ route yêu cầu đăng nhập
 const PrivateRoute = ({ children }) => {
@@ -103,13 +104,14 @@ const router = createBrowserRouter([
       {path: "dashboardM", element: <DashboardM/>}, 
       {path: "event-Manager", element: <ManageEventM/>},
       {path: "supply-Manager", element: <ManageMedicalSupplyM/>},
-      {path: "manage-campaigns", element: <ManageCampaigns />},
       {path: "student-vaccination", element: <StudentVaccinationPage/>},
       {path: "student-chronic-disease", element: <ManageChronic />},
       {path: "manage-blogs", element: <ManageBlogs />},
       {path: "blog/create", element: <CreateBlogPage /> },
       { path: "blog/:blogId", element: <BlogDetailPage /> },
       {path: "blog/edit/:blogId", element: <EditBlogPage /> },
+      {path: "vaccination-campaigns", element: <ManageVaccinationCampaigns />},
+      {path: "vaccination-campaigns/:campaignId", element: <VaccinationCampaignDetail />},
     ] 
   },
   

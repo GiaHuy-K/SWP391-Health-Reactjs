@@ -9,7 +9,11 @@ function DashboardTemplate({ columns, uri }) {
 
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: 0,
+  });
   // hàm vô hiệu hóa người dùng theo id khi clich vào
   const handleToggleActivation = async (userId, newStatus) => {
     try {
@@ -84,15 +88,24 @@ function DashboardTemplate({ columns, uri }) {
     setNewColumns(tableColumns);
   }, [columns]);
 
-  const fetchData = async () => {
+  const fetchData = async (page = 1, pageSize = 10) => {
     try {
-      const response = await api.get(uri);
-      console.log("Dữ liệu từ API:", response.data);
+      const response = await api.get(uri, {
+        params: {
+          page: page - 1, // vì backend page bắt đầu từ 0
+          size: pageSize,
+        },
+      });
 
       const raw = response.data;
       const content = Array.isArray(raw.content) ? raw.content : [];
 
       setData(content);
+      setPagination({
+        current: raw.pageable.pageNumber + 1,
+        pageSize: raw.pageable.pageSize,
+        total: raw.totalElements,
+      });
     } catch (error) {
       console.error("Lỗi khi fetch dữ liệu:", error);
       setData([]);
@@ -100,7 +113,7 @@ function DashboardTemplate({ columns, uri }) {
   };
 
   useEffect(() => {
-    fetchData();
+    fetchData(pagination.current, pagination.pageSize);
   }, []);
 
   return (
@@ -109,16 +122,24 @@ function DashboardTemplate({ columns, uri }) {
         columns={newColumns}
         dataSource={data}
         rowKey="userId"
+        pagination={{
+          current: pagination.current,
+          pageSize: pagination.pageSize,
+          total: pagination.total,
+          showSizeChanger: true,
+          pageSizeOptions: ["5", "10", "20"],
+          onChange: (page, pageSize) => {
+            fetchData(page, pageSize);
+          },
+        }}
         onRow={(record) => ({
           onClick: (event) => {
             const tagName = event.target.tagName;
             const className = event.target.className;
-
-            // Nếu người dùng click vào Switch, Button, Tag... thì không mở modal
             if (
               tagName === "BUTTON" ||
-              tagName === "INPUT" || // Switch là input
-              tagName === "SPAN" || // Một số component con trong Switch
+              tagName === "INPUT" ||
+              tagName === "SPAN" ||
               String(className).includes("ant-switch") ||
               String(className).includes("ant-btn") ||
               String(className).includes("ant-tag")
@@ -126,16 +147,11 @@ function DashboardTemplate({ columns, uri }) {
               return;
             }
 
-            // Ngược lại mới mở modal
             handleViewDetail(record.userId);
           },
         })}
-        pagination={{
-          showSizeChanger: true,
-          pageSizeOptions: ["5", "10"],
-          defaultPageSize: 10,
-        }}
       />
+
       {/* Modal xem chi tiết */}
       <UserDetailModal
         userId={selectedUserId}
