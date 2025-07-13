@@ -310,12 +310,13 @@ const VaccinationCampaignList = ({ onViewDetail, onCreateNew, onEdit }) => {
           </Space>
         </div>
       }
+      styles={{ body: { padding: "12px 16px" } }}
     >
       {/* Filters */}
       <Card
         size="small"
         style={{ marginBottom: 16 }}
-        bodyStyle={{ padding: "12px 16px" }}
+        styles={{ body: { padding: "12px 16px" } }}
       >
         <Row gutter={[16, 8]}>
           <Col xs={24} sm={12} md={6}>

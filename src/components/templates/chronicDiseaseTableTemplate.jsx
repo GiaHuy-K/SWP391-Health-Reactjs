@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Table, Modal, Tag } from "antd";
 
-function ChronicDiseaseTableTemplate({ data, loading }) {
+function ChronicDiseaseTableTemplate({ data, loading, renderAction }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedChronic, setSelectedChronic] = useState(null);
 
@@ -81,6 +81,14 @@ function ChronicDiseaseTableTemplate({ data, loading }) {
       )
     },
   ];
+  if (typeof renderAction === 'function') {
+    columns.push({
+      title: "Hành động",
+      key: "action",
+      width: 120,
+      render: (_, record) => renderAction(record)
+    });
+  }
 
   const handleRowClick = (record) => {
     setSelectedChronic(record);

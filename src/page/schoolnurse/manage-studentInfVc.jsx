@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { getAllVaccinations } from "../../services/api.vaccine";
-import { message, Input, Button, Space } from "antd";
+import { getAllVaccinations, updateVaccinationStatus } from "../../services/api.vaccine";
+import { message, Input, Button, Space, Modal, Input as AntInput } from "antd";
 import StudentVaccinationTableTemplate from "../../components/templates/studentVaccinationTableTemplate";
 
 const ManageStudentInfVc = () => {
@@ -44,6 +44,56 @@ const ManageStudentInfVc = () => {
     );
   };
 
+  const handleApprove = async (record) => {
+    Modal.confirm({
+      title: "Xác nhận duyệt tiêm chủng",
+      content: `Bạn chắc chắn muốn duyệt bản ghi tiêm chủng cho học sinh ${record.studentFullName}?`,
+      okText: "Duyệt",
+      cancelText: "Huỷ",
+      onOk: async () => {
+        await updateVaccinationStatus(record.studentVaccinationId, "Chấp nhận", "");
+        window.location.reload(); // reload trang sau khi duyệt
+      },
+    });
+  };
+  const handleReject = (record) => {
+    let reason = "";
+    Modal.confirm({
+      title: "Từ chối bản ghi tiêm chủng",
+      content: (
+        <div>
+          <div>Nhập lý do từ chối:</div>
+          <AntInput.TextArea onChange={e => reason = e.target.value} placeholder="Lý do từ chối" />
+        </div>
+      ),
+      okText: "Từ chối",
+      cancelText: "Huỷ",
+      onOk: async () => {
+        if (!reason.trim()) {
+          Modal.error({ title: "Vui lòng nhập lý do từ chối!" });
+          throw new Error("Lý do từ chối rỗng");
+        }
+        await updateVaccinationStatus(record.studentVaccinationId, "Từ chối", reason);
+        window.location.reload(); // reload trang sau khi từ chối
+      },
+    });
+  };
+  const renderAction = (record) => {
+    if (record.status === "Chờ xử lý" || record.status === "PENDING") {
+      return (
+        <>
+          <Button type="primary" size="small" onClick={e => { e.stopPropagation(); handleApprove(record); }} style={{ marginRight: 8 }}>
+            Duyệt
+          </Button>
+          <Button danger size="small" onClick={e => { e.stopPropagation(); handleReject(record); }}>
+            Từ chối
+          </Button>
+        </>
+      );
+    }
+    return null;
+  };
+
   return (
     <div>
       <Space style={{ marginBottom: 16 }}>
@@ -59,7 +109,7 @@ const ManageStudentInfVc = () => {
           Tìm kiếm
         </Button>
       </Space>
-      <StudentVaccinationTableTemplate data={filteredList} loading={loading} />
+      <StudentVaccinationTableTemplate data={filteredList} loading={loading} renderAction={renderAction} />
     </div>
   );
 };

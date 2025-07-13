@@ -470,6 +470,8 @@ const StudentVaccinationPage = () => {
     user?.role === "Quản trị viên Trường học" ||
     user?.role === "Quản lý Nhân sự/Nhân viên" ||
     user?.role === "Nhân viên Y tế";
+  const isNurse = user?.role === "Nhân viên Y tế";
+  // Trong các columns (vaccColumns, allVaccColumns, pendingVaccColumns), chỉ hiển thị nút Duyệt/Từ chối nếu isNurse === true
   const vaccColumns = [
     { title: "Tên vắc xin", dataIndex: "vaccineName", key: "vaccineName" },
     {
@@ -531,7 +533,7 @@ const StudentVaccinationPage = () => {
               Xóa
             </Button>
           </Popconfirm>
-          {isAdminOrNurse &&
+          {isNurse &&
             (record.status === "PENDING" || record.status === "Chờ xử lý") && (
               <>
                 <Button

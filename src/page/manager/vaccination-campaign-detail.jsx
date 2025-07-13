@@ -14,7 +14,8 @@ import {
   Statistic,
   Badge,
   List,
-  Avatar
+  Avatar,
+  Tooltip
 } from "antd";
 import {
   ArrowLeftOutlined,
@@ -33,8 +34,13 @@ import dayjs from "dayjs";
 import { 
   getVaccinationCampaignById, 
   getCampaignConsents,
-  CAMPAIGN_STATUS 
+  CAMPAIGN_STATUS,
+  scheduleVaccinationCampaign,
+  rescheduleVaccinationCampaign,
+  cancelVaccinationCampaign
 } from "../../services/api.vaccination";
+import VaccinationConsentList from "../../components/vaccination/VaccinationConsentList";
+import { Modal, Form, DatePicker, Input, message } from "antd";
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -45,10 +51,15 @@ const VaccinationCampaignDetail = () => {
   const [consents, setConsents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [rescheduleModalOpen, setRescheduleModalOpen] = useState(false);
+  const [cancelModalOpen, setCancelModalOpen] = useState(false);
+  const [rescheduleForm] = Form.useForm();
+  const [cancelForm] = Form.useForm();
 
   useEffect(() => {
+    if (!campaignId) return;
+    let intervalId;
     const fetchCampaignDetail = async () => {
-      if (!campaignId) return;
       setLoading(true);
       setError(null);
       try {
@@ -63,7 +74,13 @@ const VaccinationCampaignDetail = () => {
       }
     };
     fetchCampaignDetail();
-  }, [campaignId]);
+    if (campaign && campaign.status === CAMPAIGN_STATUS.SCHEDULED) {
+      intervalId = setInterval(fetchCampaignDetail, 60000); // 1 phút
+    }
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [campaignId, campaign && campaign.status]);
 
   const getStatusBadge = (status) => {
     const statusConfig = {
@@ -76,6 +93,40 @@ const VaccinationCampaignDetail = () => {
     };
     const config = statusConfig[status] || { color: "#d9d9d9", text: status };
     return <Badge color={config.color} text={config.text} />;
+  };
+
+  const handleSchedule = async () => {
+    try {
+      await scheduleVaccinationCampaign(campaignId);
+      message.success("Lên lịch thành công");
+      fetchCampaignDetail();
+    } catch {}
+  };
+
+  const handleReschedule = () => setRescheduleModalOpen(true);
+  const handleCancel = () => setCancelModalOpen(true);
+
+  const submitReschedule = async () => {
+    try {
+      const values = await rescheduleForm.validateFields();
+      const payload = {
+        newVaccinationDate: values.newDate ? values.newDate.format("YYYY-MM-DD") : undefined,
+        reason: values.reason
+      };
+      console.log('Payload gửi lên reschedule:', payload);
+      await rescheduleVaccinationCampaign(campaignId, payload);
+      setRescheduleModalOpen(false);
+      fetchCampaignDetail();
+    } catch {}
+  };
+
+  const submitCancel = async () => {
+    try {
+      const values = await cancelForm.validateFields();
+      await cancelVaccinationCampaign(campaignId, { reason: values.reason });
+      setCancelModalOpen(false);
+      fetchCampaignDetail();
+    } catch {}
   };
 
   if (loading) {
@@ -139,6 +190,23 @@ const VaccinationCampaignDetail = () => {
             {campaign.status === CAMPAIGN_STATUS.IN_PROGRESS && (
               <Button type="primary" icon={<CheckCircleOutlined />}>Hoàn thành chiến dịch</Button>
             )}
+            {campaign.status === CAMPAIGN_STATUS.DRAFT && (
+              <Button type="primary" onClick={handleSchedule}>Lên lịch</Button>
+            )}
+            {(campaign.status === CAMPAIGN_STATUS.SCHEDULED || campaign.status === CAMPAIGN_STATUS.PREPARING) && (
+              campaign.status === CAMPAIGN_STATUS.SCHEDULED ? (
+                <Tooltip title="Chỉ có thể dời lịch khi chiến dịch ở trạng thái 'Đang chuẩn bị'. Vui lòng chờ 5 phút sau khi lên lịch.">
+                  <Button onClick={handleReschedule} disabled>
+                    Dời lịch
+                  </Button>
+                </Tooltip>
+              ) : (
+                <Button onClick={handleReschedule}>Dời lịch</Button>
+              )
+            )}
+            {[CAMPAIGN_STATUS.DRAFT, CAMPAIGN_STATUS.SCHEDULED, CAMPAIGN_STATUS.PREPARING, CAMPAIGN_STATUS.IN_PROGRESS].includes(campaign.status) && (
+              <Button danger onClick={handleCancel}>Huỷ chiến dịch</Button>
+            )}
           </Space>
         </div>
         <Row gutter={[16, 16]}>
@@ -147,61 +215,15 @@ const VaccinationCampaignDetail = () => {
               <Descriptions.Item label="Tên chiến dịch" span={2}>{campaign.campaignName}</Descriptions.Item>
               <Descriptions.Item label="Tên vắc-xin">{campaign.vaccineName}</Descriptions.Item>
               <Descriptions.Item label="Trạng thái">{getStatusBadge(campaign.status)}</Descriptions.Item>
-              <Descriptions.Item label="Ngày tiêm chủng">
-                {campaign.vaccinationDate && dayjs(campaign.vaccinationDate).format("DD/MM/YYYY")}
-              </Descriptions.Item>
-              <Descriptions.Item label="Hạn chót đồng ý">
-                {campaign.consentDeadline && dayjs(campaign.consentDeadline).format("DD/MM/YYYY")}
-              </Descriptions.Item>
+              <Descriptions.Item label="Ngày tiêm chủng">{campaign.vaccinationDate && dayjs(campaign.vaccinationDate).format("DD/MM/YYYY")}</Descriptions.Item>
+              <Descriptions.Item label="Hạn chót đồng ý">{campaign.consentDeadline && dayjs(campaign.consentDeadline).format("DD/MM/YYYY")}</Descriptions.Item>
               <Descriptions.Item label="Khối lớp">
-                <Tag color="blue">{campaign.targetClassGroup}</Tag>
+                {Array.isArray(campaign.targetClasses) ? campaign.targetClasses.map((cls, idx) => <Tag key={cls+idx} color="blue">{cls}</Tag>) : campaign.targetClasses}
               </Descriptions.Item>
-              <Descriptions.Item label="Ghi chú" span={2}>
-                {campaign.notes || <Text type="secondary">Không có</Text>}
-              </Descriptions.Item>
-              <Descriptions.Item label="Người tổ chức">
-                <Space>
-                  <Avatar icon={<UserOutlined />} size="small" />
-                  {campaign.organizedByUserName}
-                </Space>
-              </Descriptions.Item>
-              <Descriptions.Item label="Đơn vị y tế">
-                <Space>
-                  <InfoCircleOutlined />
-                  {campaign.healthcareProviderName || <Text type="secondary">Không có</Text>}
-                </Space>
-              </Descriptions.Item>
-              <Descriptions.Item label="Liên hệ y tế">
-                <Space>
-                  <PhoneOutlined />
-                  {campaign.healthcareProviderContact || <Text type="secondary">Không có</Text>}
-                </Space>
-              </Descriptions.Item>
-              <Descriptions.Item label="Tổng học sinh">{campaign.totalStudents}</Descriptions.Item>
-              <Descriptions.Item label="Đã đồng ý" style={{ color: '#3f8600' }}>{campaign.approvedConsents}</Descriptions.Item>
-              <Descriptions.Item label="Từ chối" style={{ color: '#cf1322' }}>{campaign.declinedConsents}</Descriptions.Item>
-              <Descriptions.Item label="Ngày tạo">
-                {dayjs(campaign.createdAt).format("DD/MM/YYYY HH:mm")}
-              </Descriptions.Item>
-              <Descriptions.Item label="Cập nhật">
-                {dayjs(campaign.updatedAt).format("DD/MM/YYYY HH:mm")}
-              </Descriptions.Item>
-              <Descriptions.Item label="Người cập nhật">
-                {campaign.updatedByUserName}
-              </Descriptions.Item>
-              {campaign.rescheduledAt && (
-                <>
-                  <Descriptions.Item label="Dời lịch">
-                    {dayjs(campaign.rescheduledAt).format("DD/MM/YYYY HH:mm")}
-                  </Descriptions.Item>
-                  <Descriptions.Item label="Người dời lịch">
-                    {campaign.rescheduledByUserName}
-                  </Descriptions.Item>
-                </>
-              )}
-              <Descriptions.Item label="Mô tả" span={2}>
-                <Paragraph>{campaign.description || <Text type="secondary">Không có</Text>}</Paragraph>
-              </Descriptions.Item>
+              <Descriptions.Item label="Số lượng học sinh dự kiến">{campaign.expectedStudentCount}</Descriptions.Item>
+              <Descriptions.Item label="Người tạo">{campaign.createdByName}</Descriptions.Item>
+              <Descriptions.Item label="Ngày tạo">{campaign.createdAt && dayjs(campaign.createdAt).format("DD/MM/YYYY HH:mm")}</Descriptions.Item>
+              <Descriptions.Item label="Ghi chú" span={2}>{campaign.note}</Descriptions.Item>
             </Descriptions>
           </Col>
           <Col xs={24} md={8}>
@@ -216,42 +238,45 @@ const VaccinationCampaignDetail = () => {
           </Col>
         </Row>
       </Card>
-      <Card title={<Space><FileTextOutlined />Danh sách phiếu đồng ý ({consents.length})</Space>} style={{ marginTop: 16 }}>
-        {consents.length > 0 ? (
-          <List
-            dataSource={consents}
-            renderItem={(consent) => (
-              <List.Item>
-                <List.Item.Meta
-                  avatar={<Avatar icon={<UserOutlined />} />}
-                  title={consent.studentName}
-                  description={`${consent.studentClass} - ${consent.parentName}`}
-                />
-                <Space>
-                  <Tag color={
-                    consent.status === "Đồng ý" ? "green" :
-                    consent.status === "Từ chối" ? "red" : "orange"
-                  }>
-                    {consent.status}
-                  </Tag>
-                  {consent.responseDate && (
-                    <Text type="secondary">
-                      {dayjs(consent.responseDate).format("DD/MM/YYYY")}
-                    </Text>
-                  )}
-                </Space>
-              </List.Item>
-            )}
-          />
-        ) : (
-          <Alert
-            message="Chưa có phiếu đồng ý"
-            description="Chưa có học sinh nào đăng ký tham gia chiến dịch này"
-            type="info"
-            showIcon
-          />
-        )}
+      <Card title={<Space><FileTextOutlined />Danh sách phiếu đồng ý</Space>} style={{ marginTop: 16 }}>
+        <VaccinationConsentList 
+          campaignId={campaignId} 
+          onConsentClick={consent => console.log('Consent clicked:', consent)} 
+        />
       </Card>
+      <Modal
+        open={rescheduleModalOpen}
+        title="Dời lịch chiến dịch"
+        onCancel={() => setRescheduleModalOpen(false)}
+        onOk={submitReschedule}
+        okText="Xác nhận"
+        cancelText="Huỷ"
+        destroyOnHidden
+      >
+        <Form form={rescheduleForm} layout="vertical">
+          <Form.Item name="newDate" label="Ngày mới" rules={[{ required: true, message: "Chọn ngày mới" }]}> 
+            <DatePicker format="DD/MM/YYYY" style={{ width: "100%" }} />
+          </Form.Item>
+          <Form.Item name="reason" label="Lý do dời lịch" rules={[{ required: true, message: "Nhập lý do" }]}> 
+            <Input.TextArea rows={3} />
+          </Form.Item>
+        </Form>
+      </Modal>
+      <Modal
+        open={cancelModalOpen}
+        title="Huỷ chiến dịch"
+        onCancel={() => setCancelModalOpen(false)}
+        onOk={submitCancel}
+        okText="Xác nhận"
+        cancelText="Huỷ"
+        destroyOnHidden
+      >
+        <Form form={cancelForm} layout="vertical">
+          <Form.Item name="reason" label="Lý do huỷ" rules={[{ required: true, message: "Nhập lý do huỷ" }]}> 
+            <Input.TextArea rows={3} />
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };

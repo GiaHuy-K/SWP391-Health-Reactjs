@@ -171,7 +171,7 @@ const DashboardOverview = () => {
           {/* KPI Cards */}
           <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
             <Col xs={24} md={12}>
-              <Card style={kpiCardStyle}>
+              <Card styles={{ body: kpiCardStyle }}>
                 <UserOutlined style={{ ...iconStyle, color: "#1890ff" }} />
                 <div>
                   <Text type="secondary">Tổng người dùng hệ thống</Text>
@@ -183,7 +183,7 @@ const DashboardOverview = () => {
             </Col>
 
             <Col xs={24} md={12}>
-              <Card style={kpiCardStyle}>
+              <Card styles={{ body: kpiCardStyle }}>
                 <TeamOutlined style={{ ...iconStyle, color: "#52c41a" }} />
                 <div>
                   <Text type="secondary">Tổng số học sinh</Text>
