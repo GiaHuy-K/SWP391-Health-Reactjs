@@ -29,35 +29,34 @@ const ManageMedicalSupplyM = () => {
     canAdjustStock: true,
   };
   const [filters, setFilters] = useState({
-  status: null,
-});
+    status: null,
+  });
 
-const fetchSupplies = async () => {
-  setLoading(true);
-  try {
-    const res = await getMedicalSupplies({
-      page,
-      size: pageSize,
-      sort: "name,ASC",
-      ...(filters.status ? { status: filters.status } : {}),
-    });
-    setSupplies(res.content || []);
-    setTotalItems(res.totalElements || 0);
-  } catch (err) {
-    console.error("Lỗi khi tải vật tư:", err);
-  } finally {
-    setLoading(false);
-  }
-};
+  const fetchSupplies = async () => {
+    setLoading(true);
+    try {
+      const res = await getMedicalSupplies({
+        page,
+        size: pageSize,
+        sort: "name,ASC",
+        ...(filters.status ? { status: filters.status } : {}),
+      });
+      setSupplies(res.content || []);
+      setTotalItems(res.totalElements || 0);
+    } catch (err) {
+      console.error("Lỗi khi tải vật tư:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-
-const handleStatusFilterChange = (statusValue) => {
-  setPage(0); // reset về trang đầu
-  setFilters((prev) => ({
-    ...prev,
-    status: statusValue,
-  }));
-};
+  const handleStatusFilterChange = (statusValue) => {
+    setPage(0); // reset về trang đầu
+    setFilters((prev) => ({
+      ...prev,
+      status: statusValue,
+    }));
+  };
 
   useEffect(() => {
     fetchSupplies();
@@ -98,28 +97,28 @@ const handleStatusFilterChange = (statusValue) => {
 
   return (
     <div>
-
       <MedicalSupplyTableTemplate
-      data={supplies}
-      loading={loading}
-      onDelete={handleSoftDelete}
-      onCreateClick={() => setCreateModalOpen(true)}
-      onReload={fetchSupplies}
-      permissions={permissions}
-      onAdjust={handleAdjustSubmit}
-      onStatusFilterChange={handleStatusFilterChange} 
-      pagination={{
-        current: page + 1,
-        total: totalItems,
-        pageSize: pageSize,
-        showSizeChanger: true,
-        pageSizeOptions: ["5", "10"],
-        onChange: (newPage, newSize) => {
-          setPage(newPage - 1);
-          setPageSize(newSize);
-        },
-      }}
-    />
+        data={supplies}
+        loading={loading}
+        onDelete={handleSoftDelete}
+        onCreateClick={() => setCreateModalOpen(true)}
+        onReload={fetchSupplies}
+        permissions={permissions}
+        onAdjust={handleAdjustSubmit}
+        onStatusFilterChange={handleStatusFilterChange}
+        pagination={{
+          current: page + 1, 
+          pageSize,
+          total: totalItems,
+          showSizeChanger: true,
+          pageSizeOptions: ["5", "10"],
+          onChange: (newPage, newSize) => {
+            setPage(newPage - 1); 
+            setPageSize(newSize);
+          },
+        }}
+      />
+
       {/* Modal tạo mới vật tư y tế */}
       <Modal
         title="Tạo mới vật tư y tế"
@@ -157,7 +156,6 @@ const handleStatusFilterChange = (statusValue) => {
         </Form>
       </Modal>
     </div>
-
   );
 };
 

@@ -2,7 +2,7 @@ import api from "../config/axios";
 import { toast } from "react-toastify";
 
 // Lấy danh sách tất cả vật tư y tế (phân trang)
-export const getMedicalSupplies = async (params = { page: 0, size: 1000 }) => {
+export const getMedicalSupplies = async (params = { page: 0, size: 10 }) => {
   try {
     const response = await api.get("medical-supplies", { params });
     const raw = response.data;
