@@ -65,7 +65,13 @@ export const deleteHealthIncident = async (id) => {
     await api.delete(`/health-incidents/${id}`);
     toast.success("Xóa sự cố thành công");
   } catch (error) {
-    toast.error("Xóa thất bại");
+    toast.error(
+      error?.response?.data?.message ||
+        error?.response?.data?.validationErrors?.[
+          Object.keys(error.response.data.validationErrors)[0]
+        ]?.[0] ||
+        "Xóa thất bại"
+    );
     throw error;
   }
 };

@@ -75,7 +75,6 @@ const ManageMedicalSupplyM = () => {
     try {
       const values = await form.validateFields();
       await createMedicalSupply(values);
-      toast.success("Tạo mới thành công");
       setCreateModalOpen(false);
       form.resetFields();
       fetchSupplies();
