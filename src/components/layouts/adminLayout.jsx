@@ -11,6 +11,7 @@ import {
   ProfileOutlined,
   DashboardOutlined,
   HomeOutlined,
+  FileTextOutlined,
 } from "@ant-design/icons";
 import { Layout, Menu, theme, Avatar, Dropdown, Space, message } from "antd";
 import { Link, Outlet, useNavigate } from "react-router-dom";
@@ -45,6 +46,7 @@ const items = [
     false
   ), // dùng false để chữ người dùng không phải là một trang liên kết hay chuyển trang
   getItem("Học Sinh", "student", <UserSwitchOutlined />),
+  getItem("Quản lý Blog", "manage-blogs", <FileTextOutlined />),
   //HomeOutlined
   getItem(<Link to="/">Về trang chủ</Link>, "home", <HomeOutlined />, undefined, false),
 ];

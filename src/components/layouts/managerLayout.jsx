@@ -13,6 +13,8 @@ import {
   HomeOutlined,
   SolutionOutlined,
   FileTextOutlined,
+  SafetyCertificateOutlined,
+  ExperimentOutlined,
 } from '@ant-design/icons';
 import { Breadcrumb, Layout, Menu, theme, Avatar, Dropdown, Space, message } from 'antd';
 import { Link, Outlet, useNavigate } from 'react-router-dom';
@@ -33,15 +35,14 @@ function getItem(label, key, icon, children, link = true) {
 const items = [
   getItem('Dashboard', 'dashboardM', <DashboardOutlined />),
   getItem('Quản lý sự cố', 'event-Manager', <PieChartOutlined />),
-  //supply-Manager
   getItem('Quản lý vật tư y tế', 'supply-Manager', <DesktopOutlined />),
-  getItem('Thông tin tiêm chủng học sinh', 'student-vaccination', <BranchesOutlined />),
-  getItem('Thông tin bệnh mãn tính học sinh', 'student-chronic-disease', <InsuranceOutlined />),
+  getItem('Chiến dịch tiêm chủng', 'vaccination-campaigns', <SafetyCertificateOutlined />),
+  getItem('Bệnh mãn tính', 'student-chronic-disease', <ExperimentOutlined />),
   getItem('Quản lý Blog', 'manage-blogs', <FileTextOutlined />),
   //getItem('Tiêm chủng tại trường', 'vaccineAtSchoolM', <SolutionOutlined />),
   getItem(
-    "Về trang chủ",
-    "home",
+    'Về trang chủ',
+    'home',
     <HomeOutlined />,
     undefined,
     false

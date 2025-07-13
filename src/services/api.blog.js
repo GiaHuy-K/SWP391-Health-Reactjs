@@ -23,7 +23,7 @@ export const getBlogs = async (params) => {
     const response = await api.get("blogs", { params });
     return response.data;
   } catch (error) {
-    toast.error("Không thể lấy danh sách blog");
+    // Không toast lỗi ở đây, để component tự xử lý nếu muốn
     throw error;
   }
 };

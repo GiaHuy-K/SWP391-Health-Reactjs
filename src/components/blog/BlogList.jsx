@@ -54,8 +54,15 @@ const BlogList = ({
       
       setBlogs(filteredBlogs);
     } catch (error) {
-      console.error("Lỗi khi tải danh sách blog:", error);
-      setBlogs([]);
+      const token = localStorage.getItem("token");
+      if (error.response && error.response.status === 403 && !token) {
+        // Không hiển thị lỗi cho người dùng chưa đăng nhập, chỉ trả về danh sách rỗng
+        setBlogs([]);
+      } else {
+        // Hiển thị lỗi cho các trường hợp khác
+        console.error("Lỗi khi tải danh sách blog:", error);
+        setBlogs([]); // hoặc có thể set một state error nếu muốn hiển thị thông báo
+      }
     } finally {
       setLoading(false);
     }

@@ -4,11 +4,11 @@ import HomeBody from './body/HomeBody';
 import HomeFooter from './footer/HomeFooter';
 
 const HomePage = () => (
-  <div className="bg-white">
+    <div className="bg-white">
     <HomeHeader />
     <HomeBody />
     <HomeFooter />
-  </div>
-);
+    </div>
+  );
 
 export default HomePage;

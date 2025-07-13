@@ -125,9 +125,10 @@ const StudentVaccinationPage = () => {
       setLoadingStudents(true);
       try {
         const res = await getStudent();
-        setStudents(res || []);
+        setStudents(Array.isArray(res) ? res : (res?.content || []));
       } catch (err) {
         message.error("Không thể tải danh sách học sinh");
+        setStudents([]);
       } finally {
         setLoadingStudents(false);
       }
@@ -422,9 +423,11 @@ const StudentVaccinationPage = () => {
   };
 
   // Lọc danh sách học sinh theo tên
-  const filteredStudents = students.filter((s) =>
-    s.fullName.toLowerCase().includes(searchText.toLowerCase())
-  );
+  const filteredStudents = Array.isArray(students)
+    ? students.filter((s) =>
+        s.fullName.toLowerCase().includes(searchText.toLowerCase())
+      )
+    : [];
 
   // Xử lý duyệt/trạng thái
   const handleOpenStatusModal = (vaccination, action) => {
@@ -844,7 +847,7 @@ const StudentVaccinationPage = () => {
                   option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                 }
               >
-                {students.map(student => (
+                {Array.isArray(students) && students.map(student => (
                   <Option key={student.id} value={student.id}>
                     {student.fullName} - {student.id}
                   </Option>

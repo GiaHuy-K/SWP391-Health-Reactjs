@@ -7,7 +7,7 @@ import NotificationDropdown from '../../../components/notification/NotificationD
 import NotificationIcon from '../../../components/notification/NotificationIcon';
 import styles from './HomeHeader.module.css';
 
-const HomeHeader = () => {
+const HomeHeader = ({ hideNavLinks = false }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [showNotificationDropdown, setShowNotificationDropdown] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
@@ -112,10 +112,14 @@ const HomeHeader = () => {
           <h2 className="ml-3 text-2xl font-['Pacifico'] text-primary">SchoolMed</h2>
         </div>
         <nav className="hidden md:flex space-x-8 flex-1 justify-center">
-          <a href="#features" className="text-gray-600 hover:text-primary transition">Tính năng</a>
-          <a href="#contact" className="text-gray-600 hover:text-primary transition">Liên hệ</a>
-          <a href="#about" className="text-gray-600 hover:text-primary transition">Về chúng tôi</a>
-          <a href="/blogs" className="text-gray-600 hover:text-primary transition">Blog</a>
+          {!hideNavLinks && (
+            <>
+              <a href="#features" className="text-gray-600 hover:text-primary transition">Tính năng</a>
+              <a href="#contact" className="text-gray-600 hover:text-primary transition">Liên hệ</a>
+              <a href="#about" className="text-gray-600 hover:text-primary transition">Về chúng tôi</a>
+              <a href="/blogs" className="text-gray-600 hover:text-primary transition">Blog</a>
+            </>
+          )}
         </nav>
         <div className="flex items-center space-x-4">
           {!isAuthenticated ? (
@@ -200,9 +204,13 @@ const HomeHeader = () => {
         <div className="md:hidden bg-white border-t border-gray-200 py-4">
           <div className="container mx-auto px-4">
             <nav className="space-y-4">
-              <a href="#features" className="block text-gray-600 hover:text-primary transition py-2">Tính năng</a>
-              <a href="#contact" className="block text-gray-600 hover:text-primary transition py-2">Liên hệ</a>
-              <a href="#about" className="block text-gray-600 hover:text-primary transition py-2">Về chúng tôi</a>
+              {!hideNavLinks && (
+                <>
+                  <a href="#features" className="block text-gray-600 hover:text-primary transition py-2">Tính năng</a>
+                  <a href="#contact" className="block text-gray-600 hover:text-primary transition py-2">Liên hệ</a>
+                  <a href="#about" className="block text-gray-600 hover:text-primary transition py-2">Về chúng tôi</a>
+                </>
+              )}
               {isAuthenticated && (
                 <>
                   <hr className="border-gray-200" />

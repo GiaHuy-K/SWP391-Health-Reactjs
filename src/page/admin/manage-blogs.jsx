@@ -17,6 +17,7 @@ import {
   Statistic,
   Tooltip,
   Image,
+  Badge,
 } from "antd";
 import {
   PlusOutlined,
@@ -26,14 +27,16 @@ import {
   SearchOutlined,
   ReloadOutlined,
   FileTextOutlined,
+  UserOutlined,
+  CalendarOutlined,
+  EyeInvisibleOutlined,
   CheckCircleOutlined,
   ClockCircleOutlined,
+  CrownOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../config/AuthContext";
-import { useBlogPermissions, BlogPermissionGuard } from "../../utils/blogPermissions";
 import {
-  getMyBlogs,
+  getBlogs,
   deleteBlog,
   getBlogCategories,
   getBlogStatuses,
@@ -43,14 +46,16 @@ import { useBlogEnums } from "../../utils/useBlogEnums";
 import { CategoryTag, StatusTag } from "../../components/blog/EnumDisplay";
 import dayjs from "dayjs";
 import "dayjs/locale/vi";
+import { useAuth } from "../../config/AuthContext";
+import { useBlogPermissions, BlogPermissionGuard } from "../../utils/blogPermissions";
 
 dayjs.locale("vi");
 
 const { Search } = Input;
 const { Option } = Select;
-const { Title, Text } = Typography;
+const { Title, Text, Paragraph } = Typography;
 
-const ManageBlogsNurse = () => {
+const AdminManageBlogs = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const permissions = useBlogPermissions();
@@ -70,13 +75,20 @@ const ManageBlogsNurse = () => {
     total: 0,
     published: 0,
     draft: 0,
+    pending: 0,
   });
 
-  const {
-    enums: { categories, statuses },
+  // Sử dụng hook enum
+  const { 
+    enums: { categories, statuses }, 
     loading: enumsLoading,
+    getStatusLabel,
+    getCategoryLabel,
+    getStatusColor,
+    getCategoryColor,
   } = useBlogEnums();
 
+  // Load data
   useEffect(() => {
     fetchBlogs();
   }, [filters, pagination.current, pagination.pageSize]);
@@ -90,22 +102,28 @@ const ManageBlogsNurse = () => {
         sort: "createdAt,DESC",
         ...filters,
       };
+
+      // Remove empty filters
       Object.keys(params).forEach(key => {
         if (params[key] === "" || params[key] === null || params[key] === undefined) {
           delete params[key];
         }
       });
-      const response = await getMyBlogs(params);
+
+      const response = await getBlogs(params);
       setBlogs(response.content || []);
       setPagination(prev => ({
         ...prev,
         total: response.totalElements || 0,
       }));
+
+      // Calculate stats
       const allBlogs = response.content || [];
       setStats({
         total: allBlogs.length,
-        published: allBlogs.filter(b => b.status === "published").length,
-        draft: allBlogs.filter(b => b.status === "draft").length,
+        published: allBlogs.filter(b => b.status === "Công khai").length,
+        draft: allBlogs.filter(b => b.status === "Riêng tư").length,
+        pending: allBlogs.filter(b => b.status === "Chờ duyệt").length,
       });
     } catch (error) {
       console.error("Lỗi khi tải danh sách blog:", error);
@@ -115,44 +133,42 @@ const ManageBlogsNurse = () => {
     }
   };
 
+  // Handle actions
   const handleCreateBlog = () => {
     if (permissions.canCreateBlog()) {
-    navigate("/dashboardNurse/blog/create");
+      navigate("/dashboard/blog/create");
     } else {
       message.error("Bạn không có quyền tạo blog!");
     }
   };
 
   const handleViewBlog = (blogId) => {
-    navigate(`/dashboardNurse/blog/${blogId}`);
+    navigate(`/dashboard/blog/${blogId}`);
   };
 
   const handleEditBlog = (blogId) => {
-    navigate(`/dashboardNurse/blog/edit/${blogId}`);
+    navigate(`/dashboard/blog/edit/${blogId}`);
   };
 
-  const handleDeleteBlog = async (blogId, blogData) => {
-    if (!permissions.canDeleteBlog(blogData)) {
-      message.error("Bạn không có quyền xóa blog này!");
-      return;
-    }
-    
+  const handleDeleteBlog = async (blogId, blog) => {
     try {
       await deleteBlog(blogId);
-      message.success("Xóa blog thành công");
+      message.success("Xóa blog thành công!");
       fetchBlogs();
     } catch (error) {
-      console.error("Lỗi khi xóa blog:", error);
+      message.error("Lỗi khi xóa blog!");
+      console.error("Lỗi xóa blog:", error);
     }
   };
 
   const handleStatusChange = async (blogId, newStatus) => {
     try {
       await updateBlogStatus(blogId, newStatus);
-      message.success("Cập nhật trạng thái thành công");
+      message.success("Cập nhật trạng thái thành công!");
       fetchBlogs();
     } catch (error) {
-      console.error("Lỗi khi cập nhật trạng thái:", error);
+      message.error("Lỗi khi cập nhật trạng thái!");
+      console.error("Lỗi cập nhật status:", error);
     }
   };
 
@@ -161,39 +177,28 @@ const ManageBlogsNurse = () => {
     setPagination(prev => ({ ...prev, current: 1 }));
   };
 
-  const handleCategoryChange = (value) => {
-    setFilters(prev => ({ ...prev, category: value }));
-    setPagination(prev => ({ ...prev, current: 1 }));
-  };
-
-  const handleStatusFilter = (value) => {
-    setFilters(prev => ({ ...prev, status: value }));
+  const handleFilterChange = (key, value) => {
+    setFilters(prev => ({ ...prev, [key]: value }));
     setPagination(prev => ({ ...prev, current: 1 }));
   };
 
   const handleRefresh = () => {
-    setFilters({
-      search: "",
-      category: "",
-      status: "",
-    });
-    setPagination(prev => ({ ...prev, current: 1 }));
+    fetchBlogs();
   };
 
   const columns = [
     {
       title: "Thumbnail",
-      dataIndex: "thumbnail",
       key: "thumbnail",
       width: 80,
-      render: (thumbnail) => (
+      render: (_, record) => (
         <Image
+          src={record.thumbnail}
+          alt="Thumbnail"
           width={60}
           height={40}
-          src={thumbnail || "https://via.placeholder.com/60x40?text=No+Image"}
-          alt="Blog thumbnail"
           style={{ objectFit: "cover", borderRadius: 4 }}
-          fallback="https://via.placeholder.com/60x40?text=Error"
+          fallback="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMIAAADDCAYAAADQvc6UAAABRWlDQ1BJQ0MgUHJvZmlsZQAAKJFjYGASSSwoyGFhYGDIzSspCnJ3UoiIjFJgf8LAwSDCIMogwMCcmFxc4BgQ4ANUwgCjUcG3awyMIPqyLsis7PPOq3QdDFcvjV3jOD1boQVTPQrgSkktTgbSf4A4LbmgqISBgTEFyFYuLykAsTuAbJEioKOA7DkgdjqEvQHEToKwj4DVhAQ5A9k3gGyB5IxEoBmML4BsnSQk8XQkNtReEOBxcfXxUQg1Mjc0dyHgXNJBSWpFCYh2zi+oLMpMzyhRcASGUqqCZ16yno6CkYGRAQMDKMwhqj/fAIcloxgHQqxAjIHBEugw5sUIsSQpBobtQPdLciLEVJYzMPBHMDBsayhILEqEO4DxG0txmrERhM29nYGBddr//5/DGRjYNRkY/l7////39v///y4Dmn+LgeHANwDrkl1AuO+pmgAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAwqADAAQAAAABAAAAwwAAAAD9b/HnAAAHlklEQVR4Ae3dP3Ik1RnG4W+FgYxN"
         />
       ),
     },
@@ -201,6 +206,17 @@ const ManageBlogsNurse = () => {
       title: "Tiêu đề",
       dataIndex: "title",
       key: "title",
+      render: (text, record) => (
+        <div>
+          <div style={{ fontWeight: 500, marginBottom: 4 }}>
+            {text}
+          </div>
+          <div style={{ fontSize: 12, color: "#666" }}>
+            <UserOutlined style={{ marginRight: 4 }} />
+            {record.authorName || "Không xác định"}
+          </div>
+        </div>
+      ),
     },
     {
       title: "Danh mục",
@@ -221,14 +237,17 @@ const ManageBlogsNurse = () => {
       dataIndex: "createdAt",
       key: "createdAt",
       width: 120,
-      render: (createdAt) => (
-        <Text style={{ fontSize: 12 }}>{dayjs(createdAt).format("DD/MM/YYYY")}</Text>
+      render: (date) => (
+        <div>
+          <CalendarOutlined style={{ marginRight: 4 }} />
+          {dayjs(date).format("DD/MM/YYYY")}
+        </div>
       ),
     },
     {
       title: "Thao tác",
       key: "actions",
-      width: 200,
+      width: 250,
       render: (_, record) => (
         <Space size="small">
           <Tooltip title="Xem chi tiết">
@@ -247,12 +266,21 @@ const ManageBlogsNurse = () => {
               onClick={() => handleEditBlog(record.id)}
             />
           </Tooltip>
-          <BlogPermissionGuard action="delete" blogData={record} fallback={null}>
+          <Tooltip title="Cập nhật trạng thái">
+            <Button
+              type="text"
+              icon={<CheckCircleOutlined />}
+              size="small"
+              onClick={() => handleStatusChange(record.id, record.status === "Công khai" ? "Riêng tư" : "Công khai")}
+            >
+              {record.status === "Công khai" ? "Ẩn" : "Duyệt"}
+            </Button>
+          </Tooltip>
           <Tooltip title="Xóa">
             <Popconfirm
               title="Bạn có chắc muốn xóa blog này?"
               description="Hành động này không thể hoàn tác."
-                onConfirm={() => handleDeleteBlog(record.id, record)}
+              onConfirm={() => handleDeleteBlog(record.id, record)}
               okText="Xóa"
               cancelText="Hủy"
               okType="danger"
@@ -265,7 +293,6 @@ const ManageBlogsNurse = () => {
               />
             </Popconfirm>
           </Tooltip>
-          </BlogPermissionGuard>
         </Space>
       ),
     },
@@ -273,17 +300,20 @@ const ManageBlogsNurse = () => {
 
   return (
     <div>
+      {/* Header */}
       <div style={{ marginBottom: 24 }}>
         <Title level={3}>
-          <FileTextOutlined style={{ marginRight: 8 }} />
-          Quản lý Blog của tôi
+          <CrownOutlined style={{ marginRight: 8, color: "#faad14" }} />
+          Quản lý Blog - Admin
         </Title>
         <Text type="secondary">
-          Quản lý các bài viết blog bạn đã tạo
+          Quản lý toàn bộ bài viết blog trong hệ thống với quyền admin
         </Text>
       </div>
-      <Row gutter={16} style={{ marginBottom: 24 }}>
-        <Col span={8}>
+
+      {/* Stats Cards */}
+      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+        <Col xs={12} sm={6}>
           <Card>
             <Statistic
               title="Tổng số blog"
@@ -293,7 +323,7 @@ const ManageBlogsNurse = () => {
             />
           </Card>
         </Col>
-        <Col span={8}>
+        <Col xs={12} sm={6}>
           <Card>
             <Statistic
               title="Đã xuất bản"
@@ -303,58 +333,65 @@ const ManageBlogsNurse = () => {
             />
           </Card>
         </Col>
-        <Col span={8}>
+        <Col xs={12} sm={6}>
           <Card>
             <Statistic
-              title="Bản nháp"
+              title="Riêng tư"
               value={stats.draft}
-              prefix={<ClockCircleOutlined />}
+              prefix={<EyeInvisibleOutlined />}
               valueStyle={{ color: "#faad14" }}
             />
           </Card>
         </Col>
+        <Col xs={12} sm={6}>
+          <Card>
+            <Statistic
+              title="Chờ duyệt"
+              value={stats.pending}
+              prefix={<ClockCircleOutlined />}
+              valueStyle={{ color: "#ff4d4f" }}
+            />
+          </Card>
+        </Col>
       </Row>
-      <Card style={{ marginBottom: 24 }}>
-        <Row gutter={16} align="middle">
-          <Col span={8}>
+
+      {/* Filters */}
+      <Card style={{ marginBottom: 16 }}>
+        <Row gutter={[16, 16]} align="middle">
+          <Col xs={24} sm={8}>
             <Search
-              placeholder="Tìm kiếm blog..."
-              allowClear
+              placeholder="Tìm kiếm theo tiêu đề..."
               onSearch={handleSearch}
               style={{ width: "100%" }}
             />
           </Col>
-          <Col span={4}>
+          <Col xs={12} sm={4}>
             <Select
               placeholder="Danh mục"
-              allowClear
               style={{ width: "100%" }}
-              onChange={handleCategoryChange}
-              loading={enumsLoading}
+              allowClear
+              value={filters.category}
+              onChange={(value) => handleFilterChange("category", value)}
             >
-              {categories.map(category => (
-                <Option key={category.value} value={category.value}>
-                  <CategoryTag category={category} showIcon={false} />
-                </Option>
+              {categories?.map(cat => (
+                <Option key={cat} value={cat}>{getCategoryLabel(cat)}</Option>
               ))}
             </Select>
           </Col>
-          <Col span={4}>
+          <Col xs={12} sm={4}>
             <Select
               placeholder="Trạng thái"
-              allowClear
               style={{ width: "100%" }}
-              onChange={handleStatusFilter}
-              loading={enumsLoading}
+              allowClear
+              value={filters.status}
+              onChange={(value) => handleFilterChange("status", value)}
             >
-              {statuses.map(status => (
-                <Option key={status.value} value={status.value}>
-                  <StatusTag status={status} showIcon={false} />
-                </Option>
+              {statuses?.map(status => (
+                <Option key={status} value={status}>{getStatusLabel(status)}</Option>
               ))}
             </Select>
           </Col>
-          <Col span={4}>
+          <Col xs={12} sm={4}>
             <Button
               icon={<ReloadOutlined />}
               onClick={handleRefresh}
@@ -363,7 +400,7 @@ const ManageBlogsNurse = () => {
               Làm mới
             </Button>
           </Col>
-          <Col span={4}>
+          <Col xs={12} sm={4}>
             <Button
               type="primary"
               icon={<PlusOutlined />}
@@ -375,6 +412,8 @@ const ManageBlogsNurse = () => {
           </Col>
         </Row>
       </Card>
+
+      {/* Blog Table */}
       <Card>
         <Table
           columns={columns}
@@ -390,11 +429,11 @@ const ManageBlogsNurse = () => {
             showTotal: (total, range) =>
               `${range[0]}-${range[1]} của ${total} blog`,
             onChange: (page, pageSize) => {
-              setPagination(prev => ({
-                ...prev,
-                current: page,
-                pageSize: pageSize,
-              }));
+                setPagination(prev => ({
+                  ...prev,
+                  current: page,
+                  pageSize: pageSize,
+                }));
             },
           }}
         />
@@ -403,4 +442,4 @@ const ManageBlogsNurse = () => {
   );
 };
 
-export default ManageBlogsNurse; 
+export default AdminManageBlogs; 

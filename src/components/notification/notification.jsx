@@ -20,6 +20,7 @@ import styles from "../../page/home/HomePage.module.css";
 import { FaUserCircle } from "react-icons/fa";
 import { useAuth } from "../../config/AuthContext";
 import { useNavigate } from "react-router-dom";
+import HomeHeader from "../../page/home/header/HomeHeader";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -38,83 +39,6 @@ function Notification() {
   const [showDropdown, setShowDropdown] = useState(false);
   const { isAuthenticated, logout, user } = useAuth();
   const navigate = useNavigate();
-
-  const Header = ({
-    isAuthenticated,
-    isParent,
-    showDropdown,
-    setShowDropdown,
-    handleLogin,
-    handleLogout,
-    handleDashboardClick,
-    handleProfileClick,
-    handleLogoClick,
-  }) => (
-    <header className={styles.header}>
-      <div className={styles.headerContent}>
-        <div
-          className={styles.logoSection}
-          onClick={handleLogoClick}
-          style={{ cursor: "pointer" }}
-        >
-          <div className={styles.logoIcon}>
-            <img
-              src="/logo_medical_health_system.jpg"
-              alt="SchoolMed Logo"
-              style={{ width: 48, height: 48, objectFit: "contain" }}
-            />
-          </div>
-          <h2 className={styles.logoText}>SchoolMed</h2>
-        </div>
-        <div className={styles.navSection}>
-          <div className={styles.navLinks}>
-            <a className={styles.navLink} href="#home">
-              Trang chủ
-            </a>
-            <a className={styles.navLink} href="#features">
-              Tính năng
-            </a>
-            <a className={styles.navLink} href="#contact">
-              Liên hệ
-            </a>
-            <a className={styles.navLink} href="#about">
-              Về chúng tôi
-            </a>
-          </div>
-          <div className={styles.authSection}>
-            {!isAuthenticated ? (
-              <button className={styles.loginBtn} onClick={handleLogin}>
-                <span>Đăng nhập</span>
-              </button>
-            ) : (
-              <div className={styles.profileSection}>
-                <FaUserCircle
-                  className={styles.profileIcon}
-                  onClick={() => setShowDropdown(!showDropdown)}
-                />
-                {showDropdown && (
-                  <div className={styles.dropdownMenu}>
-                    {user?.role === "Phụ huynh" ? (
-                      <>
-                        <button onClick={handleProfileClick}>Hồ sơ</button>
-                        <button onClick={handleLogout}>Đăng xuất</button>
-                      </>
-                    ) : (
-                      <>
-                        <button onClick={handleDashboardClick}>Dashboard</button>
-                        <button onClick={handleProfileClick}>Hồ sơ</button>
-                        <button onClick={handleLogout}>Đăng xuất</button>
-                      </>
-                    )}
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    </header>
-  );
 
   const handleLogin = () => navigate("/login");
 
@@ -195,17 +119,7 @@ function Notification() {
 
   return (
     <div style={{ padding: 24 }}>
-      <Header
-        isAuthenticated={true}
-        isParent={user?.role === "Phụ huynh"}
-        showDropdown={showDropdown}
-        setShowDropdown={setShowDropdown}
-        handleLogin={handleLogin}
-        handleLogout={handleLogout}
-        handleDashboardClick={handleDashboardClick}
-        handleProfileClick={handleProfileClick}
-        handleLogoClick={handleLogoClick}
-      />
+      <HomeHeader hideNavLinks={true} />
 
       <Title level={4}>
         Thông báo{" "}

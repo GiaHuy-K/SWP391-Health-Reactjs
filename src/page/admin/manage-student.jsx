@@ -354,7 +354,7 @@ function ManageStudent() {
 
       {/* Bảng danh sách học sinh */}
       <Table
-        dataSource={studentList}
+        dataSource={Array.isArray(studentList) ? studentList : []}
         columns={columns}
         rowKey="id"
         pagination={{

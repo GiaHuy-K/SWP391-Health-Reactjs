@@ -53,7 +53,7 @@ const ManageChronic = () => {
       setLoadingStudents(true);
       try {
         const res = await getStudent();
-        setStudents(res || []);
+        setStudents(Array.isArray(res) ? res : (res?.content || []));
       } catch (err) {
         setStudents([]);
       } finally {
@@ -253,9 +253,11 @@ const ManageChronic = () => {
   ];
 
   // Lọc danh sách học sinh theo tên
-  const filteredStudents = students.filter((s) =>
-    s.fullName.toLowerCase().includes(searchText.toLowerCase())
-  );
+  const filteredStudents = Array.isArray(students)
+    ? students.filter((s) =>
+        s.fullName.toLowerCase().includes(searchText.toLowerCase())
+      )
+    : [];
 
   console.log("chronicList", chronicList);
 
@@ -285,7 +287,7 @@ const ManageChronic = () => {
         <Select
           placeholder="Học sinh"
           value={selectedStudent?.id}
-          onChange={(id) => setSelectedStudent(students.find((s) => s.id === id))}
+          onChange={(id) => setSelectedStudent(Array.isArray(students) ? students.find((s) => s.id === id) : undefined)}
           style={{ width: 200 }}
           allowClear
           showSearch
@@ -293,7 +295,7 @@ const ManageChronic = () => {
             option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
           }
         >
-          {students.map((stu) => (
+          {Array.isArray(students) && students.map((stu) => (
             <Option key={stu.id} value={stu.id}>
               {stu.fullName} - {stu.className}
             </Option>
