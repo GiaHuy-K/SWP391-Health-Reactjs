@@ -44,6 +44,7 @@ import BlogDetailPage from "./page/blog/blog-detail.jsx";
 import ManageBlogsNurse from "./page/schoolnurse/manage-blogs.jsx";
 import EditBlogPage from "./page/blog/edit-blog.jsx";
 import PublicBlogList from "./page/blog/public-blog-list.jsx";
+import VaccinationAtSchool from "./page/vaccination/vaccinationAtSchool.jsx";
 
 // Component bảo vệ route yêu cầu đăng nhập
 const PrivateRoute = ({ children }) => {
@@ -108,6 +109,7 @@ const router = createBrowserRouter([
       {path: "blog/create", element: <CreateBlogPage /> },
       { path: "blog/:blogId", element: <BlogDetailPage /> },
       {path: "blog/edit/:blogId", element: <EditBlogPage /> },
+      //{path: "vaccineAtSchoolM", element: <VaccinationAtSchool /> },
     ] 
   },
   
@@ -130,6 +132,7 @@ const router = createBrowserRouter([
       {path: "manage-blogs", element: <ManageBlogsNurse /> },
       {path: "blog/edit/:blogId", element: <EditBlogPage /> },
       {path: "blog/:blogId", element: <BlogDetailPage /> },
+      {path: "vaccineAtSchoolN", element: <VaccinationAtSchool /> },
     ] 
   },
 
