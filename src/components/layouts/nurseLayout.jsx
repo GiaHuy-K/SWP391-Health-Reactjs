@@ -11,6 +11,7 @@ import {
   BranchesOutlined,
   InsuranceOutlined,
   FileTextOutlined,
+  SolutionOutlined,
 } from "@ant-design/icons";
 import {
   Avatar,
@@ -42,6 +43,7 @@ const items = [
   getItem('Thông tin bệnh mãn tính học sinh', 'student-chronic-disease', <InsuranceOutlined />),
   getItem('Tạo Blog', 'blog/create', <FileOutlined />),
   getItem('Quản lý Blog', 'manage-blogs', <FileTextOutlined />),
+  getItem('Tiêm chủng tại trường', 'vaccineAtSchoolN', <SolutionOutlined />),
   getItem(
     <Link to="/">Về trang chủ</Link>,
     "home",
