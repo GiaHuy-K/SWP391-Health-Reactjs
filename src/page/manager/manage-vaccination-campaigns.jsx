@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Modal, Descriptions, Button, Space, message, Tabs } from "antd";
 import VaccinationCampaignList from "../../components/vaccination/VaccinationCampaignList";
-import VaccinationTest from "../../components/vaccination/VaccinationTest";
 import VaccinationCampaignCreateForm from "../../components/vaccination/VaccinationCampaignCreateForm";
 
 const ManageVaccinationCampaigns = () => {
@@ -9,7 +8,7 @@ const ManageVaccinationCampaigns = () => {
   const [selectedCampaign, setSelectedCampaign] = useState(null);
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
-
+  // Đợi tiến trình chuyển đổi trạng thái
   // Handle view campaign detail
   const handleViewDetail = (campaign) => {
     setSelectedCampaign(campaign);
@@ -54,11 +53,6 @@ const ManageVaccinationCampaigns = () => {
           onEdit={handleEdit}
         />
       ),
-    },
-    {
-      key: "test",
-      label: "Test API",
-      children: <VaccinationTest />,
     },
   ];
 

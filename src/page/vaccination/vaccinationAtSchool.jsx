@@ -21,9 +21,13 @@ import VaccinationMonitoringFormModal from "../../components/vaccination/AtSchoo
 import { addVaccinationMonitoring } from "../../services/api.vaccineAtSchool";
 import VaccinationDetailModal from "../../components/vaccination/AtSchool/vaccinationDetailModal";
 import VaccinationMonitoringModal from "../../components/vaccination/AtSchool/vaccinationMonitoringModal";
+import VaccinationStatusUpdateModal from "../../components/vaccination/AtSchool/VaccinationStatusUpdateModal";
+import { updateVaccinationStatus } from "../../services/api.vaccineAtSchool";
+
 import { DownOutlined } from "@ant-design/icons";
 import VaccinationRecordFormModal from "../../components/vaccination/AtSchool/vaccinationResultFormModal";
 import { toast } from "react-toastify";
+
 const { Option } = Select;
 
 function VaccinationAtSchool() {
@@ -56,6 +60,33 @@ function VaccinationAtSchool() {
   const [monitoringSubmitting, setMonitoringSubmitting] = useState(false);
   const [selectedMonitoringRecord, setSelectedMonitoringRecord] =
     useState(null);
+  const [statusModalVisible, setStatusModalVisible] = useState(false);
+  const [statusSubmitting, setStatusSubmitting] = useState(false);
+  const [currentVaccinationId, setCurrentVaccinationId] = useState(null);
+  const [statusInitialValues, setStatusInitialValues] = useState({});
+  const handleOpenStatusModal = (record) => {
+    setCurrentVaccinationId(record.schoolVaccinationId);
+    setStatusInitialValues({
+      status: record.status,
+      notes: record.notes || "",
+      reasonForChange: "",
+    });
+    setStatusModalVisible(true);
+  };
+
+  const handleSubmitStatusUpdate = async (values) => {
+    setStatusSubmitting(true);
+    try {
+      await updateVaccinationStatus(currentVaccinationId, values);
+      setStatusModalVisible(false);
+      fetchData(); // refresh danh sách
+    } catch (error) {
+      console.error("Lỗi cập nhật trạng thái:", error);
+    } finally {
+      setStatusSubmitting(false);
+    }
+  };
+
   const handleOpenCreateMonitoring = (record) => {
     setSelectedMonitoringRecord(record);
     setMonitoringFormVisible(true);
@@ -199,17 +230,20 @@ function VaccinationAtSchool() {
         const items = [];
 
         if (!record.schoolVaccinationId) {
+          // 🆕 Nếu chưa có bản ghi -> Ghi nhận kết quả tiêm chủng
           items.push({
             key: "create",
             label: "📝 Ghi nhận kết quả tiêm chủng",
           });
         } else {
+          // 🔧 Cập nhật trạng thái tiêm chủng
           items.push({
             key: "edit",
-            label: "✏️ Cập nhật trạng thái tiêm chủng",
+            label: "🔧 Cập nhật trạng thái tiêm chủng",
           });
 
           if (hasVaccinated) {
+            // Theo dõi sau tiêm nếu đã tiêm
             items.push({
               key: hasMonitoring ? "editMonitoring" : "createMonitoring",
               label: hasMonitoring
@@ -226,15 +260,17 @@ function VaccinationAtSchool() {
 
         const handleMenuClick = ({ key, domEvent }) => {
           domEvent.stopPropagation();
-          if (key === "create") handleOpenVaccinationForm(record);
-          else if (key === "monitoring")
-            handleOpenMonitoring(record.schoolVaccinationId);
-          else if (key === "edit")
-            console.log("TODO: cập nhật kết quả tiêm chủng");
-          else if (key === "createMonitoring") {
+          if (key === "create") {
+            handleOpenVaccinationForm(record); // 🆕 ghi nhận kết quả tiêm chủng
+          } else if (key === "edit") {
+            handleOpenStatusModal(record); // 🔧 cập nhật trạng thái
+          } else if (key === "createMonitoring") {
             handleOpenCreateMonitoring(record);
-          } else if (key === "editMonitoring")
+          } else if (key === "editMonitoring") {
             console.log("TODO: cập nhật theo dõi sau tiêm");
+          } else if (key === "monitoring") {
+            handleOpenMonitoring(record.schoolVaccinationId);
+          }
         };
 
         return (
@@ -310,7 +346,7 @@ function VaccinationAtSchool() {
           })}
         />
       </Spin>
-        {/* Modal chi tiết bản ghi tiêm chủng */}
+      {/* Modal chi tiết bản ghi tiêm chủng */}
       <VaccinationDetailModal
         open={showModal}
         onClose={() => setShowModal(false)}
@@ -333,7 +369,7 @@ function VaccinationAtSchool() {
         defaultConsentId={selectedRecord?.consentId}
       />
       {/* Modal ghi nhận theo dõi sau tiêm */}
-      <VaccinationMonitoringFormModal 
+      <VaccinationMonitoringFormModal
         open={monitoringFormVisible}
         onClose={() => setMonitoringFormVisible(false)}
         onSubmit={handleSubmitMonitoringForm}
@@ -345,6 +381,14 @@ function VaccinationAtSchool() {
           actionsTaken: "",
           notes: "",
         }}
+      />
+      {/* Modal cập nhật trạng thái tiêm chủng */}
+      <VaccinationStatusUpdateModal
+        open={statusModalVisible}
+        onClose={() => setStatusModalVisible(false)}
+        onSubmit={handleSubmitStatusUpdate}
+        submitting={statusSubmitting}
+        initialValues={statusInitialValues}
       />
     </div>
   );
