@@ -1,6 +1,7 @@
 import React from "react";
 import HealthIncidentLineChart from "../../components/dashboard-manager/healthIncidentLineChart";
 import RecentHealthIncidents from "../../components/dashboard-manager/recentHealthIncidents";
+import ChronicDiseaseStats from "../../components/dashboard-manager/chronicDiseaseStats";
 import { Col, Divider, Row } from "antd";
 import DashboardKPI from "../../components/dashboard-manager/KPI";
 
@@ -9,6 +10,17 @@ function DashboardN() {
     <div>
         <h2>Tổng quan</h2>
         <DashboardKPI />
+      
+      {/* Thống kê bệnh mãn tính */}
+      <Row gutter={[16, 16]}>
+        <Col span={24}>
+          <ChronicDiseaseStats />
+        </Col>
+      </Row>
+
+      <Divider />
+
+      {/* Biểu đồ đường sự cố y tế */}
       <Row gutter={[16, 16]}>
         <Col span={24}>
           <HealthIncidentLineChart />
@@ -17,7 +29,7 @@ function DashboardN() {
 
       <Divider />
 
-      {/* KHU 3: Danh sách sự cố y tế gần đây */}
+      {/* Danh sách sự cố y tế gần đây */}
       <Row gutter={[16, 16]}>
         <Col span={24}>
           <RecentHealthIncidents />

@@ -109,7 +109,6 @@ const router = createBrowserRouter([
       {path: "event-Manager", element: <ManageEventM/>},
       {path: "supply-Manager", element: <ManageMedicalSupplyM/>},
       {path: "student-vaccination", element: <StudentVaccinationPage/>},
-      {path: "student-chronic-disease", element: <ManageChronic />},
       {path: "manage-blogs", element: <ManageBlogs />},
       {path: "blog/create", element: <CreateBlogPage /> },
       { path: "blog/:blogId", element: <BlogDetailPage /> },

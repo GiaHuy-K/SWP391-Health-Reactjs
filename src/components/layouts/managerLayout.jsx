@@ -14,7 +14,6 @@ import {
   SolutionOutlined,
   FileTextOutlined,
   SafetyCertificateOutlined,
-  ExperimentOutlined,
 } from '@ant-design/icons';
 import { Breadcrumb, Layout, Menu, theme, Avatar, Dropdown, Space, message } from 'antd';
 import { Link, Outlet, useNavigate } from 'react-router-dom';
@@ -37,7 +36,6 @@ const items = [
   getItem('Quản lý sự cố', 'event-Manager', <PieChartOutlined />),
   getItem('Quản lý vật tư y tế', 'supply-Manager', <DesktopOutlined />),
   getItem('Chiến dịch tiêm chủng', 'vaccination-campaigns', <SafetyCertificateOutlined />),
-  getItem('Bệnh mãn tính', 'student-chronic-disease', <ExperimentOutlined />),
   getItem('Quản lý Blog', 'manage-blogs', <FileTextOutlined />),
   //getItem('Tiêm chủng tại trường', 'vaccineAtSchoolM', <SolutionOutlined />),
   getItem(
@@ -67,8 +65,6 @@ const ManagerLayout = () => {
       navigate("/profile");
     } else if (key === "dashboard") {
       navigate("/dashboardManager/event-Manager");
-    } else if (key === "student-chronic-disease") {
-      navigate("/dashboardManager/student-chronic-disease");
     } else if (key === "student-vaccination") {
       navigate("/dashboardManager/student-vaccination");
     } else if (key === "home") {
