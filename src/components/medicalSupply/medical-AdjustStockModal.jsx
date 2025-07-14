@@ -30,7 +30,7 @@ const AdjustStockModal = ({ open, onClose, onSubmit, supplyName }) => {
       onCancel={handleCancel}
       okText="Xác nhận"
       cancelText="Hủy"
-      destroyOnClose
+      destroyOnHidden
     >
       <Form form={form} layout="vertical">
         <Form.Item

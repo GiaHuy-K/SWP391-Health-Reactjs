@@ -24,6 +24,7 @@ import {
 import { getStudent } from "../../services/api.student";
 import dayjs from "dayjs";
 import { FileOutlined, EditOutlined, DeleteOutlined, EyeOutlined } from "@ant-design/icons";
+import { useAuth } from "../../config/AuthContext";
 
 const { Option } = Select;
 const { Title, Text } = Typography;
@@ -46,6 +47,9 @@ const ManageChronic = () => {
   const [fileUrl, setFileUrl] = useState("");
   const [fileLoading, setFileLoading] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const { user } = useAuth();
+  const isNurse = user?.role === "Nhân viên Y tế";
 
   // Lấy danh sách học sinh
   useEffect(() => {
@@ -237,7 +241,7 @@ const ManageChronic = () => {
         <Space>
           <Button type="link" icon={<EyeOutlined />} onClick={() => handleShowDetail(record)} size="small">Xem</Button>
           <Button type="link" icon={<FileOutlined />} onClick={() => handleViewFile(record.id)} size="small" loading={fileLoading}>File</Button>
-          {(record.status === "PENDING" || record.status === "Chờ xử lý") && (
+          {(record.status === "PENDING" || record.status === "Chờ xử lý") && isNurse && (
             <>
               <Button type="link" style={{ color: "#52c41a", fontWeight: 600 }} onClick={() => handleApprove(record.id)}>Duyệt</Button>
               <Button type="link" style={{ color: "#ff4d4f", fontWeight: 600 }} onClick={() => handleReject(record.id)}>Từ chối</Button>

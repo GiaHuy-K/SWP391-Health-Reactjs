@@ -50,7 +50,7 @@ const DashboardKPI = () => {
     <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
       {/* Tổng số vật tư */}
       <Col xs={24} md={12}>
-        <Card style={kpiCardStyle}>
+        <Card styles={{ body: kpiCardStyle }}>
           <HddOutlined style={{ ...iconStyle, color: "#1890ff" }} />
           <div
             style={{

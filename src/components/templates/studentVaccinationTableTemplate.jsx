@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Table, Modal } from "antd";
 
-function StudentVaccinationTableTemplate({ data, loading }) {
+function StudentVaccinationTableTemplate({ data, loading, renderAction }) {
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [selectedVaccination, setSelectedVaccination] = useState(null);
 
@@ -12,7 +12,13 @@ function StudentVaccinationTableTemplate({ data, loading }) {
     { title: "Ngày tiêm", dataIndex: "vaccinationDate", key: "vaccinationDate" },
     { title: "Nơi tiêm", dataIndex: "provider", key: "provider" },
     { title: "Trạng thái", dataIndex: "status", key: "status" },
-  ];
+    renderAction && {
+      title: "Thao tác",
+      key: "action",
+      render: (text, record) => renderAction(record),
+      align: "center",
+    },
+  ].filter(Boolean);
 
   const handleRowClick = (record) => {
     setSelectedVaccination(record);

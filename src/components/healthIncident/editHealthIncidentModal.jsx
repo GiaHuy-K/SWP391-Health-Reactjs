@@ -63,7 +63,7 @@ function EditHealthIncidentModal({
         form.resetFields();
       }}
       footer={null}
-      destroyOnClose
+      destroyOnHidden
     >
       <Form layout="vertical" form={form} onFinish={handleFinish}>
         <Form.Item

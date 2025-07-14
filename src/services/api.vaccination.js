@@ -276,6 +276,57 @@ export const updateConsent = async (consentId, updateData) => {
   }
 };
 
+/**
+ * Lên lịch chiến dịch tiêm chủng (DRAFT -> SCHEDULED)
+ * @param {number} campaignId
+ * @param {object} data (có thể truyền ngày dự kiến, nếu backend yêu cầu)
+ * @returns {Promise<Object>}
+ */
+export const scheduleVaccinationCampaign = async (campaignId, data = {}) => {
+  try {
+    const response = await api.post(`/vaccination/campaigns/${campaignId}/schedule`, data);
+    toast.success("Lên lịch chiến dịch thành công!");
+    return response.data;
+  } catch (error) {
+    toast.error(error?.response?.data?.message || "Lên lịch chiến dịch thất bại!");
+    throw error;
+  }
+};
+
+/**
+ * Dời lịch chiến dịch tiêm chủng
+ * @param {number} campaignId
+ * @param {object} data (có thể truyền ngày mới, lý do)
+ * @returns {Promise<Object>}
+ */
+export const rescheduleVaccinationCampaign = async (campaignId, data = {}) => {
+  try {
+    const response = await api.post(`/vaccination/campaigns/${campaignId}/reschedule`, data);
+    toast.success("Dời lịch chiến dịch thành công!");
+    return response.data;
+  } catch (error) {
+    toast.error(error?.response?.data?.message || "Dời lịch chiến dịch thất bại!");
+    throw error;
+  }
+};
+
+/**
+ * Hủy chiến dịch tiêm chủng
+ * @param {number} campaignId
+ * @param {object} data (có thể truyền lý do)
+ * @returns {Promise<Object>}
+ */
+export const cancelVaccinationCampaign = async (campaignId, data = {}) => {
+  try {
+    const response = await api.post(`/vaccination/campaigns/${campaignId}/cancel`, data);
+    toast.success("Hủy chiến dịch thành công!");
+    return response.data;
+  } catch (error) {
+    toast.error(error?.response?.data?.message || "Hủy chiến dịch thất bại!");
+    throw error;
+  }
+};
+
 // =========================================================================
 // CONSTANTS - Các hằng số cho trạng thái và nhóm lớp
 // =========================================================================

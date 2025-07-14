@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getAllChronicDiseases } from "../../services/api.chronic";
+import { getAllChronicDiseases, updateChronicDiseaseStatus } from "../../services/api.chronic";
 import { message, Input, Button, Space } from "antd";
 import ChronicDiseaseTableTemplate from "../../components/templates/chronicDiseaseTableTemplate";
 
@@ -44,6 +44,31 @@ const ManageChronicDia = () => {
     );
   };
 
+  const handleApprove = async (chronicDiseaseId) => {
+    try {
+      await updateChronicDiseaseStatus(chronicDiseaseId, "APPROVE", "Hồ sơ hợp lệ, đã duyệt");
+      message.success("Duyệt thành công!");
+      // reload lại danh sách
+      const res = await getAllChronicDiseases();
+      setChronicList(res.content || []);
+      setFilteredList(res.content || []);
+    } catch (err) {
+      message.error("Duyệt thất bại!");
+    }
+  };
+  const handleReject = async (chronicDiseaseId) => {
+    try {
+      await updateChronicDiseaseStatus(chronicDiseaseId, "REJECTED", "Thiếu thông tin cần thiết");
+      message.success("Từ chối thành công!");
+      // reload lại danh sách
+      const res = await getAllChronicDiseases();
+      setChronicList(res.content || []);
+      setFilteredList(res.content || []);
+    } catch (err) {
+      message.error("Từ chối thất bại!");
+    }
+  };
+
   return (
     <div>
       <Space style={{ marginBottom: 16 }}>
@@ -59,7 +84,21 @@ const ManageChronicDia = () => {
           Tìm kiếm
         </Button>
       </Space>
-      <ChronicDiseaseTableTemplate data={filteredList} loading={loading} />
+      <ChronicDiseaseTableTemplate
+        data={filteredList}
+        loading={loading}
+        renderAction={record => {
+          console.log('Chronic status:', record.status);
+          const status = (record.status || '').toLowerCase();
+          const isPending = !['approved', 'chấp nhận', 'đã duyệt', 'rejected', 'từ chối'].includes(status);
+          return isPending ? (
+            <>
+              <Button type="link" style={{ color: "#52c41a" }} onClick={e => { e.stopPropagation(); handleApprove(record.id); }}>Duyệt</Button>
+              <Button type="link" style={{ color: "#ff4d4f" }} onClick={e => { e.stopPropagation(); handleReject(record.id); }}>Từ chối</Button>
+            </>
+          ) : null;
+        }}
+      />
     </div>
   );
 };

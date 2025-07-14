@@ -49,7 +49,8 @@ const VaccinationCampaignCreateForm = ({ open, onClose, onSuccess }) => {
       okText="Tạo mới"
       cancelText="Hủy"
       confirmLoading={loading}
-      destroyOnClose
+      destroyOnHidden
+      width={800}
     >
       <Form form={form} layout="vertical">
         <Form.Item
