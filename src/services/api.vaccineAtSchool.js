@@ -5,7 +5,7 @@ import api from "../config/axios";
 // 1. Lấy chi tiết bản ghi tiêm chủng
 export const getVaccinationDetail = async (vaccinationId) => {
   try {
-    const res = await api.get(`/api/vaccination/records/${vaccinationId}`);
+    const res = await api.get(`vaccination/records/${vaccinationId}`);
     return res.data;
   } catch (error) {
     toast.error("Không thể lấy chi tiết bản ghi tiêm chủng");
@@ -16,7 +16,7 @@ export const getVaccinationDetail = async (vaccinationId) => {
 // 2. Lấy bản ghi theo dõi sau tiêm
 export const getVaccinationMonitoring = async (vaccinationId) => {
   try {
-    const res = await api.get(`/api/vaccination/records/${vaccinationId}/monitoring`);
+    const res = await api.get(`vaccination/records/${vaccinationId}/monitoring`);
     return res.data;
   } catch (error) {
     toast.error("Không thể lấy theo dõi sau tiêm");
@@ -27,7 +27,7 @@ export const getVaccinationMonitoring = async (vaccinationId) => {
 // 3. Lấy danh sách tiêm chủng theo chiến dịch
 export const getVaccinationRecordsByCampaign = async (campaignId, params = {}) => {
   try {
-    const res = await api.get(`/api/vaccination/records/campaign/${campaignId}`, { params });
+    const res = await api.get(`vaccination/records/campaign/${campaignId}`, { params });
     return res.data;
   } catch (error) {
     toast.error("Không thể tải danh sách bản ghi tiêm chủng");
@@ -38,7 +38,7 @@ export const getVaccinationRecordsByCampaign = async (campaignId, params = {}) =
 // 4. Tạo mới bản ghi tiêm chủng
 export const addVaccinationRecord = async (data) => {
   try {
-    const res = await api.post(`/api/vaccination/records`, data);
+    const res = await api.post(`vaccination/records`, data);
     toast.success("Ghi nhận tiêm chủng thành công");
     return res.data;
   } catch (error) {
@@ -50,7 +50,7 @@ export const addVaccinationRecord = async (data) => {
 // 5. Tạo mới bản ghi theo dõi sau tiêm
 export const addVaccinationMonitoring = async (data) => {
   try {
-    const res = await api.post(`/api/vaccination/records/monitoring`, data);
+    const res = await api.post(`vaccination/records/monitoring`, data);
     toast.success("Ghi nhận theo dõi sau tiêm thành công");
     return res.data;
   } catch (error) {
@@ -62,7 +62,7 @@ export const addVaccinationMonitoring = async (data) => {
 // 6. Cập nhật bản ghi tiêm chủng
 export const updateVaccinationStatus = async (vaccinationId, data) => {
   try {
-    const res = await api.put(`/api/vaccination/records/${vaccinationId}`, data);
+    const res = await api.put(`vaccination/records/${vaccinationId}`, data);
     toast.success("Cập nhật trạng thái tiêm chủng thành công");
     return res.data;
   } catch (error) {
@@ -74,7 +74,7 @@ export const updateVaccinationStatus = async (vaccinationId, data) => {
 // 7. Cập nhật bản ghi theo dõi sau tiêm
 export const updateVaccinationMonitoring = async (monitoringId, data) => {
   try {
-    const res = await api.put(`/api/vaccination/records/monitoring/${monitoringId}`, data);
+    const res = await api.put(`vaccination/records/monitoring/${monitoringId}`, data);
     toast.success("Cập nhật theo dõi sau tiêm thành công");
     return res.data;
   } catch (error) {
