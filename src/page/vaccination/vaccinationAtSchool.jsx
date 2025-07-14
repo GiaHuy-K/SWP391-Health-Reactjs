@@ -23,6 +23,7 @@ import VaccinationDetailModal from "../../components/vaccination/AtSchool/vaccin
 import VaccinationMonitoringModal from "../../components/vaccination/AtSchool/vaccinationMonitoringModal";
 import VaccinationStatusUpdateModal from "../../components/vaccination/AtSchool/VaccinationStatusUpdateModal";
 import { updateVaccinationStatus } from "../../services/api.vaccineAtSchool";
+import { updateVaccinationMonitoring } from "../../services/api.vaccineAtSchool";
 
 import { DownOutlined } from "@ant-design/icons";
 import VaccinationRecordFormModal from "../../components/vaccination/AtSchool/vaccinationResultFormModal";
@@ -79,9 +80,13 @@ function VaccinationAtSchool() {
     try {
       await updateVaccinationStatus(currentVaccinationId, values);
       setStatusModalVisible(false);
-      fetchData(); // refresh danh sách
+      fetchData();
     } catch (error) {
       console.error("Lỗi cập nhật trạng thái:", error);
+      const message =
+        error?.response?.data?.message ||
+        "Đã xảy ra lỗi khi cập nhật trạng thái";
+      toast.error(message);
     } finally {
       setStatusSubmitting(false);
     }
@@ -99,11 +104,24 @@ function VaccinationAtSchool() {
         ...formData,
         schoolVaccinationId: selectedMonitoringRecord.schoolVaccinationId,
       };
-      await addVaccinationMonitoring(payload);
+
+      if (selectedMonitoringRecord.monitoringRecord) {
+        await updateVaccinationMonitoring(
+          selectedMonitoringRecord.monitoringRecord.monitoringId,
+          payload
+        );
+      } else {
+        await addVaccinationMonitoring(payload);
+      }
+
       setMonitoringFormVisible(false);
-      fetchData(); // reload danh sách
+      fetchData();
     } catch (err) {
-      console.error("Ghi nhận theo dõi sau tiêm lỗi:", err);
+      console.error("Lỗi ghi nhận/cập nhật theo dõi sau tiêm:", err);
+      const message =
+        err?.response?.data?.message ||
+        "Đã xảy ra lỗi khi ghi nhận/cập nhật theo dõi sau tiêm";
+      toast.error(message);
     } finally {
       setMonitoringSubmitting(false);
     }
@@ -126,6 +144,10 @@ function VaccinationAtSchool() {
       fetchData();
     } catch (err) {
       console.error("Ghi nhận tiêm chủng lỗi:", err);
+      const message =
+        err?.response?.data?.message ||
+        "Đã xảy ra lỗi khi ghi nhận kết quả tiêm chủng";
+      toast.error(message);
     } finally {
       setRecordSubmitting(false);
     }
@@ -230,7 +252,7 @@ function VaccinationAtSchool() {
         const items = [];
 
         if (!record.schoolVaccinationId) {
-          // 🆕 Nếu chưa có bản ghi -> Ghi nhận kết quả tiêm chủng
+          //  Nếu chưa có bản ghi -> Ghi nhận kết quả tiêm chủng
           items.push({
             key: "create",
             label: "📝 Ghi nhận kết quả tiêm chủng",
@@ -267,7 +289,8 @@ function VaccinationAtSchool() {
           } else if (key === "createMonitoring") {
             handleOpenCreateMonitoring(record);
           } else if (key === "editMonitoring") {
-            console.log("TODO: cập nhật theo dõi sau tiêm");
+            setSelectedMonitoringRecord(record); // Gán bản ghi đang được sửa
+            setMonitoringFormVisible(true); // Mở modal
           } else if (key === "monitoring") {
             handleOpenMonitoring(record.schoolVaccinationId);
           }
@@ -374,13 +397,29 @@ function VaccinationAtSchool() {
         onClose={() => setMonitoringFormVisible(false)}
         onSubmit={handleSubmitMonitoringForm}
         submitting={monitoringSubmitting}
-        initialValues={{
-          temperature: 36.5,
-          hasSideEffects: false,
-          sideEffectsDescription: "",
-          actionsTaken: "",
-          notes: "",
-        }}
+        initialValues={
+          selectedMonitoringRecord?.monitoringRecord
+            ? {
+                temperature:
+                  selectedMonitoringRecord.monitoringRecord.temperature || 36.5,
+                hasSideEffects:
+                  selectedMonitoringRecord.monitoringRecord.hasSideEffects ||
+                  false,
+                sideEffectsDescription:
+                  selectedMonitoringRecord.monitoringRecord
+                    .sideEffectsDescription || "",
+                actionsTaken:
+                  selectedMonitoringRecord.monitoringRecord.actionsTaken || "",
+                notes: selectedMonitoringRecord.monitoringRecord.notes || "",
+              }
+            : {
+                temperature: 36.5,
+                hasSideEffects: false,
+                sideEffectsDescription: "",
+                actionsTaken: "",
+                notes: "",
+              }
+        }
       />
       {/* Modal cập nhật trạng thái tiêm chủng */}
       <VaccinationStatusUpdateModal
