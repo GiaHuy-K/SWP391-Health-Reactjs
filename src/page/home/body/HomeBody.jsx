@@ -149,9 +149,9 @@ const HomeBody = () => {
               <div className="w-14 h-14 bg-indigo-100 rounded-full flex items-center justify-center mb-5">
                 <i className="ri-calendar-check-line ri-xl text-primary"></i>
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">Lịch khám sức khỏe</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">Lịch khám tiêm chủng định kì</h3>
               <p className="text-gray-600">
-                Quản lý lịch khám sức khỏe định kỳ, tiêm chủng và các hoạt động y tế học đường với hệ thống nhắc nhở tự động.
+                Quản lý lịch tiêm chủng định kỳ, tiêm chủng và các hoạt động y tế học đường với hệ thống nhắc nhở tự động.
               </p>
             </div>
             {/* Feature 4 */}
@@ -185,14 +185,7 @@ const HomeBody = () => {
               </p>
             </div>
           </div>
-          <div className="mt-16 text-center">
-            <button 
-              className="bg-primary text-white px-6 py-3 rounded-button font-medium hover:bg-indigo-600 transition whitespace-nowrap"
-              onClick={() => window.location.href = '/login'}
-            >
-              Khám phá tất cả tính năng
-            </button>
-          </div>
+          
         </div>
       </section>
 

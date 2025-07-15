@@ -1,19 +1,30 @@
 import React from "react";
 import { Form, Input, Button, DatePicker, Select, Modal, Space, message } from "antd";
-import { createVaccinationCampaign, CLASS_GROUP_OPTIONS } from "../../services/api.vaccination";
+import { createVaccinationCampaign, updateVaccinationCampaign, CLASS_GROUP_OPTIONS } from "../../services/api.vaccination";
 import dayjs from "dayjs";
 
 const { TextArea } = Input;
 
-const VaccinationCampaignCreateForm = ({ open, onClose, onSuccess }) => {
+const VaccinationCampaignCreateForm = ({ open, onClose, onSuccess, isEdit = false, initialValues = {}, onUpdate }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = React.useState(false);
+
+  React.useEffect(() => {
+    if (open && isEdit && initialValues) {
+      // Chuyển đổi ngày sang dayjs nếu có
+      const values = { ...initialValues };
+      if (values.vaccinationDate) values.vaccinationDate = dayjs(values.vaccinationDate);
+      if (values.consentDeadline) values.consentDeadline = dayjs(values.consentDeadline);
+      form.setFieldsValue(values);
+    } else if (open && !isEdit) {
+      form.resetFields();
+    }
+  }, [open, isEdit, initialValues, form]);
 
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();
       setLoading(true);
-      // Chỉ gửi trường có giá trị
       const payload = {
         campaignName: values.campaignName,
         vaccineName: values.vaccineName,
@@ -27,14 +38,19 @@ const VaccinationCampaignCreateForm = ({ open, onClose, onSuccess }) => {
         ...(values.healthcareProviderContact ? { healthcareProviderContact: values.healthcareProviderContact } : {}),
         ...(values.consentDeadline ? { consentDeadline: values.consentDeadline.format("YYYY-MM-DD") } : {}),
       };
-      console.log('Payload gửi lên:', payload);
-      await createVaccinationCampaign(payload);
-      form.resetFields();
-      onSuccess?.();
-      onClose();
+      if (isEdit && initialValues.campaignId) {
+        await updateVaccinationCampaign(initialValues.campaignId, payload);
+        onUpdate?.();
+        onClose();
+      } else {
+        await createVaccinationCampaign(payload);
+        form.resetFields();
+        onSuccess?.();
+        onClose();
+      }
     } catch (error) {
       if (error.errorFields) return;
-      message.error(error?.response?.data?.message || "Tạo chiến dịch thất bại");
+      message.error(error?.response?.data?.message || (isEdit ? "Cập nhật chiến dịch thất bại" : "Tạo chiến dịch thất bại"));
     } finally {
       setLoading(false);
     }
@@ -42,11 +58,11 @@ const VaccinationCampaignCreateForm = ({ open, onClose, onSuccess }) => {
 
   return (
     <Modal
-      title="Tạo chiến dịch tiêm chủng mới"
+      title={isEdit ? "Chỉnh sửa chiến dịch tiêm chủng" : "Tạo chiến dịch tiêm chủng mới"}
       open={open}
       onCancel={() => { form.resetFields(); onClose(); }}
       onOk={handleSubmit}
-      okText="Tạo mới"
+      okText={isEdit ? "Cập nhật" : "Tạo mới"}
       cancelText="Hủy"
       confirmLoading={loading}
       destroyOnHidden

@@ -327,6 +327,23 @@ export const cancelVaccinationCampaign = async (campaignId, data = {}) => {
   }
 };
 
+/**
+ * Chuyển chiến dịch từ 'Đã lên lịch' sang 'Đang chuẩn bị'
+ * @param {number} campaignId - ID của chiến dịch
+ * @returns {Promise<Object>} - Thông tin chiến dịch đã cập nhật
+ */
+export const prepareVaccinationCampaign = async (campaignId) => {
+  try {
+    const response = await api.post(`/vaccination/campaigns/${campaignId}/prepare`);
+    toast.success("Chuyển sang trạng thái 'Đang chuẩn bị' thành công!");
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi khi chuyển sang trạng thái 'Đang chuẩn bị':", error);
+    toast.error(error?.response?.data?.message || "Chuyển trạng thái thất bại!");
+    throw error;
+  }
+};
+
 // =========================================================================
 // CONSTANTS - Các hằng số cho trạng thái và nhóm lớp
 // =========================================================================

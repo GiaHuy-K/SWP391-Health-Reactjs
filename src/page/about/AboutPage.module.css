@@ -1,0 +1,74 @@
+/* AboutPage.module.css */
+
+.heroSection {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.heroSection::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+  opacity: 0.3;
+}
+
+.timelineItem {
+  position: relative;
+}
+
+.timelineItem::before {
+  content: '';
+  position: absolute;
+  left: 40px;
+  top: 80px;
+  bottom: -48px;
+  width: 2px;
+  background: linear-gradient(to bottom, #6366f1, #8b5cf6);
+}
+
+.timelineItem:last-child::before {
+  display: none;
+}
+
+.valueCard {
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+}
+
+.valueCard:hover {
+  transform: translateY(-5px);
+  border-color: #6366f1;
+  box-shadow: 0 10px 25px rgba(99, 102, 241, 0.1);
+}
+
+.teamCard {
+  transition: all 0.3s ease;
+}
+
+.teamCard:hover {
+  transform: translateY(-5px);
+}
+
+.teamIcon {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  transition: all 0.3s ease;
+}
+
+.teamCard:hover .teamIcon {
+  transform: scale(1.1);
+}
+
+@media (max-width: 768px) {
+  .timelineItem::before {
+    left: 30px;
+  }
+  
+  .timelineItem {
+    padding-left: 70px;
+  }
+} 
