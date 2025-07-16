@@ -46,7 +46,7 @@ const items = [
     false
   ), // dùng false để chữ người dùng không phải là một trang liên kết hay chuyển trang
   getItem("Học Sinh", "student", <UserSwitchOutlined />),
-  getItem("Quản lý Blog", "manage-blogs", <FileTextOutlined />),
+  // getItem("Quản lý Blog", "manage-blogs", <FileTextOutlined />),
   //HomeOutlined
   getItem(<Link to="/">Về trang chủ</Link>, "home", <HomeOutlined />, undefined, false),
 ];
