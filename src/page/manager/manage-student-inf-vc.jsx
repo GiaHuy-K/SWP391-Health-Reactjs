@@ -11,6 +11,7 @@ import {
   getPendingVaccinations,
   getVaccinationFileUrl,
 } from "../../services/api.vaccine";
+import { validateVaccinationDate, getStudentBirthDate } from "../../utils/dateValidation";
 import {
   Table,
   Button,
@@ -375,6 +376,19 @@ const StudentVaccinationPage = () => {
 
   const handleVaccineSubmit = async (values) => {
     try {
+      // Validate vaccination date
+      const selectedStudent = students.find(s => s.id === selectedStudent?.id);
+      const studentBirthDate = getStudentBirthDate(selectedStudent);
+      
+      const vaccinationValidation = validateVaccinationDate(
+        values.vaccinationDate.format("YYYY-MM-DD"), 
+        studentBirthDate
+      );
+      if (!vaccinationValidation.isValid) {
+        message.error(vaccinationValidation.error);
+        return;
+      }
+
       const formData = new FormData();
       formData.append("vaccineName", values.vaccineName);
       formData.append(
@@ -973,15 +987,48 @@ const StudentVaccinationPage = () => {
 
           <Form.Item
             name="vaccinationDate"
-            label="Ngày tiêm chủng"
+            label={
+              <span>
+                Ngày tiêm chủng
+                {selectedStudent && (
+                  <span style={{ fontSize: '12px', color: '#666', fontWeight: 'normal', marginLeft: '8px' }}>
+                    (Học sinh sinh ngày: {dayjs(selectedStudent.dateOfBirth).format('DD/MM/YYYY')})
+                  </span>
+                )}
+              </span>
+            }
             rules={[
               { required: true, message: "Vui lòng chọn ngày tiêm chủng" },
             ]}
+            extra={
+              selectedStudent ? (
+                <div style={{ fontSize: '12px', color: '#666', marginTop: '4px' }}>
+                  <span>📅 Có thể chọn từ ngày sinh ({dayjs(selectedStudent.dateOfBirth).format('DD/MM/YYYY')}) đến ngày hiện tại</span>
+                </div>
+              ) : (
+                <div style={{ fontSize: '12px', color: '#ff4d4f', marginTop: '4px' }}>
+                  ⚠️ Vui lòng chọn học sinh trước khi chọn ngày tiêm chủng
+                </div>
+              )
+            }
           >
             <DatePicker
               style={{ width: "100%" }}
               format="DD/MM/YYYY"
-              placeholder="Chọn ngày tiêm chủng"
+              placeholder={
+                selectedStudent 
+                  ? `Chọn ngày từ ${dayjs(selectedStudent.dateOfBirth).format('DD/MM/YYYY')} đến hôm nay`
+                  : "Vui lòng chọn học sinh trước"
+              }
+              disabledDate={(current) => {
+                if (!current || !selectedStudent) return true;
+                const birthDate = dayjs(selectedStudent.dateOfBirth);
+                const today = dayjs();
+                return current.isBefore(birthDate, 'day') || current.isAfter(today, 'day');
+              }}
+              allowClear={false}
+              showToday={true}
+              inputReadOnly={false}
             />
           </Form.Item>
 

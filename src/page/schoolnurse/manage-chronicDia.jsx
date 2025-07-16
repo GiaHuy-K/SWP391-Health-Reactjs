@@ -28,6 +28,7 @@ import {
 } from "../../services/api.chronic";
 import { getStudent } from "../../services/api.student";
 import dayjs from "dayjs";
+import { validateDiagnosisDate, getStudentBirthDate } from "../../utils/dateValidation";
 import { 
   FileOutlined, 
   EditOutlined, 
@@ -191,6 +192,22 @@ const ManageChronicDia = () => {
   const handleEditSubmit = async (values) => {
     setLoading(true);
     try {
+      // Validate diagnosis date
+      if (values.diagnosedDate) {
+        const selectedStudent = students.find(s => s.id === selectedChronic.studentId);
+        const studentBirthDate = getStudentBirthDate(selectedStudent);
+        
+        const diagnosisValidation = validateDiagnosisDate(
+          values.diagnosedDate.format("YYYY-MM-DD"), 
+          studentBirthDate
+        );
+        if (!diagnosisValidation.isValid) {
+          message.error(diagnosisValidation.error);
+          setLoading(false);
+          return;
+        }
+      }
+
       const formData = new FormData();
       formData.append("diseaseName", values.diseaseName);
       if (values.diagnosedDate) formData.append("diagnosedDate", values.diagnosedDate.format("YYYY-MM-DD"));
@@ -549,10 +566,62 @@ const ManageChronicDia = () => {
           </Form.Item>
           <Form.Item
             name="diagnosedDate"
-            label="Ngày chẩn đoán"
+            label={
+              <span>
+                Ngày chẩn đoán
+                {selectedChronic && (() => {
+                  const selectedStudent = students.find(s => s.id === selectedChronic.studentId);
+                  return selectedStudent ? (
+                    <span style={{ fontSize: '12px', color: '#666', fontWeight: 'normal', marginLeft: '8px' }}>
+                      (Học sinh sinh ngày: {dayjs(selectedStudent.dateOfBirth).format('DD/MM/YYYY')})
+                    </span>
+                  ) : null;
+                })()}
+              </span>
+            }
             rules={[]}
+            extra={
+              selectedChronic ? (() => {
+                const selectedStudent = students.find(s => s.id === selectedChronic.studentId);
+                return selectedStudent ? (
+                  <div style={{ fontSize: '12px', color: '#666', marginTop: '4px' }}>
+                    <span>📅 Có thể chọn từ ngày sinh ({dayjs(selectedStudent.dateOfBirth).format('DD/MM/YYYY')}) đến ngày hiện tại</span>
+                  </div>
+                ) : (
+                  <div style={{ fontSize: '12px', color: '#ff4d4f', marginTop: '4px' }}>
+                    ⚠️ Không tìm thấy thông tin học sinh
+                  </div>
+                );
+              })() : (
+                <div style={{ fontSize: '12px', color: '#666', marginTop: '4px' }}>
+                  💡 Chọn ngày chẩn đoán (không bắt buộc)
+                </div>
+              )
+            }
           >
-            <DatePicker style={{ width: "100%" }} format="DD/MM/YYYY" placeholder="Chọn ngày chẩn đoán" />
+            <DatePicker 
+              style={{ width: "100%" }} 
+              format="DD/MM/YYYY" 
+              placeholder={
+                selectedChronic ? (() => {
+                  const selectedStudent = students.find(s => s.id === selectedChronic.studentId);
+                  return selectedStudent 
+                    ? `Chọn ngày từ ${dayjs(selectedStudent.dateOfBirth).format('DD/MM/YYYY')} đến hôm nay`
+                    : "Không tìm thấy thông tin học sinh";
+                })() : "Chọn ngày chẩn đoán (không bắt buộc)"
+              }
+              disabledDate={(current) => {
+                if (!current || !selectedChronic) return false;
+                const selectedStudent = students.find(s => s.id === selectedChronic.studentId);
+                if (!selectedStudent) return false;
+                const birthDate = dayjs(selectedStudent.dateOfBirth);
+                const today = dayjs();
+                return current.isBefore(birthDate, 'day') || current.isAfter(today, 'day');
+              }}
+              allowClear={true}
+              showToday={true}
+              inputReadOnly={false}
+            />
           </Form.Item>
           <Form.Item name="diagnosingDoctor" label="Bác sĩ chẩn đoán">
             <Input placeholder="Nhập tên bác sĩ chẩn đoán" />
