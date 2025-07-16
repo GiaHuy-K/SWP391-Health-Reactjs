@@ -163,6 +163,7 @@ const router = createBrowserRouter([
       { path: "nurse", element: <ManageNurse /> },
       { path: "student", element: <ManageStudent /> },
       { path: "add-account", element: <AddAccount /> },
+      {path: "manage-blogs", element: <ManageBlogs /> },
     ],
   },
   {
