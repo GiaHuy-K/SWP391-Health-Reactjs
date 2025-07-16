@@ -7,6 +7,7 @@ import {
 import LoginPage from "./page/login/index.jsx";
 import RegisterPage from "./page/register/index.jsx";
 import HomePage from "./page/home/HomePage.jsx";
+import AboutPage from "./page/about/AboutPage.jsx";
 import UserProfile from "./page/userprofile/UserProfile.jsx";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -86,6 +87,7 @@ const NurseRoute = ({ children }) => {
 
 const router = createBrowserRouter([
   { path: "/", element: <HomePage /> },
+  { path: "/about", element: <AboutPage /> },
   { path: "/login", element: <LoginPage /> },
   { path: "/register", element: <RegisterPage /> },
   { path: "/unauthorized", element: <Unauthorized /> }, // trang khi người dùng cố tình vào đường dẫn không cho phép
@@ -161,6 +163,7 @@ const router = createBrowserRouter([
       { path: "nurse", element: <ManageNurse /> },
       { path: "student", element: <ManageStudent /> },
       { path: "add-account", element: <AddAccount /> },
+      {path: "manage-blogs", element: <ManageBlogs /> },
     ],
   },
   {

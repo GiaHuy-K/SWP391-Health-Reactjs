@@ -116,7 +116,7 @@ const HomeHeader = ({ hideNavLinks = false }) => {
             <>
               <a href="#features" className="text-gray-600 hover:text-primary transition">Tính năng</a>
               <a href="#contact" className="text-gray-600 hover:text-primary transition">Liên hệ</a>
-              <a href="#about" className="text-gray-600 hover:text-primary transition">Về chúng tôi</a>
+              <a href="/about" className="text-gray-600 hover:text-primary transition">Về chúng tôi</a>
               <a href="/blogs" className="text-gray-600 hover:text-primary transition">Blog</a>
             </>
           )}
@@ -208,7 +208,7 @@ const HomeHeader = ({ hideNavLinks = false }) => {
                 <>
                   <a href="#features" className="block text-gray-600 hover:text-primary transition py-2">Tính năng</a>
                   <a href="#contact" className="block text-gray-600 hover:text-primary transition py-2">Liên hệ</a>
-                  <a href="#about" className="block text-gray-600 hover:text-primary transition py-2">Về chúng tôi</a>
+                  <a href="/about" className="block text-gray-600 hover:text-primary transition py-2">Về chúng tôi</a>
                 </>
               )}
               {isAuthenticated && (

@@ -2,11 +2,14 @@ import React, { useState } from "react";
 import { Modal, Descriptions, Button, Space, message, Tabs } from "antd";
 import VaccinationCampaignList from "../../components/vaccination/VaccinationCampaignList";
 import VaccinationCampaignCreateForm from "../../components/vaccination/VaccinationCampaignCreateForm";
+import { startVaccinationCampaign, completeVaccinationCampaign, prepareVaccinationCampaign } from "../../services/api.vaccination";
 
 const ManageVaccinationCampaigns = () => {
   const [detailModalVisible, setDetailModalVisible] = useState(false);
   const [selectedCampaign, setSelectedCampaign] = useState(null);
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editCampaign, setEditCampaign] = useState(null);
   const [reloadKey, setReloadKey] = useState(0);
   // Đợi tiến trình chuyển đổi trạng thái
   // Handle view campaign detail
@@ -28,17 +31,50 @@ const ManageVaccinationCampaigns = () => {
 
   // Handle edit campaign
   const handleEdit = (campaign) => {
-    message.info("Tính năng chỉnh sửa chiến dịch sẽ được implement sau");
+    setEditCampaign(campaign);
+    setEditModalOpen(true);
+  };
+
+  // Handle update success
+  const handleUpdateSuccess = () => {
+    setReloadKey(prev => prev + 1);
+    message.success("Cập nhật chiến dịch thành công!");
   };
 
   // Handle start campaign
-  const handleStartCampaign = (campaign) => {
-    message.info("Tính năng bắt đầu chiến dịch sẽ được implement sau");
+  const handleStartCampaign = async (campaign) => {
+    try {
+      await startVaccinationCampaign(campaign.campaignId);
+      message.success("Đã chuyển sang trạng thái Đang diễn ra!");
+      setDetailModalVisible(false); // Đóng modal chi tiết
+      setReloadKey(prev => prev + 1); // Reload lại danh sách
+    } catch (err) {
+      message.error(err?.response?.data?.message || "Chuyển trạng thái thất bại!");
+    }
   };
 
   // Handle complete campaign
-  const handleCompleteCampaign = (campaign) => {
-    message.info("Tính năng hoàn thành chiến dịch sẽ được implement sau");
+  const handleCompleteCampaign = async (campaign) => {
+    try {
+      await completeVaccinationCampaign(campaign.campaignId);
+      message.success("Chiến dịch đã được hoàn thành!");
+      setDetailModalVisible(false);
+      setReloadKey(prev => prev + 1);
+    } catch (err) {
+      message.error(err?.response?.data?.message || "Hoàn thành chiến dịch thất bại!");
+    }
+  };
+
+  // Handle chuyển sang Đang chuẩn bị
+  const handlePrepareCampaign = async (campaign) => {
+    try {
+      await prepareVaccinationCampaign(campaign.campaignId);
+      message.success("Đã chuyển sang trạng thái Đang chuẩn bị!");
+      setDetailModalVisible(false);
+      setReloadKey(prev => prev + 1);
+    } catch (err) {
+      message.error(err?.response?.data?.message || "Chuyển trạng thái thất bại!");
+    }
   };
 
   const items = [
@@ -67,6 +103,15 @@ const ManageVaccinationCampaigns = () => {
         onSuccess={handleCreateSuccess}
       />
 
+      {/* Modal chỉnh sửa chiến dịch */}
+      <VaccinationCampaignCreateForm
+        open={editModalOpen}
+        onClose={() => { setEditModalOpen(false); setEditCampaign(null); }}
+        isEdit={true}
+        initialValues={editCampaign}
+        onUpdate={handleUpdateSuccess}
+      />
+
       {/* Campaign Detail Modal */}
       <Modal
         title="Chi tiết chiến dịch tiêm chủng"
@@ -92,6 +137,15 @@ const ManageVaccinationCampaigns = () => {
               onClick={() => handleCompleteCampaign(selectedCampaign)}
             >
               Hoàn thành chiến dịch
+            </Button>
+          ),
+          selectedCampaign?.status === "Đã lên lịch" && (
+            <Button
+              key="prepare"
+              type="primary"
+              onClick={() => handlePrepareCampaign(selectedCampaign)}
+            >
+              Chuyển sang Đang chuẩn bị
             </Button>
           ),
         ]}

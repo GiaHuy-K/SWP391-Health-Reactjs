@@ -60,15 +60,15 @@ const HomeBody = () => {
                 <div className="flex flex-wrap items-center justify-center md:justify-start gap-6">
                   <div className="flex items-center bg-white/80 backdrop-blur-sm px-4 py-2 rounded-lg">
                     <i className="ri-building-4-line text-primary mr-2"></i>
-                    <span className="text-gray-700">Trường THPT Chu Văn An</span>
+                    <span className="text-gray-700">Trường Mầm non Chu Văn An</span>
                   </div>
                   <div className="flex items-center bg-white/80 backdrop-blur-sm px-4 py-2 rounded-lg">
                     <i className="ri-building-4-line text-primary mr-2"></i>
-                    <span className="text-gray-700">Trường THCS Nguyễn Du</span>
+                    <span className="text-gray-700">Trường Mầm non Nguyễn Du</span>
                   </div>
                   <div className="flex items-center bg-white/80 backdrop-blur-sm px-4 py-2 rounded-lg">
                     <i className="ri-building-4-line text-primary mr-2"></i>
-                    <span className="text-gray-700">Trường Tiểu học Lê Quý Đôn</span>
+                    <span className="text-gray-700">Trường Mầm non Lê Quý Đôn</span>
                   </div>
                 </div>
               </div>
@@ -88,7 +88,7 @@ const HomeBody = () => {
                     <img src="https://readdy.ai/api/search-image?query=Young%20male%20nurse%20portrait%2C%20asian%20medical%20staff%2C%20professional%20smile%2C%20medical%20uniform%2C%20hospital%20background&width=100&height=100&seq=avatar2&orientation=squarish" alt="Nurse" className="w-8 h-8 rounded-full border-2 border-white" />
                     <img src="https://readdy.ai/api/search-image?query=Middle%20aged%20female%20teacher%20portrait%2C%20asian%20education%20professional%2C%20warm%20smile%2C%20professional%20attire%2C%20school%20background&width=100&height=100&seq=avatar3&orientation=squarish" alt="Teacher" className="w-8 h-8 rounded-full border-2 border-white" />
                   </div>
-                  <span className="text-sm font-medium text-gray-600">1,200+ chuyên gia tin dùng</span>
+                  <span className="text-sm font-medium text-gray-600">Được các chuyên gia tin dùng</span>
                 </div>
               </div>
               <div className="absolute top-4 -right-4 bg-white rounded-lg shadow-lg p-4 flex items-center gap-3 animate-bounce">
@@ -149,9 +149,9 @@ const HomeBody = () => {
               <div className="w-14 h-14 bg-indigo-100 rounded-full flex items-center justify-center mb-5">
                 <i className="ri-calendar-check-line ri-xl text-primary"></i>
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">Lịch khám sức khỏe</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">Lịch khám tiêm chủng định kì</h3>
               <p className="text-gray-600">
-                Quản lý lịch khám sức khỏe định kỳ, tiêm chủng và các hoạt động y tế học đường với hệ thống nhắc nhở tự động.
+                Quản lý lịch tiêm chủng định kỳ, tiêm chủng và các hoạt động y tế học đường với hệ thống nhắc nhở tự động.
               </p>
             </div>
             {/* Feature 4 */}
@@ -185,14 +185,7 @@ const HomeBody = () => {
               </p>
             </div>
           </div>
-          <div className="mt-16 text-center">
-            <button 
-              className="bg-primary text-white px-6 py-3 rounded-button font-medium hover:bg-indigo-600 transition whitespace-nowrap"
-              onClick={() => window.location.href = '/login'}
-            >
-              Khám phá tất cả tính năng
-            </button>
-          </div>
+          
         </div>
       </section>
 
@@ -210,7 +203,7 @@ const HomeBody = () => {
             <div className="md:w-1/2">
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">Về chúng tôi</h2>
               <p className="text-lg text-gray-700 mb-6">
-                SchoolMed được thành lập vào năm 2022 với sứ mệnh nâng cao chất lượng chăm sóc sức khỏe học đường tại Việt Nam thông qua công nghệ số.
+                SchoolMed được thành lập vào năm 2025 với sứ mệnh nâng cao chất lượng chăm sóc sức khỏe học đường tại Việt Nam thông qua công nghệ số.
               </p>
               <p className="text-lg text-gray-700 mb-8">
                 Đội ngũ của chúng tôi bao gồm các chuyên gia y tế, giáo dục và công nghệ với hơn 15 năm kinh nghiệm, cùng chung tâm huyết xây dựng một hệ thống toàn diện giúp nhà trường quản lý sức khỏe học sinh hiệu quả.

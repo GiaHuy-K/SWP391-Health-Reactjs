@@ -11,23 +11,12 @@ const HomeFooter = () => {
             <p className="text-gray-400 mb-6">
               Nền tảng quản lý sức khỏe học đường toàn diện, kết nối nhà trường, phụ huynh và y tế trong một hệ sinh thái số.
             </p>
-            <div className="flex space-x-4">
-              <a href="#" className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 hover:text-white hover:bg-primary transition">
-                <i className="ri-facebook-fill ri-lg"></i>
-              </a>
-              <a href="#" className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 hover:text-white hover:bg-primary transition">
-                <i className="ri-linkedin-fill ri-lg"></i>
-              </a>
-              <a href="#" className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 hover:text-white hover:bg-primary transition">
-                <i className="ri-youtube-fill ri-lg"></i>
-              </a>
-            </div>
           </div>
           <div>
             <h3 className="text-lg font-semibold mb-6">Liên kết nhanh</h3>
             <ul className="space-y-3">
               <li><a href="#features" className="text-gray-400 hover:text-white transition">Tính năng</a></li>
-              <li><a href="#about" className="text-gray-400 hover:text-white transition">Về chúng tôi</a></li>
+              <li><a href="/about" className="text-gray-400 hover:text-white transition">Về chúng tôi</a></li>
               <li><a href="#contact" className="text-gray-400 hover:text-white transition">Liên hệ</a></li>
             </ul>
           </div>
