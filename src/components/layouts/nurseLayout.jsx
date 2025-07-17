@@ -41,7 +41,6 @@ const items = [
   getItem("Vật tư", "medicalSupply-Nurse", <DesktopOutlined />),
   getItem('Thông tin tiêm chủng học sinh', 'student-vaccination', <BranchesOutlined />),
   getItem('Thông tin bệnh mãn tính học sinh', 'student-chronic-disease', <InsuranceOutlined />),
-  getItem('Tạo Blog', 'blog/create', <FileOutlined />),
   getItem('Quản lý Blog', 'manage-blogs', <FileTextOutlined />),
   getItem('Tiêm chủng tại trường', 'vaccineAtSchoolN', <SolutionOutlined />),
   getItem(

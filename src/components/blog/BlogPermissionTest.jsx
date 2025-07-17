@@ -97,7 +97,11 @@ const BlogPermissionTest = ({ blogData = null }) => {
           <div>
             <Text strong>Blog Info:</Text>
             <br />
-            <Text>Author ID: {blogData.authorId}</Text>
+            <Text>Author Name: {blogData.authorName || "Không xác định"}</Text>
+            <br />
+            <Text>Current User Name: {user?.fullName || "Không xác định"}</Text>
+            <br />
+            <Text>Is Author Match: {(blogData.authorName && user?.fullName && blogData.authorName === user.fullName) ? "Có" : "Không"}</Text>
             <br />
             <Text>Status: {blogData.status}</Text>
             <br />

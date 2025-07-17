@@ -164,6 +164,9 @@ const router = createBrowserRouter([
       { path: "student", element: <ManageStudent /> },
       { path: "add-account", element: <AddAccount /> },
       {path: "manage-blogs", element: <ManageBlogs /> },
+      {path: "blog/create", element: <CreateBlogPage /> },
+      { path: "blog/:blogId", element: <BlogDetailPage /> },
+      {path: "blog/edit/:blogId", element: <EditBlogPage /> },
     ],
   },
   {

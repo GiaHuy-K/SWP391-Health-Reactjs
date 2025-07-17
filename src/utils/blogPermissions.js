@@ -13,14 +13,14 @@ const API_PERMISSIONS = {
   "POST /api/blogs/upload-thumbnail": ["SchoolAdmin", "MedicalStaff", "StaffManager"],
   "DELETE /api/blogs/delete-thumbnail": ["SchoolAdmin", "MedicalStaff", "StaffManager"],
   "POST /api/blogs": ["SchoolAdmin", "MedicalStaff", "StaffManager"],
-  "DELETE /api/blogs/{blogId}": ["author", "SchoolAdmin"], // Tác giả hoặc Admin
-  "PUT /api/blogs/{blogId}": ["author"], // Chỉ tác giả
-  "PATCH /api/blogs/{blogId}/status": ["SchoolAdmin", "StaffManager"],
-  "GET /api/blogs/author/{authorId}": ["SchoolAdmin", "StaffManager"],
+  "DELETE /api/blogs/{blogId}": ["author", "SchoolAdmin", "StaffManager"], // Tác giả, Admin hoặc Manager
+  "PUT /api/blogs/{blogId}": ["author", "SchoolAdmin", "StaffManager"], // Tác giả, Admin hoặc Manager
+  "PATCH /api/blogs/{blogId}/status": ["SchoolAdmin", "StaffManager", "MedicalStaff"],
+  "GET /api/blogs/author/{authorId}": ["SchoolAdmin", "StaffManager", "MedicalStaff"],
   "GET /api/blogs/my-blogs": ["authenticated"], // Bất kỳ user đã đăng nhập
-  "GET /api/blogs": ["public", "SchoolAdmin", "StaffManager"], // Công khai + Admin/Manager
-  "GET /api/blogs/{blogId}": ["public", "author", "SchoolAdmin", "StaffManager"], // Công khai nếu PUBLIC, toàn quyền nếu author/admin
-  "GET /api/blogs/slug/{slug}": ["public", "author", "SchoolAdmin", "StaffManager"]
+  "GET /api/blogs": ["public", "SchoolAdmin", "StaffManager", "MedicalStaff"], // Công khai + Admin/Manager/Nurse
+  "GET /api/blogs/{blogId}": ["public", "author", "SchoolAdmin", "StaffManager", "MedicalStaff"], // Công khai nếu PUBLIC, toàn quyền nếu author/admin/manager/nurse
+  "GET /api/blogs/slug/{slug}": ["public", "author", "SchoolAdmin", "StaffManager", "MedicalStaff"]
 };
 
 /**
@@ -31,6 +31,7 @@ export const useBlogPermissions = () => {
   
   const userRole = user?.role ? ROLE_MAPPING[user.role] : null;
   const userId = user?.id;
+  const userName = user?.fullName;
 
   /**
    * Kiểm tra user có quyền truy cập API không
@@ -59,11 +60,17 @@ export const useBlogPermissions = () => {
 
     // Kiểm tra author access
     if (allowedRoles.includes("author") && blogData) {
-      return blogData.authorId === userId;
+      // Nếu là SchoolAdmin hoặc StaffManager, coi như có quyền tác giả
+      if (userRole === "SchoolAdmin" || userRole === "StaffManager") {
+        return true;
+      }
+      // MedicalStaff chỉ có quyền tác giả cho blog của mình
+      return blogData.authorName === userName;
     }
 
-    // Kiểm tra admin access cho tất cả blogs
-    if (userRole === "SchoolAdmin" && allowedRoles.includes("SchoolAdmin")) {
+    // Kiểm tra admin/manager/nurse access cho tất cả blogs
+    if ((userRole === "SchoolAdmin" || userRole === "StaffManager" || userRole === "MedicalStaff") && 
+        (allowedRoles.includes("SchoolAdmin") || allowedRoles.includes("StaffManager") || allowedRoles.includes("MedicalStaff"))) {
       return true;
     }
 
@@ -89,8 +96,12 @@ export const useBlogPermissions = () => {
     if (userRole === "SchoolAdmin") {
       return true;
     }
+    // StaffManager có quyền xóa tất cả blogs
+    if (userRole === "StaffManager") {
+      return true;
+    }
     // Tác giả có quyền xóa blog của mình
-    if (blogData && blogData.authorId === userId) {
+    if (blogData && blogData.authorName === userName) {
       return true;
     }
     return false;
@@ -100,8 +111,16 @@ export const useBlogPermissions = () => {
    * Kiểm tra user có thể cập nhật blog không
    */
   const canUpdateBlog = (blogData) => {
-    // Chỉ tác giả mới có quyền cập nhật blog
-    if (blogData && blogData.authorId === userId) {
+    // SchoolAdmin có quyền cập nhật tất cả blogs
+    if (userRole === "SchoolAdmin") {
+      return true;
+    }
+    // StaffManager có quyền cập nhật tất cả blogs
+    if (userRole === "StaffManager") {
+      return true;
+    }
+    // Tác giả có quyền cập nhật blog của mình
+    if (blogData && blogData.authorName === userName) {
       return true;
     }
     return false;
@@ -111,8 +130,8 @@ export const useBlogPermissions = () => {
    * Kiểm tra user có thể cập nhật status blog không
    */
   const canUpdateBlogStatus = () => {
-    // SchoolAdmin và StaffManager có quyền cập nhật status
-    if (userRole === "SchoolAdmin" || userRole === "StaffManager") {
+    // SchoolAdmin, StaffManager và MedicalStaff có quyền cập nhật status
+    if (userRole === "SchoolAdmin" || userRole === "StaffManager" || userRole === "MedicalStaff") {
       return true;
     }
     return false;
@@ -145,8 +164,12 @@ export const useBlogPermissions = () => {
     if (userRole === "StaffManager") {
       return true;
     }
+    // MedicalStaff có quyền xem tất cả blogs
+    if (userRole === "MedicalStaff") {
+      return true;
+    }
     // Tác giả có quyền xem blog của mình
-    if (blogData && blogData.authorId === userId) {
+    if (blogData && blogData.authorName === userName) {
       return true;
     }
     return false;
@@ -156,8 +179,8 @@ export const useBlogPermissions = () => {
    * Kiểm tra user có thể xem tất cả blogs không
    */
   const canViewAllBlogs = () => {
-    // SchoolAdmin và StaffManager có quyền xem tất cả blogs
-    if (userRole === "SchoolAdmin" || userRole === "StaffManager") {
+    // SchoolAdmin, StaffManager và MedicalStaff có quyền xem tất cả blogs
+    if (userRole === "SchoolAdmin" || userRole === "StaffManager" || userRole === "MedicalStaff") {
       return true;
     }
     return false;
@@ -193,7 +216,12 @@ export const useBlogPermissions = () => {
    * Kiểm tra user có phải là tác giả của blog không
    */
   const isAuthor = (blogData) => {
-    return blogData && blogData.authorId === userId;
+    // Nếu là SchoolAdmin hoặc StaffManager, coi như có quyền tác giả
+    if (userRole === "SchoolAdmin" || userRole === "StaffManager") {
+      return true;
+    }
+    // MedicalStaff chỉ là tác giả cho blog của mình
+    return blogData && blogData.authorName === userName;
   };
 
   return {
@@ -206,9 +234,11 @@ export const useBlogPermissions = () => {
     canViewAllBlogs,
     canViewMyBlogs,
     isAuthor,
+    canAccessAPI,
     getUIPermissions,
     userRole,
     userId,
+    userName,
     isAuthenticated
   };
 };

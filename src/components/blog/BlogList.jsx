@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { useBlogPermissions, BlogPermissionGuard } from "../../utils/blogPermissions";
 import { getBlogs, getMyBlogs } from "../../services/api.blog";
 import { CategoryTag, StatusTag } from "./EnumDisplay";
+import { useAuth } from "../../config/AuthContext";
 import dayjs from "dayjs";
 
 const { Title, Text, Paragraph } = Typography;
@@ -25,6 +26,7 @@ const BlogList = ({
 }) => {
   const navigate = useNavigate();
   const permissions = useBlogPermissions();
+  const { user } = useAuth();
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -81,7 +83,18 @@ const BlogList = ({
     if (!permissions.canUpdateBlog(blog)) {
       return;
     }
-    navigate(`/dashboardManager/blog/edit/${blog.id}`);
+    
+    // Chuyển hướng dựa trên vai trò của user
+    if (user?.role === "Quản trị viên Trường học") {
+      navigate(`/dashboard/blog/edit/${blog.id}`);
+    } else if (user?.role === "Quản lý Nhân sự/Nhân viên") {
+      navigate(`/dashboardManager/blog/edit/${blog.id}`);
+    } else if (user?.role === "Nhân viên Y tế") {
+      navigate(`/dashboardNurse/blog/edit/${blog.id}`);
+    } else {
+      // Fallback cho các vai trò khác
+      navigate(`/dashboardManager/blog/edit/${blog.id}`);
+    }
   };
 
   const handleDeleteBlog = (blog) => {

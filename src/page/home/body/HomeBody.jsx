@@ -278,17 +278,7 @@ const HomeBody = () => {
                   </div>
                 </div>
               </div>
-              <div className="flex space-x-4">
-                <a href="#" className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center text-primary hover:bg-primary hover:text-white transition">
-                  <i className="ri-facebook-fill ri-lg"></i>
-                </a>
-                <a href="#" className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center text-primary hover:bg-primary hover:text-white transition">
-                  <i className="ri-linkedin-fill ri-lg"></i>
-                </a>
-                <a href="#" className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center text-primary hover:bg-primary hover:text-white transition">
-                  <i className="ri-youtube-fill ri-lg"></i>
-                </a>
-              </div>
+
             </div>
             <div className="md:w-1/2">
               <div className="bg-white p-8 rounded-lg shadow-md">
