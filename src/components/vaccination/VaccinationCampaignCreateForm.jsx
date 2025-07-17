@@ -90,11 +90,31 @@ const VaccinationCampaignCreateForm = ({ open, onClose, onSuccess, isEdit = fals
           <TextArea rows={3} placeholder="Mô tả chiến dịch (không bắt buộc)" />
         </Form.Item>
         <Form.Item
-          label="Ngày tiêm chủng"
+          label={
+            <span>
+              Ngày tiêm chủng
+              <span style={{ fontSize: '12px', color: '#666', fontWeight: 'normal', marginLeft: '8px' }}>
+                (Không được trong tương lai)
+              </span>
+            </span>
+          }
           name="vaccinationDate"
           rules={[{ required: true, message: "Vui lòng chọn ngày tiêm chủng" }]}
+          extra={
+            <div style={{ fontSize: '12px', color: '#666', marginTop: '4px' }}>
+              📅 Chọn ngày tiêm chủng cho chiến dịch (từ hôm nay trở về trước)
+            </div>
+          }
         >
-          <DatePicker format="DD/MM/YYYY" style={{ width: "100%" }} />
+          <DatePicker 
+            format="DD/MM/YYYY" 
+            style={{ width: "100%" }}
+            placeholder="Chọn ngày tiêm chủng"
+            disabledDate={(current) => current && current > dayjs().endOf('day')}
+            allowClear={false}
+            showToday={true}
+            inputReadOnly={false}
+          />
         </Form.Item>
         <Form.Item
           label="Hạn chót gửi phiếu đồng ý"

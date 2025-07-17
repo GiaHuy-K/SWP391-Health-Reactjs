@@ -6,6 +6,7 @@ import api from "../../config/axios";
 import styles from "./UserProfile.module.css";
 import { isParentRole } from "../../config/AuthContext";
 import { addStudentChronicDisease, getStudentChronicDiseases } from "../../services/api.chronic";
+import { validateVaccinationDate, validateDiagnosisDate, getStudentBirthDate } from "../../utils/dateValidation";
 
 
 
@@ -188,6 +189,18 @@ const UserProfile = () => {
       toast.error("Vui lòng chọn học sinh cần khai báo");
       return;
     }
+
+    // Validate vaccination date
+    const studentIdToUse = selectedStudentId || (studentInfo[0] && studentInfo[0].id);
+    const selectedStudent = studentInfo.find(s => s.id === studentIdToUse);
+    const studentBirthDate = getStudentBirthDate(selectedStudent);
+    
+    const vaccinationValidation = validateVaccinationDate(vaccineForm.vaccinationDate, studentBirthDate);
+    if (!vaccinationValidation.isValid) {
+      toast.error(vaccinationValidation.error);
+      return;
+    }
+
     setSubmitting(true);
     try {
       const formData = new FormData();
@@ -198,7 +211,6 @@ const UserProfile = () => {
         formData.append('notes', vaccineForm.notes);
       }
       formData.append('proofFile', vaccineForm.proofFile);
-      const studentIdToUse = selectedStudentId || (studentInfo[0] && studentInfo[0].id);
       await api.post(`/students/${studentIdToUse}/vaccinations`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -294,12 +306,18 @@ const UserProfile = () => {
     if (!chronicForm.diseaseName.trim()) {
       errors.diseaseName = "Tên bệnh mãn tính là bắt buộc";
     }
+    
+    // Validate diagnosis date
     if (chronicForm.diagnosedDate) {
-      const today = new Date().toISOString().slice(0, 10);
-      if (chronicForm.diagnosedDate > today) {
-        errors.diagnosedDate = "Ngày chẩn đoán không được lớn hơn ngày hiện tại";
+      const selectedStudent = studentInfo.find(s => s.id === chronicForm.id);
+      const studentBirthDate = getStudentBirthDate(selectedStudent);
+      
+      const diagnosisValidation = validateDiagnosisDate(chronicForm.diagnosedDate, studentBirthDate);
+      if (!diagnosisValidation.isValid) {
+        errors.diagnosedDate = diagnosisValidation.error;
       }
     }
+    
     if (chronicForm.attachmentFile) {
       const allowedTypes = ["application/pdf", "image/jpeg", "image/png"];
       if (!allowedTypes.includes(chronicForm.attachmentFile.type)) {
@@ -658,15 +676,42 @@ const UserProfile = () => {
                   />
                 </div>
                 <div className={styles.formGroup}>
-                  <label className={styles.formLabel}>Ngày tiêm chủng</label>
+                  <label className={styles.formLabel}>
+                    Ngày tiêm chủng
+                    {selectedStudentId && (() => {
+                      const selectedStudent = studentInfo.find(s => s.id === selectedStudentId);
+                      return selectedStudent ? (
+                        <span style={{ fontSize: '12px', color: '#666', fontWeight: 'normal', marginLeft: '8px' }}>
+                          (Học sinh sinh ngày: {selectedStudent.dateOfBirth})
+                        </span>
+                      ) : null;
+                    })()}
+                  </label>
                   <input
                     className={styles.formInput}
                     type="date"
                     name="vaccinationDate"
                     value={vaccineForm.vaccinationDate}
                     onChange={handleVaccineChange}
+                    min={selectedStudentId ? 
+                      (studentInfo.find(s => s.id === selectedStudentId)?.dateOfBirth || '') : 
+                      (studentInfo[0]?.dateOfBirth || '')
+                    }
+                    max={new Date().toISOString().split('T')[0]}
                     required
+                    placeholder="Chọn ngày tiêm chủng"
                   />
+                  <small style={{ color: '#666', fontSize: '12px', display: 'block', marginTop: '4px' }}>
+                    📅 Có thể chọn từ ngày sinh đến ngày hiện tại
+                    {selectedStudentId && (() => {
+                      const selectedStudent = studentInfo.find(s => s.id === selectedStudentId);
+                      return selectedStudent ? (
+                        <span style={{ color: '#1890ff' }}>
+                          (Từ {selectedStudent.dateOfBirth} đến hôm nay)
+                        </span>
+                      ) : null;
+                    })()}
+                  </small>
                 </div>
                 <div className={styles.formGroup}>
                   <label className={styles.formLabel}>Nơi tiêm chủng</label>
@@ -895,14 +940,41 @@ const UserProfile = () => {
                   {chronicErrors.diseaseName && <div style={{ color: "red", fontSize: 13 }}>{chronicErrors.diseaseName}</div>}
                 </div>
                 <div style={{ marginBottom: 12 }}>
-                  <label>Ngày chẩn đoán</label>
+                  <label>
+                    Ngày chẩn đoán
+                    {chronicForm.id && (() => {
+                      const selectedStudent = studentInfo.find(s => s.id === chronicForm.id);
+                      return selectedStudent ? (
+                        <span style={{ fontSize: '12px', color: '#666', fontWeight: 'normal', marginLeft: '8px' }}>
+                          (Học sinh sinh ngày: {selectedStudent.dateOfBirth})
+                        </span>
+                      ) : null;
+                    })()}
+                  </label>
                   <input
                     type="date"
                     name="diagnosedDate"
                     value={chronicForm.diagnosedDate}
                     onChange={handleChronicChange}
+                    min={chronicForm.id ? 
+                      (studentInfo.find(s => s.id === chronicForm.id)?.dateOfBirth || '') : 
+                      (studentInfo[0]?.dateOfBirth || '')
+                    }
+                    max={new Date().toISOString().split('T')[0]}
                     style={{ width: "100%", padding: 8, borderRadius: 6, border: "1px solid #ccc" }}
+                    placeholder="Chọn ngày chẩn đoán (không bắt buộc)"
                   />
+                  <small style={{ color: '#666', fontSize: '12px', display: 'block', marginTop: '4px' }}>
+                    📅 Có thể chọn từ ngày sinh đến ngày hiện tại
+                    {chronicForm.id && (() => {
+                      const selectedStudent = studentInfo.find(s => s.id === chronicForm.id);
+                      return selectedStudent ? (
+                        <span style={{ color: '#1890ff' }}>
+                          (Từ {selectedStudent.dateOfBirth} đến hôm nay)
+                        </span>
+                      ) : null;
+                    })()}
+                  </small>
                   {chronicErrors.diagnosedDate && <div style={{ color: "red", fontSize: 13 }}>{chronicErrors.diagnosedDate}</div>}
                 </div>
                 <div style={{ marginBottom: 12 }}>
