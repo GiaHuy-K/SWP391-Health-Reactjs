@@ -102,7 +102,7 @@ const VaccinationCampaignCreateForm = ({ open, onClose, onSuccess, isEdit = fals
           rules={[{ required: true, message: "Vui lòng chọn ngày tiêm chủng" }]}
           extra={
             <div style={{ fontSize: '12px', color: '#666', marginTop: '4px' }}>
-              📅 Chọn ngày tiêm chủng cho chiến dịch (từ hôm nay trở về trước)
+              📅 Chọn ngày tiêm chủng cho chiến dịch 
             </div>
           }
         >
@@ -110,7 +110,6 @@ const VaccinationCampaignCreateForm = ({ open, onClose, onSuccess, isEdit = fals
             format="DD/MM/YYYY" 
             style={{ width: "100%" }}
             placeholder="Chọn ngày tiêm chủng"
-            disabledDate={(current) => current && current > dayjs().endOf('day')}
             allowClear={false}
             showToday={true}
             inputReadOnly={false}
