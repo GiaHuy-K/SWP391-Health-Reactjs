@@ -58,7 +58,7 @@ const PrivateRoute = ({ children }) => {
   return isAuthenticated ? children : <Navigate to="/login" />;
 };
 
-// bảo vệ trang dashboard của admin
+// bảo vệ trang dashboard của admin school
 const AdminRoute = ({ children }) => {
   const { isAuthenticated, user } = useAuth();
 
