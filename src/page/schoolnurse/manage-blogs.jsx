@@ -282,7 +282,7 @@ const ManageBlogsNurse = () => {
           Quản lý Blog của tôi
         </Title>
         <Text type="secondary">
-          Quản lý các bài viết blog bạn đã tạo
+          Quản lý các bài viết blog bạn đã tạo. Blog sẽ được tạo với trạng thái "Riêng tư" và cần được Manager duyệt để xuất bản.
         </Text>
       </div>
       <Row gutter={16} style={{ marginBottom: 24 }}>
@@ -317,6 +317,25 @@ const ManageBlogsNurse = () => {
           </Card>
         </Col>
       </Row>
+      
+      {/* Thông báo cho Nurse về việc blog cần được Admin duyệt */}
+      {stats.draft > 0 && (
+        <Card style={{ marginBottom: 16, background: "#e6f7ff", border: "1px solid #91d5ff" }}>
+          <div style={{ 
+            display: "flex", 
+            alignItems: "center", 
+            gap: "8px",
+            color: "#1890ff",
+            fontSize: "14px"
+          }}>
+            <span style={{ fontSize: "16px" }}>ℹ️</span>
+            <span>
+              Có <strong>{stats.draft}</strong> blog đang ở trạng thái "Riêng tư". 
+              Blog sẽ được Manager duyệt để chuyển thành "Công khai".
+            </span>
+          </div>
+        </Card>
+      )}
       <Card style={{ marginBottom: 24 }}>
         <Row gutter={16} align="middle">
           <Col span={8}>

@@ -110,6 +110,7 @@ const VaccinationCampaignCreateForm = ({ open, onClose, onSuccess, isEdit = fals
             format="DD/MM/YYYY" 
             style={{ width: "100%" }}
             placeholder="Chọn ngày tiêm chủng"
+            disabledDate={(current) => current && current < dayjs().startOf('day')}
             allowClear={false}
             showToday={true}
             inputReadOnly={false}

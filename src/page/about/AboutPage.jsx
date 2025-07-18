@@ -104,29 +104,29 @@ const AboutPage = () => {
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             <div className="text-center">
-              <div className="w-32 h-32 bg-gradient-to-br from-primary to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                <i className="ri-user-3-line ri-4xl text-white"></i>
+              <div className="w-20 h-20 bg-gradient-to-br from-primary to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i className="ri-user-3-line ri-2xl text-white"></i>
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Chuyên gia Y tế</h3>
               <p className="text-gray-600">Đội ngũ bác sĩ, y tá có chuyên môn cao về y tế học đường</p>
             </div>
             <div className="text-center">
-              <div className="w-32 h-32 bg-gradient-to-br from-primary to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                <i className="ri-graduation-cap-line ri-4xl text-white"></i>
+              <div className="w-20 h-20 bg-gradient-to-br from-primary to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i className="ri-graduation-cap-line ri-2xl text-white"></i>
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Chuyên gia Giáo dục</h3>
               <p className="text-gray-600">Các nhà giáo dục có kinh nghiệm trong quản lý học đường</p>
             </div>
             <div className="text-center">
-              <div className="w-32 h-32 bg-gradient-to-br from-primary to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                <i className="ri-code-s-slash-line ri-4xl text-white"></i>
+              <div className="w-20 h-20 bg-gradient-to-br from-primary to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i className="ri-code-s-slash-line ri-2xl text-white"></i>
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Kỹ sư Công nghệ</h3>
               <p className="text-gray-600">Đội ngũ phát triển phần mềm và bảo mật thông tin</p>
             </div>
             <div className="text-center">
-              <div className="w-32 h-32 bg-gradient-to-br from-primary to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                <i className="ri-customer-service-2-line ri-4xl text-white"></i>
+              <div className="w-20 h-20 bg-gradient-to-br from-primary to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i className="ri-customer-service-2-line ri-2xl text-white"></i>
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Hỗ trợ Khách hàng</h3>
               <p className="text-gray-600">Đội ngũ hỗ trợ chuyên nghiệp, sẵn sàng hỗ trợ 24/7</p>
