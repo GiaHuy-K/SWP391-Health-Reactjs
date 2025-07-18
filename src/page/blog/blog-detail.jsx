@@ -6,7 +6,6 @@ import { useBlogPermissions, BlogPermissionGuard } from "../../utils/blogPermiss
 import { Button, Space } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import BlogAuthorInfo from "../../components/blog/BlogAuthorInfo";
-import BlogPermissionTest from "../../components/blog/BlogPermissionTest";
 import { useAuth } from "../../config/AuthContext";
 import HomeHeader from "../home/header/HomeHeader";
 
@@ -43,7 +42,17 @@ const BlogDetailPage = () => {
   }
 
   const handleEdit = () => {
-    navigate(`/dashboardManager/blog/edit/${blogId}`);
+    // Chuyển hướng dựa trên vai trò của user
+    if (user?.role === "Quản trị viên Trường học") {
+      navigate(`/dashboard/blog/edit/${blogId}`);
+    } else if (user?.role === "Quản lý Nhân sự/Nhân viên") {
+      navigate(`/dashboardManager/blog/edit/${blogId}`);
+    } else if (user?.role === "Nhân viên Y tế") {
+      navigate(`/dashboardNurse/blog/edit/${blogId}`);
+    } else {
+      // Fallback cho các vai trò khác
+      navigate(`/dashboardManager/blog/edit/${blogId}`);
+    }
   };
 
   const handleDelete = () => {
@@ -53,13 +62,11 @@ const BlogDetailPage = () => {
 
   return (
     <>
-      <HomeHeader hideNavLinks={true} />
+      {/* Chỉ hiển thị HomeHeader cho các role không phải Admin, Manager, Nurse */}
+      {!["Quản trị viên Trường học", "Quản lý Nhân sự/Nhân viên", "Nhân viên Y tế"].includes(role) && (
+        <HomeHeader hideNavLinks={true} />
+      )}
       <div className="blog-detail-page" style={{ maxWidth: 900, margin: "0 auto", padding: 24 }}>
-        {/* Chỉ hiển thị BlogPermissionTest nếu KHÔNG phải Phụ huynh hoặc MedicalStaff */}
-        {process.env.NODE_ENV === 'development' && !["Phụ huynh", "MedicalStaff", "Parent"].includes(role) && (
-          <BlogPermissionTest blogData={blog} />
-        )}
-        
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
           <h1>{blog.title}</h1>
           <BlogPermissionGuard action="update" blogData={blog} fallback={null}>

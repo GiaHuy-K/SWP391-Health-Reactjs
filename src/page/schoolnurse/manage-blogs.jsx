@@ -34,6 +34,7 @@ import { useAuth } from "../../config/AuthContext";
 import { useBlogPermissions, BlogPermissionGuard } from "../../utils/blogPermissions";
 import {
   getMyBlogs,
+  getBlogs,
   deleteBlog,
   getBlogCategories,
   getBlogStatuses,
@@ -95,7 +96,9 @@ const ManageBlogsNurse = () => {
           delete params[key];
         }
       });
-      const response = await getMyBlogs(params);
+      
+      // Nurse có quyền xem tất cả blogs, không chỉ blogs của mình
+      const response = await getBlogs(params);
       setBlogs(response.content || []);
       setPagination(prev => ({
         ...prev,
@@ -104,8 +107,8 @@ const ManageBlogsNurse = () => {
       const allBlogs = response.content || [];
       setStats({
         total: allBlogs.length,
-        published: allBlogs.filter(b => b.status === "published").length,
-        draft: allBlogs.filter(b => b.status === "draft").length,
+        published: allBlogs.filter(b => b.status === "Công khai").length,
+        draft: allBlogs.filter(b => b.status === "Riêng tư").length,
       });
     } catch (error) {
       console.error("Lỗi khi tải danh sách blog:", error);

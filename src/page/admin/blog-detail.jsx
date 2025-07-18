@@ -6,7 +6,6 @@ import { useBlogPermissions, BlogPermissionGuard } from "../../utils/blogPermiss
 import { Button, Space, Card, Typography, Tag, Divider, Row, Col, Statistic } from "antd";
 import { EditOutlined, DeleteOutlined, CrownOutlined, UserOutlined, CalendarOutlined, EyeOutlined } from "@ant-design/icons";
 import BlogAuthorInfo from "../../components/blog/BlogAuthorInfo";
-import BlogPermissionTest from "../../components/blog/BlogPermissionTest";
 import { useAuth } from "../../config/AuthContext";
 import dayjs from "dayjs";
 import "dayjs/locale/vi";
@@ -95,12 +94,7 @@ const AdminBlogDetailPage = () => {
         </Row>
       </Card>
 
-      {/* Admin Permission Test */}
-      {process.env.NODE_ENV === 'development' && (
-        <Card style={{ marginBottom: 24 }}>
-          <BlogPermissionTest blogData={blog} />
-        </Card>
-      )}
+
 
       {/* Blog Stats */}
       <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
