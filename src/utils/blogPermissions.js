@@ -130,8 +130,8 @@ export const useBlogPermissions = () => {
    * Kiểm tra user có thể cập nhật status blog không
    */
   const canUpdateBlogStatus = () => {
-    // SchoolAdmin, StaffManager và MedicalStaff có quyền cập nhật status
-    if (userRole === "SchoolAdmin" || userRole === "StaffManager" || userRole === "MedicalStaff") {
+    // Chỉ StaffManager có quyền cập nhật status (duyệt blog)
+    if (userRole === "StaffManager") {
       return true;
     }
     return false;

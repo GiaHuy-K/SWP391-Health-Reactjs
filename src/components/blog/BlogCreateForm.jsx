@@ -11,20 +11,42 @@ import {
 } from "../../services/api.blog";
 import { toast } from "react-toastify";
 import { useBlogPermissions } from "../../utils/blogPermissions";
+import { useAuth } from "../../config/AuthContext";
 import "./BlogCreateForm.css";
 
 const BlogCreateForm = ({ onSuccess, onCancel, mode = "create", initialData }) => {
   const editorRef = useRef(null);
   const permissions = useBlogPermissions();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState([]);
   const [statuses, setStatuses] = useState([]);
   const [thumbnailPreview, setThumbnailPreview] = useState(initialData?.thumbnail || null);
+  
+  // Xác định trạng thái mặc định dựa trên role
+  const getDefaultStatus = () => {
+    if (mode === "edit") {
+      return initialData?.status || "";
+    }
+    
+    // Nếu là Manager, cho phép chọn trạng thái tự do
+    if (user?.role === "Quản lý Nhân sự/Nhân viên") {
+      return initialData?.status || "";
+    }
+    
+    // Nếu là Admin hoặc Nurse, mặc định là "Riêng tư"
+    if (user?.role === "Quản trị viên Trường học" || user?.role === "Nhân viên Y tế") {
+      return "Riêng tư";
+    }
+    
+    return initialData?.status || "";
+  };
+  
   const [form, setForm] = useState({
     title: initialData?.title || "",
     thumbnail: initialData?.thumbnail || "",
     description: initialData?.description || "",
-    status: initialData?.status || "",
+    status: getDefaultStatus(),
     category: initialData?.category || "",
     content: initialData?.content || ""
   });
@@ -49,7 +71,7 @@ const BlogCreateForm = ({ onSuccess, onCancel, mode = "create", initialData }) =
           setForm(prev => ({
             ...prev,
             category: prev.category || categoriesData[0].displayName,
-            status: prev.status || statusesData.find(s => s.value === 'DRAFT')?.displayName || statusesData[0].displayName,
+            status: prev.status || getDefaultStatus(),
           }));
         }
       } catch (error) {
@@ -287,6 +309,55 @@ const BlogCreateForm = ({ onSuccess, onCancel, mode = "create", initialData }) =
           <label htmlFor="description">Mô tả <span className="required">*</span></label>
           <textarea id="description" name="description" value={form.description} onChange={handleChange} placeholder="Nhập mô tả ngắn cho blog" rows="3" disabled={loading} required/>
         </div>
+        
+        {/* Thông báo cho Admin và Nurse về trạng thái mặc định */}
+        {mode === "create" && (user?.role === "Quản trị viên Trường học" || user?.role === "Nhân viên Y tế") && (
+          <div className="form-group" style={{ 
+            background: "#e6f7ff", 
+            border: "1px solid #91d5ff", 
+            borderRadius: "4px", 
+            padding: "12px",
+            marginBottom: "20px"
+          }}>
+            <div style={{ 
+              display: "flex", 
+              alignItems: "center", 
+              gap: "8px",
+              color: "#1890ff",
+              fontSize: "14px"
+            }}>
+              <span style={{ fontSize: "16px" }}>ℹ️</span>
+              <span>
+                Blog sẽ được tạo với trạng thái <strong>"Riêng tư"</strong>. 
+                Chỉ khi được Manager duyệt mới chuyển thành "Công khai".
+              </span>
+            </div>
+          </div>
+        )}
+        
+        {/* Thông báo cho Manager khi edit blog */}
+        {mode === "edit" && user?.role === "Quản lý Nhân sự/Nhân viên" && (
+          <div className="form-group" style={{ 
+            background: "#f6ffed", 
+            border: "1px solid #b7eb8f", 
+            borderRadius: "4px", 
+            padding: "12px",
+            marginBottom: "20px"
+          }}>
+            <div style={{ 
+              display: "flex", 
+              alignItems: "center", 
+              gap: "8px",
+              color: "#52c41a",
+              fontSize: "14px"
+            }}>
+              <span style={{ fontSize: "16px" }}>📝</span>
+              <span>
+                Bạn có thể thay đổi trạng thái blog từ "Riêng tư" thành "Công khai" để duyệt bài viết.
+              </span>
+            </div>
+          </div>
+        )}
         <div className="form-row">
           <div className="form-group">
             <label htmlFor="category">Danh mục <span className="required">*</span></label>
@@ -294,12 +365,15 @@ const BlogCreateForm = ({ onSuccess, onCancel, mode = "create", initialData }) =
               {categories.map((category) => (<option key={category.displayName} value={category.displayName} style={{color: category.color}}>{category.displayName}</option>))}
             </select>
           </div>
-          <div className="form-group">
-            <label htmlFor="status">Trạng thái</label>
-            <select id="status" name="status" value={form.status} onChange={handleChange} disabled={loading} style={{ color: statuses.find(s => s.displayName === form.status)?.color || undefined }}>
-              {statuses.map((status) => (<option key={status.displayName} value={status.displayName} style={{ color: status.color }}>{status.displayName}</option>))}
-            </select>
-          </div>
+          {/* Chỉ hiển thị trường trạng thái cho Manager hoặc khi edit */}
+          {(user?.role === "Quản lý Nhân sự/Nhân viên" || mode === "edit") && (
+            <div className="form-group">
+              <label htmlFor="status">Trạng thái</label>
+              <select id="status" name="status" value={form.status} onChange={handleChange} disabled={loading} style={{ color: statuses.find(s => s.displayName === form.status)?.color || undefined }}>
+                {statuses.map((status) => (<option key={status.displayName} value={status.displayName} style={{ color: status.color }}>{status.displayName}</option>))}
+              </select>
+            </div>
+          )}
         </div>
         <div className="form-group">
           <label>Nội dung <span className="required">*</span></label>
