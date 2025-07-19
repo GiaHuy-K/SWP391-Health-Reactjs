@@ -161,7 +161,7 @@ const EventHealthIncidentTemplate = () => {
               });
             }}
           >
-            Xóa mềm
+            Xóa
           </Button>
         </Space>
       ),
@@ -178,7 +178,6 @@ const EventHealthIncidentTemplate = () => {
           type="primary"
           onClick={() => {
             setCreateModalOpen(true);
-            fetchFormData();
           }}
         >
           Thêm sự cố sức khỏe
