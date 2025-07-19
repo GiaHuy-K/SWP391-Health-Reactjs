@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getAllVaccinations, updateVaccinationStatus } from "../../services/api.vaccine";
+import { getAllVaccinations, updateVaccinationStatus, getVaccinationFileUrl } from "../../services/api.vaccine";
 import { message, Input, Button, Space, Modal, Input as AntInput } from "antd";
 import StudentVaccinationTableTemplate from "../../components/templates/studentVaccinationTableTemplate";
 
@@ -8,6 +8,11 @@ const ManageStudentInfVc = () => {
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
   const [filteredList, setFilteredList] = useState([]);
+  
+  // State cho chức năng xem file bằng chứng
+  const [fileModalVisible, setFileModalVisible] = useState(false);
+  const [fileUrl, setFileUrl] = useState("");
+  const [fileLoading, setFileLoading] = useState(false);
 
   useEffect(() => {
     console.log("Khởi tạo trang quản lý tiêm chủng học sinh (Y tá)");
@@ -78,20 +83,59 @@ const ManageStudentInfVc = () => {
       },
     });
   };
-  const renderAction = (record) => {
-    if (record.status === "Chờ xử lý" || record.status === "PENDING") {
-      return (
-        <>
-          <Button type="primary" size="small" onClick={e => { e.stopPropagation(); handleApprove(record); }} style={{ marginRight: 8 }}>
-            Duyệt
-          </Button>
-          <Button danger size="small" onClick={e => { e.stopPropagation(); handleReject(record); }}>
-            Từ chối
-          </Button>
-        </>
-      );
+  // Hàm xử lý xem file bằng chứng
+  const handleViewFile = async (vaccinationId) => {
+    setFileLoading(true);
+    try {
+      const res = await getVaccinationFileUrl(vaccinationId);
+      if (!res || !res.url) {
+        message.error("Không có file bằng chứng cho bản ghi này");
+        return;
+      }
+      setFileUrl(res.url);
+      setFileModalVisible(true);
+    } catch (err) {
+      message.error("Không thể tải file bằng chứng");
+    } finally {
+      setFileLoading(false);
     }
-    return null;
+  };
+
+  // Hàm xử lý download file
+  const handleDownloadFile = () => {
+    if (fileUrl) {
+      const link = document.createElement('a');
+      link.href = fileUrl;
+      link.download = 'vaccination-proof.pdf';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
+
+  const renderAction = (record) => {
+    return (
+      <Space>
+        {record.status === "Chờ xử lý" || record.status === "PENDING" ? (
+          <>
+            <Button type="primary" size="small" onClick={e => { e.stopPropagation(); handleApprove(record); }} style={{ marginRight: 8 }}>
+              Duyệt
+            </Button>
+            <Button danger size="small" onClick={e => { e.stopPropagation(); handleReject(record); }}>
+              Từ chối
+            </Button>
+          </>
+        ) : null}
+        <Button
+          type="link"
+          onClick={() => handleViewFile(record.studentVaccinationId)}
+          size="small"
+          loading={fileLoading}
+        >
+          File
+        </Button>
+      </Space>
+    );
   };
 
   return (
@@ -110,6 +154,45 @@ const ManageStudentInfVc = () => {
         </Button>
       </Space>
       <StudentVaccinationTableTemplate data={filteredList} loading={loading} renderAction={renderAction} />
+      
+      {/* Modal xem file bằng chứng */}
+      <Modal
+        title="File bằng chứng tiêm chủng"
+        open={fileModalVisible}
+        onCancel={() => setFileModalVisible(false)}
+        footer={[
+          <Button key="close" onClick={() => setFileModalVisible(false)}>
+            Đóng
+          </Button>,
+          <Button 
+            key="download" 
+            type="primary" 
+            onClick={handleDownloadFile}
+            disabled={!fileUrl}
+          >
+            Tải xuống
+          </Button>,
+        ]}
+        width={800}
+      >
+        {fileUrl ? (
+          <div style={{ textAlign: 'center' }}>
+            <iframe
+              src={fileUrl}
+              style={{ width: '100%', height: '500px', border: 'none' }}
+              title="File bằng chứng"
+            />
+          </div>
+        ) : (
+          <div style={{ textAlign: 'center', padding: '50px' }}>
+            {fileLoading ? (
+              <div>Đang tải file...</div>
+            ) : (
+              <div>Không thể hiển thị file</div>
+            )}
+          </div>
+        )}
+      </Modal>
     </div>
   );
 };
