@@ -1,5 +1,4 @@
-
-import React from "react";
+import React, { useEffect } from "react";
 import { Modal, Form, Input, InputNumber, Switch } from "antd";
 
 function VaccinationMonitoringFormModal({
@@ -10,6 +9,16 @@ function VaccinationMonitoringFormModal({
   initialValues,
 }) {
   const [form] = Form.useForm();
+
+  // Reset form khi mở modal
+  useEffect(() => {
+    if (open) {
+      form.setFieldsValue({
+        ...initialValues,
+        hasSideEffects: Boolean(initialValues?.hasSideEffects),
+      });
+    }
+  }, [open, initialValues, form]);
 
   const handleOk = () => {
     form.validateFields().then((values) => {
@@ -26,7 +35,7 @@ function VaccinationMonitoringFormModal({
       title="Ghi nhận theo dõi sau tiêm"
       okText="Ghi nhận"
     >
-      <Form form={form} layout="vertical" initialValues={initialValues}>
+      <Form form={form} layout="vertical">
         <Form.Item
           label="Nhiệt độ (°C)"
           name="temperature"
@@ -35,7 +44,11 @@ function VaccinationMonitoringFormModal({
           <InputNumber min={34} max={42} step={0.1} style={{ width: "100%" }} />
         </Form.Item>
 
-        <Form.Item label="Có phản ứng phụ không?" name="hasSideEffects" valuePropName="checked">
+        <Form.Item
+          label="Có phản ứng phụ không?"
+          name="hasSideEffects"
+          valuePropName="checked"
+        >
           <Switch />
         </Form.Item>
 
