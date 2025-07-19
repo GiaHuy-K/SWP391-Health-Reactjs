@@ -161,7 +161,7 @@ const EventHealthIncidentTemplate = () => {
               });
             }}
           >
-            Xóa mềm
+            Xóa
           </Button>
         </Space>
       ),
