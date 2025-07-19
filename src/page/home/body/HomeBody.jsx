@@ -171,7 +171,7 @@ const HomeBody = () => {
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-3">Kết nối phụ huynh</h3>
               <p className="text-gray-600">
-                Tạo kênh liên lạc trực tiếp giữa nhà trường và phụ huynh về các vấn đề sức khỏe của học sinh qua ứng dụng di động.
+                Tạo sự kết nối giữa nhà trường và phụ huynh về các vấn đề sức khỏe của học sinh qua ứng dụng di động.
               </p>
             </div>
             {/* Feature 6 */}
@@ -206,7 +206,7 @@ const HomeBody = () => {
                 SchoolMed được thành lập vào năm 2025 với sứ mệnh nâng cao chất lượng chăm sóc sức khỏe học đường tại Việt Nam thông qua công nghệ số.
               </p>
               <p className="text-lg text-gray-700 mb-8">
-                Đội ngũ của chúng tôi bao gồm các chuyên gia y tế, giáo dục và công nghệ với hơn 15 năm kinh nghiệm, cùng chung tâm huyết xây dựng một hệ thống toàn diện giúp nhà trường quản lý sức khỏe học sinh hiệu quả.
+                Đội ngũ của chúng tôi bao gồm các chuyên gia y tế, giáo dục và công nghệ với hơn nhiều năm kinh nghiệm, cùng chung tâm huyết xây dựng một hệ thống toàn diện giúp nhà trường quản lý sức khỏe học sinh hiệu quả.
               </p>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-8">
                 <div className="text-center">
