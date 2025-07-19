@@ -94,7 +94,7 @@ const VaccinationCampaignCreateForm = ({ open, onClose, onSuccess, isEdit = fals
             <span>
               Ngày tiêm chủng
               <span style={{ fontSize: '12px', color: '#666', fontWeight: 'normal', marginLeft: '8px' }}>
-                (Không được trong tương lai)
+                (Không được trong quá khứ)
               </span>
             </span>
           }

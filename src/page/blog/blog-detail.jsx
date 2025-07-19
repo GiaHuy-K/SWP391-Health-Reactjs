@@ -51,7 +51,7 @@ const BlogDetailPage = () => {
       navigate(`/dashboardNurse/blog/edit/${blogId}`);
     } else {
       // Fallback cho các vai trò khác
-      navigate(`/dashboardManager/blog/edit/${blogId}`);
+    navigate(`/dashboardManager/blog/edit/${blogId}`);
     }
   };
 
@@ -64,7 +64,7 @@ const BlogDetailPage = () => {
     <>
       {/* Chỉ hiển thị HomeHeader cho các role không phải Admin, Manager, Nurse */}
       {!["Quản trị viên Trường học", "Quản lý Nhân sự/Nhân viên", "Nhân viên Y tế"].includes(role) && (
-        <HomeHeader hideNavLinks={true} />
+      <HomeHeader hideNavLinks={true} />
       )}
       <div className="blog-detail-page" style={{ maxWidth: 900, margin: "0 auto", padding: 24 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>

@@ -17,7 +17,7 @@ export const validateDateAgainstBirthDate = (date, studentBirthDate) => {
   if (!studentBirthDate) {
     return {
       isValid: false,
-      error: "Không tìm thấy ngày sinh của học sinh"
+      error: "Không tìm thấy ngày sinh của học sinh hoặc định dạng ngày không hợp lệ"
     };
   }
 
@@ -102,8 +102,22 @@ export const getStudentBirthDate = (student) => {
   if (!student) return null;
   
   // Handle different date formats
-  if (student.dateOfBirth) {
-    return dayjs(student.dateOfBirth).format('YYYY-MM-DD');
+  if (student.dateOfBirth && student.dateOfBirth !== 'null' && student.dateOfBirth !== 'undefined') {
+    try {
+      // Try to parse the date with dayjs
+      const parsedDate = dayjs(student.dateOfBirth);
+      
+      // Check if the parsed date is valid
+      if (parsedDate.isValid()) {
+        return parsedDate.format('YYYY-MM-DD');
+      } else {
+        console.error('Invalid date format:', student.dateOfBirth);
+        return null;
+      }
+    } catch (error) {
+      console.error('Error parsing student birth date:', error);
+      return null;
+    }
   }
   
   return null;

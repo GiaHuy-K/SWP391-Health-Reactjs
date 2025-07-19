@@ -93,7 +93,7 @@ const BlogList = ({
       navigate(`/dashboardNurse/blog/edit/${blog.id}`);
     } else {
       // Fallback cho các vai trò khác
-      navigate(`/dashboardManager/blog/edit/${blog.id}`);
+    navigate(`/dashboardManager/blog/edit/${blog.id}`);
     }
   };
 

@@ -20,7 +20,7 @@ function DashboardN() {
       </Row>
 
       <Divider />
-
+      
       {/* Thống kê bệnh mãn tính */}
       <Row gutter={[16, 16]}>
         <Col span={24}>

@@ -367,12 +367,12 @@ const BlogCreateForm = ({ onSuccess, onCancel, mode = "create", initialData }) =
           </div>
           {/* Chỉ hiển thị trường trạng thái cho Manager hoặc khi edit */}
           {(user?.role === "Quản lý Nhân sự/Nhân viên" || mode === "edit") && (
-            <div className="form-group">
-              <label htmlFor="status">Trạng thái</label>
-              <select id="status" name="status" value={form.status} onChange={handleChange} disabled={loading} style={{ color: statuses.find(s => s.displayName === form.status)?.color || undefined }}>
-                {statuses.map((status) => (<option key={status.displayName} value={status.displayName} style={{ color: status.color }}>{status.displayName}</option>))}
-              </select>
-            </div>
+          <div className="form-group">
+            <label htmlFor="status">Trạng thái</label>
+            <select id="status" name="status" value={form.status} onChange={handleChange} disabled={loading} style={{ color: statuses.find(s => s.displayName === form.status)?.color || undefined }}>
+              {statuses.map((status) => (<option key={status.displayName} value={status.displayName} style={{ color: status.color }}>{status.displayName}</option>))}
+            </select>
+          </div>
           )}
         </div>
         <div className="form-group">
