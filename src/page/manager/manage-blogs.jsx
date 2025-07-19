@@ -170,13 +170,15 @@ const ManageBlogs = () => {
     }
     
     try {
-      await updateBlogStatus(blogId, { status: newStatus }); // SỬA: truyền object thay vì string
+      await updateBlogStatus(blogId, { status: newStatus });
       message.success("Cập nhật trạng thái thành công");
       fetchBlogs();
     } catch (error) {
       console.error("Lỗi khi cập nhật trạng thái:", error);
     }
   };
+
+
 
   // Handle filters
   const handleSearch = (value) => {
@@ -289,7 +291,7 @@ const ManageBlogs = () => {
               onClick={() => handleEditBlog(record.id)}
             />
           </Tooltip>
-          {/* Sửa logic ở đây: StaffManager có quyền cập nhật status thì luôn thấy nút này */}
+          {/* Manager có quyền cập nhật status */}
           <BlogPermissionGuard action="updateStatus" blogData={record} fallback={null}>
             <Tooltip title="Cập nhật trạng thái">
               <Button
@@ -335,7 +337,7 @@ const ManageBlogs = () => {
           Quản lý Blog
         </Title>
         <Text type="secondary">
-          Quản lý các bài viết blog về sức khỏe học đường
+          Quản lý các bài viết blog về sức khỏe học đường. Bạn có thể duyệt blog từ "Riêng tư" thành "Công khai".
         </Text>
       </div>
 
@@ -372,6 +374,25 @@ const ManageBlogs = () => {
           </Card>
         </Col>
       </Row>
+      
+      {/* Thông báo cho Manager về việc duyệt blog */}
+      {stats.draft > 0 && (
+        <Card style={{ marginBottom: 16, background: "#f6ffed", border: "1px solid #b7eb8f" }}>
+          <div style={{ 
+            display: "flex", 
+            alignItems: "center", 
+            gap: "8px",
+            color: "#52c41a",
+            fontSize: "14px"
+          }}>
+            <span style={{ fontSize: "16px" }}>📝</span>
+            <span>
+              Có <strong>{stats.draft}</strong> blog đang ở trạng thái "Riêng tư" cần được duyệt. 
+              Sử dụng nút "Duyệt" để chuyển blog từ "Riêng tư" thành "Công khai".
+            </span>
+          </div>
+        </Card>
+      )}
 
       {/* Filters */}
       <Card style={{ marginBottom: 24 }}>

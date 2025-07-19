@@ -40,7 +40,6 @@ import {
   deleteBlog,
   getBlogCategories,
   getBlogStatuses,
-  updateBlogStatus,
 } from "../../services/api.blog";
 import { useBlogEnums } from "../../utils/useBlogEnums";
 import { CategoryTag, StatusTag } from "../../components/blog/EnumDisplay";
@@ -161,16 +160,7 @@ const AdminManageBlogs = () => {
     }
   };
 
-  const handleStatusChange = async (blogId, newStatus) => {
-    try {
-      await updateBlogStatus(blogId, newStatus);
-      message.success("Cập nhật trạng thái thành công!");
-      fetchBlogs();
-    } catch (error) {
-      message.error("Lỗi khi cập nhật trạng thái!");
-      console.error("Lỗi cập nhật status:", error);
-    }
-  };
+
 
   const handleSearch = (value) => {
     setFilters(prev => ({ ...prev, search: value }));
@@ -266,16 +256,6 @@ const AdminManageBlogs = () => {
               onClick={() => handleEditBlog(record.id)}
             />
           </Tooltip>
-          <Tooltip title="Cập nhật trạng thái">
-            <Button
-              type="text"
-              icon={<CheckCircleOutlined />}
-              size="small"
-              onClick={() => handleStatusChange(record.id, record.status === "Công khai" ? "Riêng tư" : "Công khai")}
-            >
-              {record.status === "Công khai" ? "Ẩn" : "Duyệt"}
-            </Button>
-          </Tooltip>
           <Tooltip title="Xóa">
             <Popconfirm
               title="Bạn có chắc muốn xóa blog này?"
@@ -307,7 +287,7 @@ const AdminManageBlogs = () => {
           Quản lý Blog - Admin
         </Title>
         <Text type="secondary">
-          Quản lý toàn bộ bài viết blog trong hệ thống với quyền admin
+          Quản lý toàn bộ bài viết blog trong hệ thống với quyền admin. Blog sẽ được tạo với trạng thái "Riêng tư" và cần được Manager duyệt để xuất bản.
         </Text>
       </div>
 
@@ -354,6 +334,25 @@ const AdminManageBlogs = () => {
           </Card>
         </Col>
       </Row>
+      
+      {/* Thông báo cho Admin về việc blog cần được Manager duyệt */}
+      {stats.draft > 0 && (
+        <Card style={{ marginBottom: 16, background: "#e6f7ff", border: "1px solid #91d5ff" }}>
+          <div style={{ 
+            display: "flex", 
+            alignItems: "center", 
+            gap: "8px",
+            color: "#1890ff",
+            fontSize: "14px"
+          }}>
+            <span style={{ fontSize: "16px" }}>ℹ️</span>
+            <span>
+              Có <strong>{stats.draft}</strong> blog đang ở trạng thái "Riêng tư". 
+              Blog sẽ được Manager duyệt để chuyển thành "Công khai".
+            </span>
+          </div>
+        </Card>
+      )}
 
       {/* Filters */}
       <Card style={{ marginBottom: 16 }}>

@@ -56,6 +56,11 @@
   gap: 20px;
 }
 
+/* Khi chỉ có một cột (ẩn trường trạng thái) */
+.form-row:has(.form-group:only-child) {
+  grid-template-columns: 1fr;
+}
+
 .form-group label {
   font-weight: 500;
   color: #333;

@@ -6,7 +6,7 @@ export const getStudent = async (params = { page: 0, size: 10 }) => {
   try {
     const response = await api.get("students", { params });
     const raw = response.data;
-    // console.log("📦 getStudent data:", raw);
+    console.log("📦 getStudent data:", raw);
     return raw; 
   } catch (error) {
     toast.error(error.response.data);
