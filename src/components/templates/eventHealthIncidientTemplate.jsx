@@ -178,7 +178,6 @@ const EventHealthIncidentTemplate = () => {
           type="primary"
           onClick={() => {
             setCreateModalOpen(true);
-            fetchFormData();
           }}
         >
           Thêm sự cố sức khỏe

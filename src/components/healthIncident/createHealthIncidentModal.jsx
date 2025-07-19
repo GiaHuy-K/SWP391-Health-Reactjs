@@ -4,10 +4,10 @@ import {
   Form,
   Input,
   Select,
-  DatePicker,
   Button,
   InputNumber,
   Space,
+  TimePicker,
 } from "antd";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
@@ -53,9 +53,15 @@ function CreateHealthIncidentModal({
   }, []);
 
   const handleFinish = async (values) => {
+    const today = dayjs().startOf("day");
+    const incidentDateTime = today
+      .hour(values.incidentTime.hour())
+      .minute(values.incidentTime.minute())
+      .second(0);
+
     const payload = {
       studentId: values.studentId,
-      incidentDateTime: values.incidentDateTime.toISOString(),
+      incidentDateTime: incidentDateTime.toISOString(),
       incidentType: values.incidentType,
       description: values.description,
       actionTaken: values.actionTaken,
@@ -67,14 +73,12 @@ function CreateHealthIncidentModal({
           note: item.note,
         })) || [],
     };
-    console.log("Payload gửi lên:", payload);
     try {
       await createHealthIncident(payload);
       toast.success("Tạo sự cố thành công");
       form.resetFields();
       onSuccess?.();
     } catch (err) {
-      console.error("Chi tiết lỗi từ server:", err?.response?.data);
       toast.error(
         "Đã xảy ra lỗi: " +
           (err?.response?.data?.message || "Kiểm tra lại dữ liệu")
@@ -91,7 +95,7 @@ function CreateHealthIncidentModal({
         form.resetFields();
       }}
       footer={null}
-      destroyOnHidden
+      destroyOnClose
     >
       <Form layout="vertical" form={form} onFinish={handleFinish}>
         <Form.Item
@@ -115,15 +119,27 @@ function CreateHealthIncidentModal({
 
         <Form.Item
           label="Thời gian sự cố"
-          name="incidentDateTime"
+          name="incidentTime"
           rules={[{ required: true, message: "Chọn thời gian sự cố" }]}
         >
-          <DatePicker
-            showTime
+          <TimePicker
             style={{ width: "100%" }}
-            disabledDate={(current) =>
-              current && current > dayjs().endOf("day")
-            }
+            format="HH:mm"
+            disabledTime={() => {
+              const now = dayjs();
+              return {
+                disabledHours: () =>
+                  Array.from({ length: 24 }, (_, i) => i).filter(
+                    (i) => i > now.hour()
+                  ),
+                disabledMinutes: (selectedHour) =>
+                  selectedHour === now.hour()
+                    ? Array.from({ length: 60 }, (_, i) => i).filter(
+                        (i) => i > now.minute()
+                      )
+                    : [],
+              };
+            }}
           />
         </Form.Item>
 
