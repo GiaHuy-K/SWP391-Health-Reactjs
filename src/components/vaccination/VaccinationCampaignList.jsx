@@ -69,12 +69,12 @@ const VaccinationCampaignList = ({ onViewDetail, onCreateNew, onEdit }) => {
         ...(filters.campaignName && { campaignName: filters.campaignName }),
         ...(filters.vaccineName && { vaccineName: filters.vaccineName }),
         ...(filters.status && { status: filters.status }),
-        ...(filters.classGroup && { classGroup: filters.classGroup }),
+        ...(filters.classGroup && { targetClassGroup: filters.classGroup }),
         ...(filters.dateRange && filters.dateRange[0] && {
-          startDate: filters.dateRange[0].format("YYYY-MM-DD"),
+          vaccinationDate: filters.dateRange[0].format("YYYY-MM-DD"),
         }),
         ...(filters.dateRange && filters.dateRange[1] && {
-          endDate: filters.dateRange[1].format("YYYY-MM-DD"),
+          vaccinationDate: filters.dateRange[1].format("YYYY-MM-DD"),
         }),
       };
 
@@ -188,27 +188,27 @@ const VaccinationCampaignList = ({ onViewDetail, onCreateNew, onEdit }) => {
     },
     {
       title: "Nhóm lớp",
-      dataIndex: "classGroup",
-      key: "classGroup",
+      dataIndex: "targetClassGroup",
+      key: "targetClassGroup",
       width: 100,
-      render: (classGroup) => (
-        <Tag color="blue">{classGroup}</Tag>
+      render: (targetClassGroup) => (
+        targetClassGroup ? <Tag color="blue">{targetClassGroup}</Tag> : "-"
       ),
     },
     {
       title: "Thời gian",
-      dataIndex: "startDate",
-      key: "startDate",
+      dataIndex: "vaccinationDate",
+      key: "vaccinationDate",
       width: 150,
-      render: (startDate, record) => (
+      render: (vaccinationDate, record) => (
         <div>
           <div>
             <CalendarOutlined style={{ marginRight: 4 }} />
-            {dayjs(startDate).format("DD/MM/YYYY")}
+            {vaccinationDate ? dayjs(vaccinationDate).format("DD/MM/YYYY") : "Chưa có"}
           </div>
-          {record.endDate && (
+          {record.consentDeadline && (
             <Text type="secondary" style={{ fontSize: "12px" }}>
-              - {dayjs(record.endDate).format("DD/MM/YYYY")}
+              Hạn chót xác nhận: {dayjs(record.consentDeadline).format("DD/MM/YYYY")}
             </Text>
           )}
         </div>
@@ -373,7 +373,7 @@ const VaccinationCampaignList = ({ onViewDetail, onCreateNew, onEdit }) => {
           
           <Col xs={24} sm={12} md={4}>
             <RangePicker
-              placeholder={["Từ ngày", "Đến ngày"]}
+              placeholder={["Từ ngày tiêm", "Đến ngày tiêm"]}
               value={filters.dateRange}
               onChange={(dates) => handleFilterChange("dateRange", dates)}
               format="DD/MM/YYYY"

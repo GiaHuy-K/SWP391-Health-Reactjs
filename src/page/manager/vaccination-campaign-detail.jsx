@@ -53,34 +53,39 @@ const VaccinationCampaignDetail = () => {
   const [error, setError] = useState(null);
   const [rescheduleModalOpen, setRescheduleModalOpen] = useState(false);
   const [cancelModalOpen, setCancelModalOpen] = useState(false);
+  const [scheduleLoading, setScheduleLoading] = useState(false);
   const [rescheduleForm] = Form.useForm();
   const [cancelForm] = Form.useForm();
 
+  const fetchCampaignDetail = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const campaignData = await getVaccinationCampaignById(campaignId);
+      setCampaign(campaignData);
+      const consentsData = await getCampaignConsents(campaignId);
+      setConsents(consentsData.content || []);
+    } catch (err) {
+      setError(err.message || "Không thể tải thông tin chiến dịch");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (!campaignId) return;
-    let intervalId;
-    const fetchCampaignDetail = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const campaignData = await getVaccinationCampaignById(campaignId);
-        setCampaign(campaignData);
-        const consentsData = await getCampaignConsents(campaignId);
-        setConsents(consentsData.content || []);
-      } catch (err) {
-        setError(err.message || "Không thể tải thông tin chiến dịch");
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchCampaignDetail();
-    if (campaign && campaign.status === CAMPAIGN_STATUS.SCHEDULED) {
-      intervalId = setInterval(fetchCampaignDetail, 60000); // 1 phút
-    }
+  }, [campaignId]);
+
+  // Interval cho trạng thái SCHEDULED
+  useEffect(() => {
+    if (!campaign || campaign.status !== CAMPAIGN_STATUS.SCHEDULED) return;
+    
+    const intervalId = setInterval(fetchCampaignDetail, 60000); // 1 phút
     return () => {
       if (intervalId) clearInterval(intervalId);
     };
-  }, [campaignId, campaign && campaign.status]);
+  }, [campaign?.status]);
 
   const getStatusBadge = (status) => {
     const statusConfig = {
@@ -96,11 +101,18 @@ const VaccinationCampaignDetail = () => {
   };
 
   const handleSchedule = async () => {
+    setScheduleLoading(true);
     try {
       await scheduleVaccinationCampaign(campaignId);
       message.success("Lên lịch thành công");
-      fetchCampaignDetail();
-    } catch {}
+      // Reload dữ liệu sau khi lên lịch thành công
+      await fetchCampaignDetail();
+    } catch (error) {
+      console.error("Lỗi khi lên lịch:", error);
+      message.error(error?.response?.data?.message || "Lên lịch thất bại");
+    } finally {
+      setScheduleLoading(false);
+    }
   };
 
   const handleReschedule = () => setRescheduleModalOpen(true);
@@ -191,7 +203,13 @@ const VaccinationCampaignDetail = () => {
               <Button type="primary" icon={<CheckCircleOutlined />}>Hoàn thành chiến dịch</Button>
             )}
             {campaign.status === CAMPAIGN_STATUS.DRAFT && (
-              <Button type="primary" onClick={handleSchedule}>Lên lịch</Button>
+              <Button 
+                type="primary" 
+                onClick={handleSchedule}
+                loading={scheduleLoading}
+              >
+                Lên lịch
+              </Button>
             )}
             {(campaign.status === CAMPAIGN_STATUS.SCHEDULED || campaign.status === CAMPAIGN_STATUS.PREPARING) && (
               campaign.status === CAMPAIGN_STATUS.SCHEDULED ? (
@@ -213,17 +231,20 @@ const VaccinationCampaignDetail = () => {
           <Col xs={24} md={16}>
             <Descriptions column={2} bordered>
               <Descriptions.Item label="Tên chiến dịch" span={2}>{campaign.campaignName}</Descriptions.Item>
+              <Descriptions.Item label="Mô tả" span={2}>{campaign.description || "Không có mô tả"}</Descriptions.Item>
               <Descriptions.Item label="Tên vắc-xin">{campaign.vaccineName}</Descriptions.Item>
               <Descriptions.Item label="Trạng thái">{getStatusBadge(campaign.status)}</Descriptions.Item>
               <Descriptions.Item label="Ngày tiêm chủng">{campaign.vaccinationDate && dayjs(campaign.vaccinationDate).format("DD/MM/YYYY")}</Descriptions.Item>
               <Descriptions.Item label="Hạn chót đồng ý">{campaign.consentDeadline && dayjs(campaign.consentDeadline).format("DD/MM/YYYY")}</Descriptions.Item>
               <Descriptions.Item label="Khối lớp">
-                {Array.isArray(campaign.targetClasses) ? campaign.targetClasses.map((cls, idx) => <Tag key={cls+idx} color="blue">{cls}</Tag>) : campaign.targetClasses}
+                {campaign.targetClassGroup ? <Tag color="blue">{campaign.targetClassGroup}</Tag> : "Chưa có"}
               </Descriptions.Item>
-              <Descriptions.Item label="Số lượng học sinh dự kiến">{campaign.expectedStudentCount}</Descriptions.Item>
-              <Descriptions.Item label="Người tạo">{campaign.createdByName}</Descriptions.Item>
+              <Descriptions.Item label="Số lượng học sinh dự kiến">{campaign.totalStudents || 0}</Descriptions.Item>
+              <Descriptions.Item label="Người tạo">{campaign.organizedByUserName || "Chưa có"}</Descriptions.Item>
               <Descriptions.Item label="Ngày tạo">{campaign.createdAt && dayjs(campaign.createdAt).format("DD/MM/YYYY HH:mm")}</Descriptions.Item>
-              <Descriptions.Item label="Ghi chú" span={2}>{campaign.note}</Descriptions.Item>
+              <Descriptions.Item label="Nhà cung cấp y tế">{campaign.healthcareProviderName || "Chưa có"}</Descriptions.Item>
+              <Descriptions.Item label="Liên hệ nhà cung cấp">{campaign.healthcareProviderContact || "Chưa có"}</Descriptions.Item>
+              <Descriptions.Item label="Ghi chú" span={2}>{campaign.notes || "Không có"}</Descriptions.Item>
             </Descriptions>
           </Col>
           <Col xs={24} md={8}>
