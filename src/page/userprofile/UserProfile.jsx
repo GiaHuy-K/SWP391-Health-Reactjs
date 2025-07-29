@@ -192,8 +192,20 @@ const UserProfile = () => {
 
     // Validate vaccination date
     const studentIdToUse = selectedStudentId || (studentInfo[0] && studentInfo[0].id);
-    const selectedStudent = studentInfo.find(s => s.id === studentIdToUse);
+    const selectedStudent = studentInfo.find(s => String(s.id) === String(studentIdToUse));
+    
+    // Debug logging
+    console.log('studentIdToUse:', studentIdToUse, typeof studentIdToUse);
+    console.log('Selected student:', selectedStudent);
+    console.log('Student dateOfBirth:', selectedStudent?.dateOfBirth);
+    
     const studentBirthDate = getStudentBirthDate(selectedStudent);
+    console.log('Parsed birth date:', studentBirthDate);
+    
+    if (!studentBirthDate) {
+      toast.error("Học sinh chưa có thông tin ngày sinh. Vui lòng liên hệ admin để cập nhật thông tin học sinh.");
+      return;
+    }
     
     const vaccinationValidation = validateVaccinationDate(vaccineForm.vaccinationDate, studentBirthDate);
     if (!vaccinationValidation.isValid) {
@@ -309,12 +321,23 @@ const UserProfile = () => {
     
     // Validate diagnosis date
     if (chronicForm.diagnosedDate) {
-      const selectedStudent = studentInfo.find(s => s.id === chronicForm.id);
-      const studentBirthDate = getStudentBirthDate(selectedStudent);
+      const selectedStudent = studentInfo.find(s => String(s.id) === String(chronicForm.id));
       
-      const diagnosisValidation = validateDiagnosisDate(chronicForm.diagnosedDate, studentBirthDate);
-      if (!diagnosisValidation.isValid) {
-        errors.diagnosedDate = diagnosisValidation.error;
+      // Debug logging
+      console.log('chronicForm.id:', chronicForm.id, typeof chronicForm.id);
+      console.log('Selected student for chronic:', selectedStudent);
+      console.log('Student dateOfBirth for chronic:', selectedStudent?.dateOfBirth);
+      
+      const studentBirthDate = getStudentBirthDate(selectedStudent);
+      console.log('Parsed birth date for chronic:', studentBirthDate);
+      
+      if (!studentBirthDate) {
+        errors.diagnosedDate = "Học sinh chưa có thông tin ngày sinh. Vui lòng liên hệ admin để cập nhật thông tin học sinh.";
+      } else {
+        const diagnosisValidation = validateDiagnosisDate(chronicForm.diagnosedDate, studentBirthDate);
+        if (!diagnosisValidation.isValid) {
+          errors.diagnosedDate = diagnosisValidation.error;
+        }
       }
     }
     
@@ -523,7 +546,7 @@ const UserProfile = () => {
                           <strong>Lớp:</strong> {student.className}
                         </div>
                         <div className={styles.infoItem}>
-                          <strong>Ngày sinh:</strong> {student.dateOfBirth}
+                          <strong>Ngày sinh:</strong> {student.dateOfBirth || 'Chưa có thông tin'}
                         </div>
                         <div className={styles.infoItem}>
                           <strong>Giới tính:</strong> {student.gender}
@@ -679,10 +702,10 @@ const UserProfile = () => {
                   <label className={styles.formLabel}>
                     Ngày tiêm chủng
                     {selectedStudentId && (() => {
-                      const selectedStudent = studentInfo.find(s => s.id === selectedStudentId);
+                      const selectedStudent = studentInfo.find(s => String(s.id) === String(selectedStudentId));
                       return selectedStudent ? (
                         <span style={{ fontSize: '12px', color: '#666', fontWeight: 'normal', marginLeft: '8px' }}>
-                          (Học sinh sinh ngày: {selectedStudent.dateOfBirth})
+                          (Học sinh sinh ngày: {selectedStudent.dateOfBirth || 'Chưa có thông tin'})
                         </span>
                       ) : null;
                     })()}
@@ -694,7 +717,7 @@ const UserProfile = () => {
                     value={vaccineForm.vaccinationDate}
                     onChange={handleVaccineChange}
                     min={selectedStudentId ? 
-                      (studentInfo.find(s => s.id === selectedStudentId)?.dateOfBirth || '') : 
+                      (studentInfo.find(s => String(s.id) === String(selectedStudentId))?.dateOfBirth || '') : 
                       (studentInfo[0]?.dateOfBirth || '')
                     }
                     max={new Date().toISOString().split('T')[0]}
@@ -704,10 +727,10 @@ const UserProfile = () => {
                   <small style={{ color: '#666', fontSize: '12px', display: 'block', marginTop: '4px' }}>
                     📅 Có thể chọn từ ngày sinh đến ngày hiện tại
                     {selectedStudentId && (() => {
-                      const selectedStudent = studentInfo.find(s => s.id === selectedStudentId);
+                      const selectedStudent = studentInfo.find(s => String(s.id) === String(selectedStudentId));
                       return selectedStudent ? (
                         <span style={{ color: '#1890ff' }}>
-                          (Từ {selectedStudent.dateOfBirth} đến hôm nay)
+                          (Từ {selectedStudent.dateOfBirth || 'Chưa có thông tin'} đến hôm nay)
                         </span>
                       ) : null;
                     })()}
@@ -943,10 +966,10 @@ const UserProfile = () => {
                   <label>
                     Ngày chẩn đoán
                     {chronicForm.id && (() => {
-                      const selectedStudent = studentInfo.find(s => s.id === chronicForm.id);
+                      const selectedStudent = studentInfo.find(s => String(s.id) === String(chronicForm.id));
                       return selectedStudent ? (
                         <span style={{ fontSize: '12px', color: '#666', fontWeight: 'normal', marginLeft: '8px' }}>
-                          (Học sinh sinh ngày: {selectedStudent.dateOfBirth})
+                          (Học sinh sinh ngày: {selectedStudent.dateOfBirth || 'Chưa có thông tin'})
                         </span>
                       ) : null;
                     })()}
@@ -957,7 +980,7 @@ const UserProfile = () => {
                     value={chronicForm.diagnosedDate}
                     onChange={handleChronicChange}
                     min={chronicForm.id ? 
-                      (studentInfo.find(s => s.id === chronicForm.id)?.dateOfBirth || '') : 
+                      (studentInfo.find(s => String(s.id) === String(chronicForm.id))?.dateOfBirth || '') : 
                       (studentInfo[0]?.dateOfBirth || '')
                     }
                     max={new Date().toISOString().split('T')[0]}
@@ -967,10 +990,10 @@ const UserProfile = () => {
                   <small style={{ color: '#666', fontSize: '12px', display: 'block', marginTop: '4px' }}>
                     📅 Có thể chọn từ ngày sinh đến ngày hiện tại
                     {chronicForm.id && (() => {
-                      const selectedStudent = studentInfo.find(s => s.id === chronicForm.id);
+                      const selectedStudent = studentInfo.find(s => String(s.id) === String(chronicForm.id));
                       return selectedStudent ? (
                         <span style={{ color: '#1890ff' }}>
-                          (Từ {selectedStudent.dateOfBirth} đến hôm nay)
+                          (Từ {selectedStudent.dateOfBirth || 'Chưa có thông tin'} đến hôm nay)
                         </span>
                       ) : null;
                     })()}
