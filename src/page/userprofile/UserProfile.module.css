@@ -665,3 +665,21 @@
 .studentSection {
   animation: fadeIn 0.5s ease-out;
 } 
+.passwordWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.eyeIcon {
+  position: absolute;
+  right: 12px;
+  cursor: pointer;
+  font-size: 18px;
+  color: #999;
+  transition: color 0.2s;
+}
+
+.eyeIcon:hover {
+  color: #333;
+}
