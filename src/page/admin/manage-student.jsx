@@ -22,6 +22,7 @@ import {
 import StudentDetailModal from "../../components/admin/student-detail-modal";
 import styles from "./ManageStudent.module.css";
 import EditStudentModal from "../../components/admin/editStudentModal";
+import { toast } from "react-toastify";
 
 const { Option } = Select;
 
@@ -167,11 +168,19 @@ function ManageStudent() {
           else if (status === "REACTIVATE")
             endpoint = `/students/${id}/reactivate`;
 
-          await api.post(endpoint);
-          message.success(`Đã ${actionText} cho học sinh "${fullName}"`);
+          const response = await api.post(endpoint);
+          const serverMessage =
+            response?.data?.message ||
+            `Đã ${actionText} cho học sinh "${fullName}"`;
+
+          message.success(serverMessage);
           fetchStudent(); // load lại danh sách
         } catch (err) {
-          message.error("Lỗi khi cập nhật trạng thái");
+          toast.error(
+            err?.response?.data?.message ||
+              err?.message ||
+              "Lỗi khi cập nhật trạng thái học sinh"
+          );
           console.error(err);
         }
       },

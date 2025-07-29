@@ -5,10 +5,16 @@ import { toast } from "react-toastify";
 import api from "../../config/axios";
 import styles from "./UserProfile.module.css";
 import { isParentRole } from "../../config/AuthContext";
-import { addStudentChronicDisease, getStudentChronicDiseases } from "../../services/api.chronic";
-import { validateVaccinationDate, validateDiagnosisDate, getStudentBirthDate } from "../../utils/dateValidation";
-
-
+import {
+  addStudentChronicDisease,
+  getStudentChronicDiseases,
+} from "../../services/api.chronic";
+import {
+  validateVaccinationDate,
+  validateDiagnosisDate,
+  getStudentBirthDate,
+} from "../../utils/dateValidation";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const UserProfile = () => {
   const { logout } = useAuth();
@@ -54,7 +60,11 @@ const UserProfile = () => {
   const [chronicAdding, setChronicAdding] = useState(false);
   const chronicInputRef = useRef(null);
   const vaccineInputRef = useRef(null);
-
+  const [showPassword, setShowPassword] = useState({
+    old: false,
+    new: false,
+    confirm: false,
+  });
   useEffect(() => {
     fetchUserProfile();
   }, []);
@@ -125,8 +135,13 @@ const UserProfile = () => {
     }
 
     setSubmitting(true);
+    console.log("passwordForm:", passwordForm);
     try {
-      await api.put("/user/profile/change-password", passwordForm);
+      await api.put("/user/profile/change-password", passwordForm, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       toast.success("Đổi mật khẩu thành công");
       setPasswordForm({
         oldPassword: "",
@@ -177,7 +192,12 @@ const UserProfile = () => {
 
   const handleVaccineSubmit = async (e) => {
     e.preventDefault();
-    if (!vaccineForm.vaccineName || !vaccineForm.vaccinationDate || !vaccineForm.provider || !vaccineForm.proofFile) {
+    if (
+      !vaccineForm.vaccineName ||
+      !vaccineForm.vaccinationDate ||
+      !vaccineForm.provider ||
+      !vaccineForm.proofFile
+    ) {
       toast.error("Vui lòng nhập đầy đủ thông tin bắt buộc");
       return;
     }
@@ -191,23 +211,31 @@ const UserProfile = () => {
     }
 
     // Validate vaccination date
-    const studentIdToUse = selectedStudentId || (studentInfo[0] && studentInfo[0].id);
-    const selectedStudent = studentInfo.find(s => String(s.id) === String(studentIdToUse));
-    
+    const studentIdToUse =
+      selectedStudentId || (studentInfo[0] && studentInfo[0].id);
+    const selectedStudent = studentInfo.find(
+      (s) => String(s.id) === String(studentIdToUse)
+    );
+
     // Debug logging
-    console.log('studentIdToUse:', studentIdToUse, typeof studentIdToUse);
-    console.log('Selected student:', selectedStudent);
-    console.log('Student dateOfBirth:', selectedStudent?.dateOfBirth);
-    
+    console.log("studentIdToUse:", studentIdToUse, typeof studentIdToUse);
+    console.log("Selected student:", selectedStudent);
+    console.log("Student dateOfBirth:", selectedStudent?.dateOfBirth);
+
     const studentBirthDate = getStudentBirthDate(selectedStudent);
-    console.log('Parsed birth date:', studentBirthDate);
-    
+    console.log("Parsed birth date:", studentBirthDate);
+
     if (!studentBirthDate) {
-      toast.error("Học sinh chưa có thông tin ngày sinh. Vui lòng liên hệ admin để cập nhật thông tin học sinh.");
+      toast.error(
+        "Học sinh chưa có thông tin ngày sinh. Vui lòng liên hệ admin để cập nhật thông tin học sinh."
+      );
       return;
     }
-    
-    const vaccinationValidation = validateVaccinationDate(vaccineForm.vaccinationDate, studentBirthDate);
+
+    const vaccinationValidation = validateVaccinationDate(
+      vaccineForm.vaccinationDate,
+      studentBirthDate
+    );
     if (!vaccinationValidation.isValid) {
       toast.error(vaccinationValidation.error);
       return;
@@ -216,16 +244,16 @@ const UserProfile = () => {
     setSubmitting(true);
     try {
       const formData = new FormData();
-      formData.append('vaccineName', vaccineForm.vaccineName);
-      formData.append('vaccinationDate', vaccineForm.vaccinationDate);
-      formData.append('provider', vaccineForm.provider);
+      formData.append("vaccineName", vaccineForm.vaccineName);
+      formData.append("vaccinationDate", vaccineForm.vaccinationDate);
+      formData.append("provider", vaccineForm.provider);
       if (vaccineForm.notes) {
-        formData.append('notes', vaccineForm.notes);
+        formData.append("notes", vaccineForm.notes);
       }
-      formData.append('proofFile', vaccineForm.proofFile);
+      formData.append("proofFile", vaccineForm.proofFile);
       await api.post(`/students/${studentIdToUse}/vaccinations`, formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
       });
       toast.success("Khai báo thông tin vaccine thành công!");
@@ -239,7 +267,10 @@ const UserProfile = () => {
       setShowVaccineModal(false);
       setSelectedStudentId("");
     } catch (err) {
-      toast.error(err.response?.data?.message || "Khai báo thông tin vaccine thất bại");
+      console.log(err);
+      toast.error(
+        err.response?.data?.message || "Khai báo thông tin vaccine thất bại"
+      );
     } finally {
       setSubmitting(false);
     }
@@ -256,7 +287,7 @@ const UserProfile = () => {
   };
 
   const handleLogoClick = () => {
-    navigate('/');
+    navigate("/");
   };
 
   // Hàm điều hướng đến dashboard tương ứng với role
@@ -264,13 +295,13 @@ const UserProfile = () => {
     switch (user?.role) {
       case "Hệ thống":
       case "Quản trị viên Trường học":
-        navigate('/dashboard/overview');
+        navigate("/dashboard/overview");
         break;
       case "Quản lý Nhân sự/Nhân viên":
-        navigate('/dashboardManager/event-Manager');
+        navigate("/dashboardManager/event-Manager");
         break;
       case "Nhân viên Y tế":
-        navigate('/dashboardNurse/event-Nurse');
+        navigate("/dashboardNurse/event-Nurse");
         break;
       default:
         // Parent không có dashboard riêng
@@ -280,7 +311,7 @@ const UserProfile = () => {
 
   // Kiểm tra xem user có phải là Parent không
   const isParent = isParentRole(user);
-  
+
   // Debug log để kiểm tra role
   console.log("User role:", user?.role);
   console.log("LocalStorage userRole:", localStorage.getItem("userRole"));
@@ -301,15 +332,15 @@ const UserProfile = () => {
     }
   };
 
-  const handleChronicChange = e => {
+  const handleChronicChange = (e) => {
     const { name, value, files } = e.target;
-    setChronicForm(prev => ({
+    setChronicForm((prev) => ({
       ...prev,
-      [name]: files ? files[0] : value
+      [name]: files ? files[0] : value,
     }));
   };
 
-  const handleChronicSubmit = async e => {
+  const handleChronicSubmit = async (e) => {
     e.preventDefault();
     const errors = {};
     if (!chronicForm.id) {
@@ -318,29 +349,38 @@ const UserProfile = () => {
     if (!chronicForm.diseaseName.trim()) {
       errors.diseaseName = "Tên bệnh mãn tính là bắt buộc";
     }
-    
+
     // Validate diagnosis date
     if (chronicForm.diagnosedDate) {
-      const selectedStudent = studentInfo.find(s => String(s.id) === String(chronicForm.id));
-      
+      const selectedStudent = studentInfo.find(
+        (s) => String(s.id) === String(chronicForm.id)
+      );
+
       // Debug logging
-      console.log('chronicForm.id:', chronicForm.id, typeof chronicForm.id);
-      console.log('Selected student for chronic:', selectedStudent);
-      console.log('Student dateOfBirth for chronic:', selectedStudent?.dateOfBirth);
-      
+      console.log("chronicForm.id:", chronicForm.id, typeof chronicForm.id);
+      console.log("Selected student for chronic:", selectedStudent);
+      console.log(
+        "Student dateOfBirth for chronic:",
+        selectedStudent?.dateOfBirth
+      );
+
       const studentBirthDate = getStudentBirthDate(selectedStudent);
-      console.log('Parsed birth date for chronic:', studentBirthDate);
-      
+      console.log("Parsed birth date for chronic:", studentBirthDate);
+
       if (!studentBirthDate) {
-        errors.diagnosedDate = "Học sinh chưa có thông tin ngày sinh. Vui lòng liên hệ admin để cập nhật thông tin học sinh.";
+        errors.diagnosedDate =
+          "Học sinh chưa có thông tin ngày sinh. Vui lòng liên hệ admin để cập nhật thông tin học sinh.";
       } else {
-        const diagnosisValidation = validateDiagnosisDate(chronicForm.diagnosedDate, studentBirthDate);
+        const diagnosisValidation = validateDiagnosisDate(
+          chronicForm.diagnosedDate,
+          studentBirthDate
+        );
         if (!diagnosisValidation.isValid) {
           errors.diagnosedDate = diagnosisValidation.error;
         }
       }
     }
-    
+
     if (chronicForm.attachmentFile) {
       const allowedTypes = ["application/pdf", "image/jpeg", "image/png"];
       if (!allowedTypes.includes(chronicForm.attachmentFile.type)) {
@@ -369,7 +409,7 @@ const UserProfile = () => {
       if (chronicForm.attachmentFile) {
         formData.append("attachmentFile", chronicForm.attachmentFile);
       }
-      
+
       await addStudentChronicDisease(chronicForm.id, formData);
       toast.success("Khai báo bệnh mãn tính thành công!");
       setShowChronicModal(false);
@@ -383,7 +423,9 @@ const UserProfile = () => {
       });
       setChronicErrors({});
     } catch (err) {
-      toast.error(err.response?.data?.message || "Khai báo bệnh mãn tính thất bại");
+      toast.error(
+        err.response?.data?.message || "Khai báo bệnh mãn tính thất bại"
+      );
     } finally {
       setChronicAdding(false);
     }
@@ -408,21 +450,43 @@ const UserProfile = () => {
         }
       };
       fetchData();
-      return () => { mounted = false; };
+      return () => {
+        mounted = false;
+      };
     }, [studentId]);
 
-    if (loading) return <div style={{ color: '#888', fontSize: 14 }}>Đang tải...</div>;
-    if (!diseases || diseases.length === 0) return <div style={{ color: '#888', fontSize: 14 }}>Chưa khai báo bệnh mãn tính</div>;
+    if (loading)
+      return <div style={{ color: "#888", fontSize: 14 }}>Đang tải...</div>;
+    if (!diseases || diseases.length === 0)
+      return (
+        <div style={{ color: "#888", fontSize: 14 }}>
+          Chưa khai báo bệnh mãn tính
+        </div>
+      );
     return (
       <ul style={{ paddingLeft: 18, margin: 0 }}>
         {diseases
-          .filter(d => d.status === 'APPROVE' || d.status === 'Chấp nhận')
+          .filter((d) => d.status === "APPROVE" || d.status === "Chấp nhận")
           .map((d, idx) => (
             <li key={d.id || idx} style={{ marginBottom: 8 }}>
-              <div><b>Tên bệnh:</b> {d.diseaseName}</div>
-              {d.diagnosedDate && <div><b>Ngày chẩn đoán:</b> {d.diagnosedDate}</div>}
-              {d.diagnosingDoctor && <div><b>Bác sĩ:</b> {d.diagnosingDoctor}</div>}
-              {d.notes && <div><b>Ghi chú:</b> {d.notes}</div>}
+              <div>
+                <b>Tên bệnh:</b> {d.diseaseName}
+              </div>
+              {d.diagnosedDate && (
+                <div>
+                  <b>Ngày chẩn đoán:</b> {d.diagnosedDate}
+                </div>
+              )}
+              {d.diagnosingDoctor && (
+                <div>
+                  <b>Bác sĩ:</b> {d.diagnosingDoctor}
+                </div>
+              )}
+              {d.notes && (
+                <div>
+                  <b>Ghi chú:</b> {d.notes}
+                </div>
+              )}
             </li>
           ))}
       </ul>
@@ -439,31 +503,60 @@ const UserProfile = () => {
         <div className={styles.layoutContainer}>
           <header className={styles.header}>
             <div className={styles.headerContent}>
-            <div className="flex items-center mr-10 cursor-pointer" onClick={handleLogoClick}>
-              <div style={{ width: 48, height: 48 }}>
-                <img
-                  src="/logo_medical_health_system.jpg"
-                  alt="SchoolMed Logo"
-                  style={{ width: 48, height: 48, objectFit: "contain" }}
-                />
+              <div
+                className="flex items-center mr-10 cursor-pointer"
+                onClick={handleLogoClick}
+              >
+                <div style={{ width: 48, height: 48 }}>
+                  <img
+                    src="/logo_medical_health_system.jpg"
+                    alt="SchoolMed Logo"
+                    style={{ width: 48, height: 48, objectFit: "contain" }}
+                  />
+                </div>
+                <h2 className="ml-3 text-2xl font-['Pacifico'] text-primary">
+                  SchoolMed
+                </h2>
               </div>
-              <h2 className="ml-3 text-2xl font-['Pacifico'] text-primary">SchoolMed</h2>
-            </div>
               <div className={styles.navSection}>
                 <div className={styles.navLinks}>
-                  <a className={styles.navLink} href="#" onClick={handleGoHome}>Trang chủ</a>
+                  <a className={styles.navLink} href="#" onClick={handleGoHome}>
+                    Trang chủ
+                  </a>
                   {!isParent && (
-                    <a className={styles.navLink} href="#" onClick={handleDashboardClick}>Bảng số liệu</a>
+                    <a
+                      className={styles.navLink}
+                      href="#"
+                      onClick={handleDashboardClick}
+                    >
+                      Bảng số liệu
+                    </a>
                   )}
                   {isParent && user.linkedToStudent && (
-                    <a className={styles.navLink} href="#" onClick={() => setShowVaccineModal(true)}>Khai báo vaccine đã tiêm</a>
+                    <a
+                      className={styles.navLink}
+                      href="#"
+                      onClick={() => setShowVaccineModal(true)}
+                    >
+                      Khai báo vaccine đã tiêm
+                    </a>
                   )}
                   {isParent && user.linkedToStudent && (
-                    <a className={styles.navLink} href="#" onClick={() => setShowChronicModal(true)}>
+                    <a
+                      className={styles.navLink}
+                      href="#"
+                      onClick={() => setShowChronicModal(true)}
+                    >
                       Khai báo bệnh mãn tính
                     </a>
                   )}
-                  <a className={styles.navLink} href="#" onClick={() => setShowPasswordModal(true)}>Đổi mật khẩu</a>
+                  <a
+                    className={styles.navLink}
+                    href="#"
+                    onClick={() => setShowPasswordModal(true)}
+                  >
+                    Đổi mật khẩu
+                  </a>
                 </div>
                 <button className={styles.logoutBtn} onClick={handleLogout}>
                   <span>Đăng xuất</span>
@@ -514,60 +607,73 @@ const UserProfile = () => {
               </div>
 
               {/* Chỉ hiển thị danh sách học sinh đã liên kết và nút Liên kết */}
-              {user.linkedToStudent && Array.isArray(studentInfo) && studentInfo.length > 0 && (
-                <div className={styles.studentSection}>
-                  <h2 className={styles.sectionTitle}>Thông tin học sinh đã liên kết</h2>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24 }}>
-                    {studentInfo.map((student, idx) => (
-                      <div
-                        key={student.id}
-                        style={{
-                          minWidth: 280,
-                          border: '1px solid #e0e0e0',
-                          borderRadius: 12,
-                          boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-                          padding: 20,
-                          marginBottom: 16,
-                          background: '#fff',
-                          flex: '1 1 320px',
-                          maxWidth: 400,
-                        }}
-                      >
-                        <div style={{ fontWeight: 600, marginBottom: 8 }}>
-                          Học sinh {idx + 1}
-                        </div>
-                        <div className={styles.infoItem}>
-                          <strong>Họ và tên:</strong> {student.fullName}
-                        </div>
-                        <div className={styles.infoItem}>
-                          <strong>Mã học sinh:</strong> {student.id}
-                        </div>
-                        <div className={styles.infoItem}>
-                          <strong>Lớp:</strong> {student.className}
-                        </div>
-                        <div className={styles.infoItem}>
-                          <strong>Ngày sinh:</strong> {student.dateOfBirth || 'Chưa có thông tin'}
-                        </div>
-                        <div className={styles.infoItem}>
-                          <strong>Giới tính:</strong> {student.gender}
-                        </div>
-                        <button
-                          className={styles.submitBtn}
-                          style={{ marginTop: 12 }}
-                          onClick={() => handleShowVaccineDetail(student)}
+              {user.linkedToStudent &&
+                Array.isArray(studentInfo) &&
+                studentInfo.length > 0 && (
+                  <div className={styles.studentSection}>
+                    <h2 className={styles.sectionTitle}>
+                      Thông tin học sinh đã liên kết
+                    </h2>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 24 }}>
+                      {studentInfo.map((student, idx) => (
+                        <div
+                          key={student.id}
+                          style={{
+                            minWidth: 280,
+                            border: "1px solid #e0e0e0",
+                            borderRadius: 12,
+                            boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
+                            padding: 20,
+                            marginBottom: 16,
+                            background: "#fff",
+                            flex: "1 1 320px",
+                            maxWidth: 400,
+                          }}
                         >
-                          Xem chi tiết tiêm chủng
-                        </button>
-                        {/* Thông tin bệnh mãn tính */}
-                        <h3 style={{ margin: '18px 0 8px 0', color: '#1976d2', fontWeight: 700 }}>Thông tin bệnh mãn tính:</h3>
-                        <ChronicDiseaseInfo studentId={student.id} />
-                      </div>
-                    ))}
+                          <div style={{ fontWeight: 600, marginBottom: 8 }}>
+                            Học sinh {idx + 1}
+                          </div>
+                          <div className={styles.infoItem}>
+                            <strong>Họ và tên:</strong> {student.fullName}
+                          </div>
+                          <div className={styles.infoItem}>
+                            <strong>Mã học sinh:</strong> {student.id}
+                          </div>
+                          <div className={styles.infoItem}>
+                            <strong>Lớp:</strong> {student.className}
+                          </div>
+                          <div className={styles.infoItem}>
+                            <strong>Ngày sinh:</strong>{" "}
+                            {student.dateOfBirth || "Chưa có thông tin"}
+                          </div>
+                          <div className={styles.infoItem}>
+                            <strong>Giới tính:</strong> {student.gender}
+                          </div>
+                          <button
+                            className={styles.submitBtn}
+                            style={{ marginTop: 12 }}
+                            onClick={() => handleShowVaccineDetail(student)}
+                          >
+                            Xem chi tiết tiêm chủng
+                          </button>
+                          {/* Thông tin bệnh mãn tính */}
+                          <h3
+                            style={{
+                              margin: "18px 0 8px 0",
+                              color: "#1976d2",
+                              fontWeight: 700,
+                            }}
+                          >
+                            Thông tin bệnh mãn tính:
+                          </h3>
+                          <ChronicDiseaseInfo studentId={student.id} />
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
               {isParent && (
-                <div style={{ textAlign: 'center', marginTop: 24 }}>
+                <div style={{ textAlign: "center", marginTop: 24 }}>
                   <button
                     className={styles.submitBtn}
                     onClick={() => setShowLinkModal(true)}
@@ -586,50 +692,95 @@ const UserProfile = () => {
             <div className={styles.modalContent}>
               <div className={styles.modalHeader}>
                 <h2>Change Password</h2>
-                <button 
+                <button
                   className={styles.modalClose}
                   onClick={() => setShowPasswordModal(false)}
                 >
                   ×
                 </button>
               </div>
-              <form onSubmit={handlePasswordSubmit} className={styles.modalForm}>
+              <form
+                onSubmit={handlePasswordSubmit}
+                className={styles.modalForm}
+              >
+                {/* Mật khẩu hiện tại */}
                 <div className={styles.formGroup}>
                   <label className={styles.formLabel}>Mật khẩu hiện tại</label>
-                  <input
-                    className={styles.formInput}
-                    type="password"
-                    name="oldPassword"
-                    value={passwordForm.oldPassword}
-                    onChange={handlePasswordChange}
-                    placeholder="Nhập mật khẩu hiện tại"
-                    required
-                  />
+                  <div className={styles.passwordWrapper}>
+                    <input
+                      className={styles.formInput}
+                      type={showPassword.old ? "text" : "password"}
+                      name="oldPassword"
+                      value={passwordForm.oldPassword}
+                      onChange={handlePasswordChange}
+                      placeholder="Nhập mật khẩu hiện tại"
+                      required
+                    />
+                    <span
+                      className={styles.eyeIcon}
+                      onClick={() =>
+                        setShowPassword((prev) => ({ ...prev, old: !prev.old }))
+                      }
+                    >
+                      {showPassword.old ? <FaEyeSlash /> : <FaEye />}
+                    </span>
+                  </div>
                 </div>
+
+                {/* Mật khẩu mới */}
                 <div className={styles.formGroup}>
                   <label className={styles.formLabel}>Mật khẩu mới</label>
-                  <input
-                    className={styles.formInput}
-                    type="password"
-                    name="newPassword"
-                    value={passwordForm.newPassword}
-                    onChange={handlePasswordChange}
-                    placeholder="Nhập mật khẩu mới"
-                    required
-                  />
+                  <div className={styles.passwordWrapper}>
+                    <input
+                      className={styles.formInput}
+                      type={showPassword.new ? "text" : "password"}
+                      name="newPassword"
+                      value={passwordForm.newPassword}
+                      onChange={handlePasswordChange}
+                      placeholder="Nhập mật khẩu mới"
+                      required
+                    />
+                    <span
+                      className={styles.eyeIcon}
+                      onClick={() =>
+                        setShowPassword((prev) => ({ ...prev, new: !prev.new }))
+                      }
+                    >
+                      {showPassword.new ? <FaEyeSlash /> : <FaEye />}
+                    </span>
+                  </div>
                 </div>
+
+                {/* Xác nhận mật khẩu */}
                 <div className={styles.formGroup}>
-                  <label className={styles.formLabel}>Xác nhận mật khẩu mới</label>
-                  <input
-                    className={styles.formInput}
-                    type="password"
-                    name="confirmNewPassword"
-                    value={passwordForm.confirmNewPassword}
-                    onChange={handlePasswordChange}
-                    placeholder="Xác nhận mật khẩu mới"
-                    required
-                  />
+                  <label className={styles.formLabel}>
+                    Xác nhận mật khẩu mới
+                  </label>
+                  <div className={styles.passwordWrapper}>
+                    <input
+                      className={styles.formInput}
+                      type={showPassword.confirm ? "text" : "password"}
+                      name="confirmNewPassword"
+                      value={passwordForm.confirmNewPassword}
+                      onChange={handlePasswordChange}
+                      placeholder="Xác nhận mật khẩu mới"
+                      required
+                    />
+                    <span
+                      className={styles.eyeIcon}
+                      onClick={() =>
+                        setShowPassword((prev) => ({
+                          ...prev,
+                          confirm: !prev.confirm,
+                        }))
+                      }
+                    >
+                      {showPassword.confirm ? <FaEyeSlash /> : <FaEye />}
+                    </span>
+                  </div>
                 </div>
+
+                {/* Nút hành động */}
                 <div className={styles.modalActions}>
                   <button
                     type="submit"
@@ -657,7 +808,7 @@ const UserProfile = () => {
             <div className={styles.modalContent}>
               <div className={styles.modalHeader}>
                 <h2>Khai báo thông tin vaccine</h2>
-                <button 
+                <button
                   className={styles.modalClose}
                   onClick={() => {
                     setShowVaccineModal(false);
@@ -674,11 +825,11 @@ const UserProfile = () => {
                     <select
                       className={styles.formInput}
                       value={selectedStudentId}
-                      onChange={e => setSelectedStudentId(e.target.value)}
+                      onChange={(e) => setSelectedStudentId(e.target.value)}
                       required
                     >
                       <option value="">Chọn học sinh</option>
-                      {studentInfo.map(student => (
+                      {studentInfo.map((student) => (
                         <option key={student.id} value={student.id}>
                           {student.fullName} ({student.className})
                         </option>
@@ -701,14 +852,26 @@ const UserProfile = () => {
                 <div className={styles.formGroup}>
                   <label className={styles.formLabel}>
                     Ngày tiêm chủng
-                    {selectedStudentId && (() => {
-                      const selectedStudent = studentInfo.find(s => String(s.id) === String(selectedStudentId));
-                      return selectedStudent ? (
-                        <span style={{ fontSize: '12px', color: '#666', fontWeight: 'normal', marginLeft: '8px' }}>
-                          (Học sinh sinh ngày: {selectedStudent.dateOfBirth || 'Chưa có thông tin'})
-                        </span>
-                      ) : null;
-                    })()}
+                    {selectedStudentId &&
+                      (() => {
+                        const selectedStudent = studentInfo.find(
+                          (s) => String(s.id) === String(selectedStudentId)
+                        );
+                        return selectedStudent ? (
+                          <span
+                            style={{
+                              fontSize: "12px",
+                              color: "#666",
+                              fontWeight: "normal",
+                              marginLeft: "8px",
+                            }}
+                          >
+                            (Học sinh sinh ngày:{" "}
+                            {selectedStudent.dateOfBirth || "Chưa có thông tin"}
+                            )
+                          </span>
+                        ) : null;
+                      })()}
                   </label>
                   <input
                     className={styles.formInput}
@@ -716,24 +879,39 @@ const UserProfile = () => {
                     name="vaccinationDate"
                     value={vaccineForm.vaccinationDate}
                     onChange={handleVaccineChange}
-                    min={selectedStudentId ? 
-                      (studentInfo.find(s => String(s.id) === String(selectedStudentId))?.dateOfBirth || '') : 
-                      (studentInfo[0]?.dateOfBirth || '')
+                    min={
+                      selectedStudentId
+                        ? studentInfo.find(
+                            (s) => String(s.id) === String(selectedStudentId)
+                          )?.dateOfBirth || ""
+                        : studentInfo[0]?.dateOfBirth || ""
                     }
-                    max={new Date().toISOString().split('T')[0]}
+                    max={new Date().toISOString().split("T")[0]}
                     required
                     placeholder="Chọn ngày tiêm chủng"
                   />
-                  <small style={{ color: '#666', fontSize: '12px', display: 'block', marginTop: '4px' }}>
+                  <small
+                    style={{
+                      color: "#666",
+                      fontSize: "12px",
+                      display: "block",
+                      marginTop: "4px",
+                    }}
+                  >
                     📅 Có thể chọn từ ngày sinh đến ngày hiện tại
-                    {selectedStudentId && (() => {
-                      const selectedStudent = studentInfo.find(s => String(s.id) === String(selectedStudentId));
-                      return selectedStudent ? (
-                        <span style={{ color: '#1890ff' }}>
-                          (Từ {selectedStudent.dateOfBirth || 'Chưa có thông tin'} đến hôm nay)
-                        </span>
-                      ) : null;
-                    })()}
+                    {selectedStudentId &&
+                      (() => {
+                        const selectedStudent = studentInfo.find(
+                          (s) => String(s.id) === String(selectedStudentId)
+                        );
+                        return selectedStudent ? (
+                          <span style={{ color: "#1890ff" }}>
+                            (Từ{" "}
+                            {selectedStudent.dateOfBirth || "Chưa có thông tin"}{" "}
+                            đến hôm nay)
+                          </span>
+                        ) : null;
+                      })()}
                   </small>
                 </div>
                 <div className={styles.formGroup}>
@@ -759,8 +937,18 @@ const UserProfile = () => {
                     rows="3"
                   />
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', width: '100%', marginBottom: 16 }}>
-                  <label style={{ marginBottom: 4, fontWeight: 500 }}>File bằng chứng</label>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "flex-start",
+                    width: "100%",
+                    marginBottom: 16,
+                  }}
+                >
+                  <label style={{ marginBottom: 4, fontWeight: 500 }}>
+                    File bằng chứng
+                  </label>
                   <button
                     type="button"
                     style={{
@@ -771,7 +959,7 @@ const UserProfile = () => {
                       padding: "8px 16px",
                       fontWeight: 600,
                       cursor: "pointer",
-                      marginBottom: 4
+                      marginBottom: 4,
                     }}
                     onClick={() => vaccineInputRef.current?.click()}
                   >
@@ -786,9 +974,11 @@ const UserProfile = () => {
                     style={{ display: "none" }}
                   />
                   <span style={{ fontSize: 13, marginBottom: 2 }}>
-                    {vaccineForm.proofFile ? vaccineForm.proofFile.name : "Chưa chọn file"}
+                    {vaccineForm.proofFile
+                      ? vaccineForm.proofFile.name
+                      : "Chưa chọn file"}
                   </span>
-                  <small style={{ color: '#666', fontSize: '12px' }}>
+                  <small style={{ color: "#666", fontSize: "12px" }}>
                     Chấp nhận file: PDF, JPG, PNG
                   </small>
                 </div>
@@ -822,7 +1012,7 @@ const UserProfile = () => {
             <div className={styles.modalContent}>
               <div className={styles.modalHeader}>
                 <h2>Liên kết tài khoản học sinh bạn giám hộ</h2>
-                <button 
+                <button
                   className={styles.modalClose}
                   onClick={() => setShowLinkModal(false)}
                 >
@@ -844,7 +1034,9 @@ const UserProfile = () => {
                   />
                 </div>
                 <div className={styles.formGroup}>
-                  <label className={styles.formLabel}>Quan hệ với học sinh</label>
+                  <label className={styles.formLabel}>
+                    Quan hệ với học sinh
+                  </label>
                   <select
                     className={styles.formInput}
                     name="relationshipType"
@@ -899,22 +1091,72 @@ const UserProfile = () => {
               ) : selectedVaccines.length === 0 ? (
                 <div>Chưa có thông tin tiêm chủng.</div>
               ) : (
-                <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: 12 }}>
+                <table
+                  style={{
+                    width: "100%",
+                    borderCollapse: "collapse",
+                    marginTop: 12,
+                  }}
+                >
                   <thead>
                     <tr>
-                      <th style={{ borderBottom: '1px solid #eee', padding: 8 }}>Tên vaccine</th>
-                      <th style={{ borderBottom: '1px solid #eee', padding: 8 }}>Ngày tiêm</th>
-                      <th style={{ borderBottom: '1px solid #eee', padding: 8 }}>Nơi tiêm</th>
-                      <th style={{ borderBottom: '1px solid #eee', padding: 8 }}>Ghi chú</th>
+                      <th
+                        style={{ borderBottom: "1px solid #eee", padding: 8 }}
+                      >
+                        Tên vaccine
+                      </th>
+                      <th
+                        style={{ borderBottom: "1px solid #eee", padding: 8 }}
+                      >
+                        Ngày tiêm
+                      </th>
+                      <th
+                        style={{ borderBottom: "1px solid #eee", padding: 8 }}
+                      >
+                        Nơi tiêm
+                      </th>
+                      <th
+                        style={{ borderBottom: "1px solid #eee", padding: 8 }}
+                      >
+                        Ghi chú
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
                     {selectedVaccines.map((v, idx) => (
                       <tr key={idx}>
-                        <td style={{ borderBottom: '1px solid #f5f5f5', padding: 8 }}>{v.vaccineName}</td>
-                        <td style={{ borderBottom: '1px solid #f5f5f5', padding: 8 }}>{v.vaccinationDate}</td>
-                        <td style={{ borderBottom: '1px solid #f5f5f5', padding: 8 }}>{v.provider}</td>
-                        <td style={{ borderBottom: '1px solid #f5f5f5', padding: 8 }}>{v.notes}</td>
+                        <td
+                          style={{
+                            borderBottom: "1px solid #f5f5f5",
+                            padding: 8,
+                          }}
+                        >
+                          {v.vaccineName}
+                        </td>
+                        <td
+                          style={{
+                            borderBottom: "1px solid #f5f5f5",
+                            padding: 8,
+                          }}
+                        >
+                          {v.vaccinationDate}
+                        </td>
+                        <td
+                          style={{
+                            borderBottom: "1px solid #f5f5f5",
+                            padding: 8,
+                          }}
+                        >
+                          {v.provider}
+                        </td>
+                        <td
+                          style={{
+                            borderBottom: "1px solid #f5f5f5",
+                            padding: 8,
+                          }}
+                        >
+                          {v.notes}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -926,79 +1168,158 @@ const UserProfile = () => {
 
         {/* Modal khai báo bệnh mãn tính cho phụ huynh */}
         {isParent && showChronicModal && (
-          <div style={{
-            position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh",
-            background: "rgba(0,0,0,0.25)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center"
-          }}>
-            <div style={{
-              background: "#fff", borderRadius: 12, padding: 24, minWidth: 350, boxShadow: "0 4px 24px rgba(0,0,0,0.12)"
-            }}>
-              <h3 style={{ marginBottom: 16 }}>Khai báo bệnh mãn tính cho học sinh</h3>
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "100vw",
+              height: "100vh",
+              background: "rgba(0,0,0,0.25)",
+              zIndex: 1000,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <div
+              style={{
+                background: "#fff",
+                borderRadius: 12,
+                padding: 24,
+                minWidth: 350,
+                boxShadow: "0 4px 24px rgba(0,0,0,0.12)",
+              }}
+            >
+              <h3 style={{ marginBottom: 16 }}>
+                Khai báo bệnh mãn tính cho học sinh
+              </h3>
               <form onSubmit={handleChronicSubmit}>
                 <div style={{ marginBottom: 12 }}>
-                  <label><b>Chọn học sinh *</b></label>
+                  <label>
+                    <b>Chọn học sinh *</b>
+                  </label>
                   <select
                     name="id"
                     value={chronicForm.id}
                     onChange={handleChronicChange}
-                    style={{ width: "100%", padding: 8, borderRadius: 6, border: "1px solid #ccc" }}
+                    style={{
+                      width: "100%",
+                      padding: 8,
+                      borderRadius: 6,
+                      border: "1px solid #ccc",
+                    }}
                     required
                   >
                     <option value="">Chọn học sinh</option>
-                    {Array.isArray(studentInfo) && studentInfo.map(stu => (
-                      <option key={stu.id} value={stu.id}>{stu.fullName} ({stu.className})</option>
-                    ))}
+                    {Array.isArray(studentInfo) &&
+                      studentInfo.map((stu) => (
+                        <option key={stu.id} value={stu.id}>
+                          {stu.fullName} ({stu.className})
+                        </option>
+                      ))}
                   </select>
-                  {chronicErrors.id && <div style={{ color: "red", fontSize: 13 }}>{chronicErrors.id}</div>}
+                  {chronicErrors.id && (
+                    <div style={{ color: "red", fontSize: 13 }}>
+                      {chronicErrors.id}
+                    </div>
+                  )}
                 </div>
                 <div style={{ marginBottom: 12 }}>
-                  <label><b>Tên bệnh *</b></label>
+                  <label>
+                    <b>Tên bệnh *</b>
+                  </label>
                   <input
                     name="diseaseName"
                     value={chronicForm.diseaseName}
                     onChange={handleChronicChange}
-                    style={{ width: "100%", padding: 8, borderRadius: 6, border: "1px solid #ccc" }}
+                    style={{
+                      width: "100%",
+                      padding: 8,
+                      borderRadius: 6,
+                      border: "1px solid #ccc",
+                    }}
                     required
                   />
-                  {chronicErrors.diseaseName && <div style={{ color: "red", fontSize: 13 }}>{chronicErrors.diseaseName}</div>}
+                  {chronicErrors.diseaseName && (
+                    <div style={{ color: "red", fontSize: 13 }}>
+                      {chronicErrors.diseaseName}
+                    </div>
+                  )}
                 </div>
                 <div style={{ marginBottom: 12 }}>
                   <label>
                     Ngày chẩn đoán
-                    {chronicForm.id && (() => {
-                      const selectedStudent = studentInfo.find(s => String(s.id) === String(chronicForm.id));
-                      return selectedStudent ? (
-                        <span style={{ fontSize: '12px', color: '#666', fontWeight: 'normal', marginLeft: '8px' }}>
-                          (Học sinh sinh ngày: {selectedStudent.dateOfBirth || 'Chưa có thông tin'})
-                        </span>
-                      ) : null;
-                    })()}
+                    {chronicForm.id &&
+                      (() => {
+                        const selectedStudent = studentInfo.find(
+                          (s) => String(s.id) === String(chronicForm.id)
+                        );
+                        return selectedStudent ? (
+                          <span
+                            style={{
+                              fontSize: "12px",
+                              color: "#666",
+                              fontWeight: "normal",
+                              marginLeft: "8px",
+                            }}
+                          >
+                            (Học sinh sinh ngày:{" "}
+                            {selectedStudent.dateOfBirth || "Chưa có thông tin"}
+                            )
+                          </span>
+                        ) : null;
+                      })()}
                   </label>
                   <input
                     type="date"
                     name="diagnosedDate"
                     value={chronicForm.diagnosedDate}
                     onChange={handleChronicChange}
-                    min={chronicForm.id ? 
-                      (studentInfo.find(s => String(s.id) === String(chronicForm.id))?.dateOfBirth || '') : 
-                      (studentInfo[0]?.dateOfBirth || '')
+                    min={
+                      chronicForm.id
+                        ? studentInfo.find(
+                            (s) => String(s.id) === String(chronicForm.id)
+                          )?.dateOfBirth || ""
+                        : studentInfo[0]?.dateOfBirth || ""
                     }
-                    max={new Date().toISOString().split('T')[0]}
-                    style={{ width: "100%", padding: 8, borderRadius: 6, border: "1px solid #ccc" }}
+                    max={new Date().toISOString().split("T")[0]}
+                    style={{
+                      width: "100%",
+                      padding: 8,
+                      borderRadius: 6,
+                      border: "1px solid #ccc",
+                    }}
                     placeholder="Chọn ngày chẩn đoán (không bắt buộc)"
                   />
-                  <small style={{ color: '#666', fontSize: '12px', display: 'block', marginTop: '4px' }}>
+                  <small
+                    style={{
+                      color: "#666",
+                      fontSize: "12px",
+                      display: "block",
+                      marginTop: "4px",
+                    }}
+                  >
                     📅 Có thể chọn từ ngày sinh đến ngày hiện tại
-                    {chronicForm.id && (() => {
-                      const selectedStudent = studentInfo.find(s => String(s.id) === String(chronicForm.id));
-                      return selectedStudent ? (
-                        <span style={{ color: '#1890ff' }}>
-                          (Từ {selectedStudent.dateOfBirth || 'Chưa có thông tin'} đến hôm nay)
-                        </span>
-                      ) : null;
-                    })()}
+                    {chronicForm.id &&
+                      (() => {
+                        const selectedStudent = studentInfo.find(
+                          (s) => String(s.id) === String(chronicForm.id)
+                        );
+                        return selectedStudent ? (
+                          <span style={{ color: "#1890ff" }}>
+                            (Từ{" "}
+                            {selectedStudent.dateOfBirth || "Chưa có thông tin"}{" "}
+                            đến hôm nay)
+                          </span>
+                        ) : null;
+                      })()}
                   </small>
-                  {chronicErrors.diagnosedDate && <div style={{ color: "red", fontSize: 13 }}>{chronicErrors.diagnosedDate}</div>}
+                  {chronicErrors.diagnosedDate && (
+                    <div style={{ color: "red", fontSize: 13 }}>
+                      {chronicErrors.diagnosedDate}
+                    </div>
+                  )}
                 </div>
                 <div style={{ marginBottom: 12 }}>
                   <label>Bác sĩ chẩn đoán</label>
@@ -1006,7 +1327,12 @@ const UserProfile = () => {
                     name="diagnosingDoctor"
                     value={chronicForm.diagnosingDoctor}
                     onChange={handleChronicChange}
-                    style={{ width: "100%", padding: 8, borderRadius: 6, border: "1px solid #ccc" }}
+                    style={{
+                      width: "100%",
+                      padding: 8,
+                      borderRadius: 6,
+                      border: "1px solid #ccc",
+                    }}
                   />
                 </div>
                 <div style={{ marginBottom: 12 }}>
@@ -1015,13 +1341,20 @@ const UserProfile = () => {
                     name="notes"
                     value={chronicForm.notes}
                     onChange={handleChronicChange}
-                    style={{ width: "100%", padding: 8, borderRadius: 6, border: "1px solid #ccc" }}
+                    style={{
+                      width: "100%",
+                      padding: 8,
+                      borderRadius: 6,
+                      border: "1px solid #ccc",
+                    }}
                     rows={2}
                   />
                 </div>
                 <div style={{ marginBottom: 12 }}>
                   <label>File đính kèm</label>
-                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <div
+                    style={{ display: "flex", alignItems: "center", gap: 12 }}
+                  >
                     <input
                       ref={chronicInputRef}
                       type="file"
@@ -1039,33 +1372,64 @@ const UserProfile = () => {
                         borderRadius: 6,
                         padding: "8px 16px",
                         fontWeight: 600,
-                        cursor: "pointer"
+                        cursor: "pointer",
                       }}
                       onClick={() => chronicInputRef.current?.click()}
                     >
                       Chọn file
                     </button>
                     <span style={{ fontSize: 13 }}>
-                      {chronicForm.attachmentFile ? chronicForm.attachmentFile.name : "Chưa chọn file"}
+                      {chronicForm.attachmentFile
+                        ? chronicForm.attachmentFile.name
+                        : "Chưa chọn file"}
                     </span>
                   </div>
-                  {chronicErrors.attachmentFile && <div style={{ color: "red", fontSize: 13 }}>{chronicErrors.attachmentFile}</div>}
+                  {chronicErrors.attachmentFile && (
+                    <div style={{ color: "red", fontSize: 13 }}>
+                      {chronicErrors.attachmentFile}
+                    </div>
+                  )}
                 </div>
-                <div style={{ marginTop: 16, display: "flex", justifyContent: "flex-end" }}>
+                <div
+                  style={{
+                    marginTop: 16,
+                    display: "flex",
+                    justifyContent: "flex-end",
+                  }}
+                >
                   <button
                     type="button"
-                    onClick={() => { setShowChronicModal(false); setChronicErrors({}); }}
-                    style={{
-                      background: "#eee", color: "#333", border: "none", borderRadius: 6, padding: "8px 16px", marginRight: 8, cursor: "pointer"
+                    onClick={() => {
+                      setShowChronicModal(false);
+                      setChronicErrors({});
                     }}
-                  >Hủy</button>
+                    style={{
+                      background: "#eee",
+                      color: "#333",
+                      border: "none",
+                      borderRadius: 6,
+                      padding: "8px 16px",
+                      marginRight: 8,
+                      cursor: "pointer",
+                    }}
+                  >
+                    Hủy
+                  </button>
                   <button
                     type="submit"
                     disabled={chronicAdding}
                     style={{
-                      background: "#1976d2", color: "#fff", border: "none", borderRadius: 6, padding: "8px 16px", fontWeight: 600, cursor: "pointer"
+                      background: "#1976d2",
+                      color: "#fff",
+                      border: "none",
+                      borderRadius: 6,
+                      padding: "8px 16px",
+                      fontWeight: 600,
+                      cursor: "pointer",
                     }}
-                  >{chronicAdding ? "Đang khai báo..." : "Khai báo"}</button>
+                  >
+                    {chronicAdding ? "Đang khai báo..." : "Khai báo"}
+                  </button>
                 </div>
               </form>
             </div>
@@ -1083,18 +1447,33 @@ const Footer = () => (
     <div className="container mx-auto px-4">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
         <div>
-          <a href="#" className="text-2xl font-['Pacifico'] text-white mb-6 inline-block">SchoolMed</a>
+          <a
+            href="#"
+            className="text-2xl font-['Pacifico'] text-white mb-6 inline-block"
+          >
+            SchoolMed
+          </a>
           <p className="text-gray-400 mb-6">
-            Nền tảng quản lý sức khỏe học đường toàn diện, kết nối nhà trường, phụ huynh và y tế trong một hệ sinh thái số.
+            Nền tảng quản lý sức khỏe học đường toàn diện, kết nối nhà trường,
+            phụ huynh và y tế trong một hệ sinh thái số.
           </p>
           <div className="flex space-x-4">
-            <a href="#" className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 hover:text-white hover:bg-primary transition">
+            <a
+              href="#"
+              className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 hover:text-white hover:bg-primary transition"
+            >
               <i className="ri-facebook-fill ri-lg"></i>
             </a>
-            <a href="#" className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 hover:text-white hover:bg-primary transition">
+            <a
+              href="#"
+              className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 hover:text-white hover:bg-primary transition"
+            >
               <i className="ri-linkedin-fill ri-lg"></i>
             </a>
-            <a href="#" className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 hover:text-white hover:bg-primary transition">
+            <a
+              href="#"
+              className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 hover:text-white hover:bg-primary transition"
+            >
               <i className="ri-youtube-fill ri-lg"></i>
             </a>
           </div>
@@ -1102,20 +1481,61 @@ const Footer = () => (
         <div>
           <h3 className="text-lg font-semibold mb-6">Liên kết nhanh</h3>
           <ul className="space-y-3">
-            <li><a href="#features" className="text-gray-400 hover:text-white transition">Tính năng</a></li>
-            <li><a href="#about" className="text-gray-400 hover:text-white transition">Về chúng tôi</a></li>
-            
-            <li><a href="#contact" className="text-gray-400 hover:text-white transition">Liên hệ</a></li>
+            <li>
+              <a
+                href="#features"
+                className="text-gray-400 hover:text-white transition"
+              >
+                Tính năng
+              </a>
+            </li>
+            <li>
+              <a
+                href="#about"
+                className="text-gray-400 hover:text-white transition"
+              >
+                Về chúng tôi
+              </a>
+            </li>
+
+            <li>
+              <a
+                href="#contact"
+                className="text-gray-400 hover:text-white transition"
+              >
+                Liên hệ
+              </a>
+            </li>
           </ul>
         </div>
         <div>
           <h3 className="text-lg font-semibold mb-6">Dịch vụ</h3>
           <ul className="space-y-3">
-            <li><a href="#" className="text-gray-400 hover:text-white transition">Quản lý hồ sơ sức khỏe</a></li>
-            <li><a href="#" className="text-gray-400 hover:text-white transition">Khám sức khỏe định kỳ</a></li>
-            <li><a href="#" className="text-gray-400 hover:text-white transition">Tư vấn dinh dưỡng học đường</a></li>
-            <li><a href="#" className="text-gray-400 hover:text-white transition">Đào tạo y tế học đường</a></li>
-            <li><a href="#" className="text-gray-400 hover:text-white transition">Tích hợp hệ thống</a></li>
+            <li>
+              <a href="#" className="text-gray-400 hover:text-white transition">
+                Quản lý hồ sơ sức khỏe
+              </a>
+            </li>
+            <li>
+              <a href="#" className="text-gray-400 hover:text-white transition">
+                Khám sức khỏe định kỳ
+              </a>
+            </li>
+            <li>
+              <a href="#" className="text-gray-400 hover:text-white transition">
+                Tư vấn dinh dưỡng học đường
+              </a>
+            </li>
+            <li>
+              <a href="#" className="text-gray-400 hover:text-white transition">
+                Đào tạo y tế học đường
+              </a>
+            </li>
+            <li>
+              <a href="#" className="text-gray-400 hover:text-white transition">
+                Tích hợp hệ thống
+              </a>
+            </li>
           </ul>
         </div>
         <div>
@@ -1125,30 +1545,50 @@ const Footer = () => (
               <div className="w-5 h-5 flex items-center justify-center mr-3 mt-1">
                 <i className="ri-map-pin-line text-gray-400"></i>
               </div>
-              <span className="text-gray-400">7 Đ. D1, Long Thạnh Mỹ, Thủ Đức, Hồ Chí Minh, Việt Nam</span>
+              <span className="text-gray-400">
+                7 Đ. D1, Long Thạnh Mỹ, Thủ Đức, Hồ Chí Minh, Việt Nam
+              </span>
             </li>
             <li className="flex items-center">
               <div className="w-5 h-5 flex items-center justify-center mr-3">
                 <i className="ri-mail-line text-gray-400"></i>
               </div>
-              <a href="mailto:contact@schoolmed.vn" className="text-gray-400 hover:text-white transition">contact@schoolmed.vn</a>
+              <a
+                href="mailto:contact@schoolmed.vn"
+                className="text-gray-400 hover:text-white transition"
+              >
+                contact@schoolmed.vn
+              </a>
             </li>
             <li className="flex items-center">
               <div className="w-5 h-5 flex items-center justify-center mr-3">
                 <i className="ri-phone-line text-gray-400"></i>
               </div>
-              <a href="tel:+842812345678" className="text-gray-400 hover:text-white transition">(+84) 28 1234 5678</a>
+              <a
+                href="tel:+842812345678"
+                className="text-gray-400 hover:text-white transition"
+              >
+                (+84) 28 1234 5678
+              </a>
             </li>
           </ul>
         </div>
       </div>
       <hr className="border-gray-800 mb-8" />
       <div className="flex flex-col md:flex-row justify-between items-center">
-        <p className="text-gray-500 mb-4 md:mb-0">© 2025 SchoolMed. Tất cả các quyền được bảo lưu.</p>
+        <p className="text-gray-500 mb-4 md:mb-0">
+          © 2025 SchoolMed. Tất cả các quyền được bảo lưu.
+        </p>
         <div className="flex space-x-6">
-          <a href="#" className="text-gray-500 hover:text-white transition">Điều khoản sử dụng</a>
-          <a href="#" className="text-gray-500 hover:text-white transition">Chính sách bảo mật</a>
-          <a href="#" className="text-gray-500 hover:text-white transition">Cookies</a>
+          <a href="#" className="text-gray-500 hover:text-white transition">
+            Điều khoản sử dụng
+          </a>
+          <a href="#" className="text-gray-500 hover:text-white transition">
+            Chính sách bảo mật
+          </a>
+          <a href="#" className="text-gray-500 hover:text-white transition">
+            Cookies
+          </a>
         </div>
       </div>
     </div>
