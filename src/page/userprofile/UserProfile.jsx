@@ -227,6 +227,7 @@ const UserProfile = () => {
       setShowVaccineModal(false);
       setSelectedStudentId("");
     } catch (err) {
+      console.log(err);
       toast.error(err.response?.data?.message || "Khai báo thông tin vaccine thất bại");
     } finally {
       setSubmitting(false);
