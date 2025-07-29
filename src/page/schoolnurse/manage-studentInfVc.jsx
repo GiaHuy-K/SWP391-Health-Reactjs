@@ -163,12 +163,12 @@ const ManageStudentInfVc = () => {
         ) : null}
         <Button
           type="link"
-          onClick={(e) => {
-            e.stopPropagation(); 
-            handleViewFile(record.studentVaccinationId);
-          }}
           size="small"
           loading={fileLoading}
+          onClick={(e) => {
+            e.stopPropagation(); // chặn sự kiện click lan lên Table row
+            handleViewFile(record.studentVaccinationId);
+          }}
         >
           File
         </Button>
@@ -206,14 +206,14 @@ const ManageStudentInfVc = () => {
           <Button key="close" onClick={() => setFileModalVisible(false)}>
             Đóng
           </Button>,
-          <Button
-            key="download"
-            type="primary"
-            onClick={handleDownloadFile}
-            disabled={!fileUrl}
-          >
-            Tải xuống
-          </Button>,
+          // <Button
+          //   key="download"
+          //   type="primary"
+          //   onClick={handleDownloadFile}
+          //   disabled={!fileUrl}
+          // >
+          //   Tải xuống
+          // </Button>,
         ]}
         width={800}
       >
