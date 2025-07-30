@@ -63,7 +63,7 @@
 .logoSection {
   display: flex;
   align-items: center;
-  gap: 2rem; /* hoặc 1rem tùy khoảng cách bạn muốn */
+  gap: 2rem; 
   color: #141414;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -72,7 +72,7 @@
 }
 
 .logoIcon {
-  width: 24px; /* tăng từ 1rem nếu bạn cần to hơn */
+  width: 24px; 
   height: 40px;
 }
 
@@ -585,17 +585,6 @@
 }
 
 /* Animations */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 .heroContent {
   animation: fadeInUp 0.8s ease-out;
 }

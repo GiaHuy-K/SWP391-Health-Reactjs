@@ -411,7 +411,6 @@ const UserProfile = () => {
       }
 
       await addStudentChronicDisease(chronicForm.id, formData);
-      toast.success("Khai báo bệnh mãn tính thành công!");
       setShowChronicModal(false);
       setChronicForm({
         id: "",

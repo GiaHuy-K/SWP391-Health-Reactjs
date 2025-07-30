@@ -71,21 +71,11 @@ const VaccinationConsentList = ({ campaignId, onConsentClick }) => {
       key: "studentClass"
     },
     {
-      title: "Phụ huynh",
-      dataIndex: "parentName",
-      key: "parentName"
-    },
-    {
       title: "Trạng thái",
       dataIndex: "status",
       key: "status",
       render: (status) => <Tag color={statusColors[status] || "default"}>{status}</Tag>
-    },
-    {
-      title: "Ngày phản hồi",
-      dataIndex: "responseDate",
-      key: "responseDate"
-    }
+    },  
   ];
 
   return (

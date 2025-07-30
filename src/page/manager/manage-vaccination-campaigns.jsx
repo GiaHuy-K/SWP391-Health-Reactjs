@@ -3,6 +3,7 @@ import { Modal, Descriptions, Button, Space, message, Tabs } from "antd";
 import VaccinationCampaignList from "../../components/vaccination/VaccinationCampaignList";
 import VaccinationCampaignCreateForm from "../../components/vaccination/VaccinationCampaignCreateForm";
 import { startVaccinationCampaign, completeVaccinationCampaign, prepareVaccinationCampaign } from "../../services/api.vaccination";
+import dayjs from "dayjs";
 
 const ManageVaccinationCampaigns = () => {
   const [detailModalVisible, setDetailModalVisible] = useState(false);
@@ -156,6 +157,9 @@ const ManageVaccinationCampaigns = () => {
             <Descriptions.Item label="Tên chiến dịch" span={2}>
               {selectedCampaign.campaignName}
             </Descriptions.Item>
+            <Descriptions.Item label="Mô tả" span={2}>
+              {selectedCampaign.description || "Không có mô tả"}
+            </Descriptions.Item>
             <Descriptions.Item label="Tên vaccine">
               {selectedCampaign.vaccineName}
             </Descriptions.Item>
@@ -163,39 +167,53 @@ const ManageVaccinationCampaigns = () => {
               <span style={{ 
                 color: selectedCampaign.status === "Đã hoàn thành" ? "green" : 
                        selectedCampaign.status === "Đang diễn ra" ? "blue" :
-                       selectedCampaign.status === "Đang chuẩn bị" ? "orange" : "gray"
+                       selectedCampaign.status === "Đang chuẩn bị" ? "orange" :
+                       selectedCampaign.status === "Đã lên lịch" ? "blue" : "gray"
               }}>
                 {selectedCampaign.status}
               </span>
             </Descriptions.Item>
-            <Descriptions.Item label="Nhóm lớp">
-              {selectedCampaign.classGroup}
+            <Descriptions.Item label="Khối lớp">
+              {selectedCampaign.targetClassGroup || "Chưa có"}
             </Descriptions.Item>
-            <Descriptions.Item label="Ngày bắt đầu">
-              {new Date(selectedCampaign.startDate).toLocaleDateString("vi-VN")}
+            <Descriptions.Item label="Ngày tiêm chủng">
+              {selectedCampaign.vaccinationDate ? dayjs(selectedCampaign.vaccinationDate).format("DD/MM/YYYY") : "Chưa có"}
             </Descriptions.Item>
-            {selectedCampaign.endDate && (
-              <Descriptions.Item label="Ngày kết thúc">
-                {new Date(selectedCampaign.endDate).toLocaleDateString("vi-VN")}
-              </Descriptions.Item>
-            )}
+            <Descriptions.Item label="Hạn chót gửi phiếu đồng ý">
+              {selectedCampaign.consentDeadline ? dayjs(selectedCampaign.consentDeadline).format("DD/MM/YYYY") : "Hệ thống tự động tạo"}
+            </Descriptions.Item>
             <Descriptions.Item label="Người tổ chức">
-              {selectedCampaign.organizedByUserName}
+              {selectedCampaign.organizedByUserName || "Chưa có"}
+            </Descriptions.Item>
+            <Descriptions.Item label="Nhà cung cấp y tế">
+              {selectedCampaign.healthcareProviderName || "Chưa có"}
+            </Descriptions.Item>
+            <Descriptions.Item label="Liên hệ nhà cung cấp">
+              {selectedCampaign.healthcareProviderContact || "Chưa có"}
             </Descriptions.Item>
             <Descriptions.Item label="Số lượng học sinh">
               {selectedCampaign.totalStudents || 0} học sinh
             </Descriptions.Item>
-            {selectedCampaign.description && (
-              <Descriptions.Item label="Mô tả" span={2}>
-                {selectedCampaign.description}
-              </Descriptions.Item>
-            )}
+            <Descriptions.Item label="Đã đồng ý">
+              {selectedCampaign.approvedConsents || 0} học sinh
+            </Descriptions.Item>
+            <Descriptions.Item label="Từ chối">
+              {selectedCampaign.declinedConsents || 0} học sinh
+            </Descriptions.Item>
+            <Descriptions.Item label="Chưa phản hồi">
+              {(selectedCampaign.totalStudents || 0) - (selectedCampaign.approvedConsents || 0) - (selectedCampaign.declinedConsents || 0)} học sinh
+            </Descriptions.Item>
             <Descriptions.Item label="Ngày tạo">
-              {new Date(selectedCampaign.createdAt).toLocaleString("vi-VN")}
+              {selectedCampaign.createdAt ? dayjs(selectedCampaign.createdAt).format("DD/MM/YYYY HH:mm") : "Chưa có"}
             </Descriptions.Item>
             <Descriptions.Item label="Cập nhật gần nhất">
-              {new Date(selectedCampaign.lastUpdatedAt).toLocaleString("vi-VN")}
+              {selectedCampaign.updatedAt ? dayjs(selectedCampaign.updatedAt).format("DD/MM/YYYY HH:mm") : "Chưa có"}
             </Descriptions.Item>
+            {selectedCampaign.notes && (
+              <Descriptions.Item label="Ghi chú" span={2}>
+                {selectedCampaign.notes}
+              </Descriptions.Item>
+            )}
           </Descriptions>
         )}
       </Modal>
