@@ -208,20 +208,6 @@ const HomeBody = () => {
               <p className="text-lg text-gray-700 mb-8">
                 Đội ngũ của chúng tôi bao gồm các chuyên gia y tế, giáo dục và công nghệ với hơn nhiều năm kinh nghiệm, cùng chung tâm huyết xây dựng một hệ thống toàn diện giúp nhà trường quản lý sức khỏe học sinh hiệu quả.
               </p>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-8">
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-primary mb-2">200+</div>
-                  <p className="text-gray-600">Trường học sử dụng</p>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-primary mb-2">150.000+</div>
-                  <p className="text-gray-600">Học sinh được quản lý</p>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-primary mb-2">98%</div>
-                  <p className="text-gray-600">Đánh giá tích cực</p>
-                </div>
-              </div>
               <button className="bg-white text-primary border border-primary px-6 py-3 rounded-button font-medium hover:bg-primary hover:text-white transition whitespace-nowrap"
                 onClick={() => window.location.href = '/about'}
               >
@@ -279,59 +265,6 @@ const HomeBody = () => {
                 </div>
               </div>
 
-            </div>
-            <div className="md:w-1/2">
-              <div className="bg-white p-8 rounded-lg shadow-md">
-                <h3 className="text-2xl font-semibold text-gray-900 mb-6">Gửi tin nhắn cho chúng tôi</h3>
-                <form onSubmit={handleContactSubmit}>
-                  <div className="mb-4">
-                    <label htmlFor="name" className="block text-gray-700 font-medium mb-2">Họ và tên</label>
-                    <input 
-                      type="text" 
-                      id="name" 
-                      name="name"
-                      className="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" 
-                      placeholder="Nhập họ và tên của bạn"
-                    />
-                  </div>
-                  <div className="mb-4">
-                    <label htmlFor="email" className="block text-gray-700 font-medium mb-2">Email</label>
-                    <input 
-                      type="email" 
-                      id="email" 
-                      name="email"
-                      className="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" 
-                      placeholder="Nhập địa chỉ email của bạn"
-                    />
-                  </div>
-                  <div className="mb-4">
-                    <label htmlFor="phone" className="block text-gray-700 font-medium mb-2">Số điện thoại</label>
-                    <input 
-                      type="tel" 
-                      id="phone" 
-                      name="phone"
-                      className="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" 
-                      placeholder="Nhập số điện thoại của bạn"
-                    />
-                  </div>
-                  <div className="mb-6">
-                    <label htmlFor="message" className="block text-gray-700 font-medium mb-2">Tin nhắn</label>
-                    <textarea 
-                      id="message" 
-                      name="message"
-                      rows="4" 
-                      className="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" 
-                      placeholder="Nhập nội dung tin nhắn của bạn"
-                    ></textarea>
-                  </div>
-                  <button 
-                    type="submit" 
-                    className="w-full bg-primary text-white px-6 py-3 rounded-button font-medium hover:bg-indigo-600 transition whitespace-nowrap"
-                  >
-                    Gửi tin nhắn
-                  </button>
-                </form>
-              </div>
             </div>
           </div>
         </div>

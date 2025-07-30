@@ -91,22 +91,99 @@ const ManageBlogsNurse = () => {
         sort: "createdAt,DESC",
         ...filters,
       };
+      
+      // Xử lý parameter status nếu có
+      if (filters.status) {
+        params.status = filters.status;
+        // Thử thêm parameter khác nếu API cần
+        params.blogStatus = filters.status;
+      }
       Object.keys(params).forEach(key => {
         if (params[key] === "" || params[key] === null || params[key] === undefined) {
           delete params[key];
         }
       });
       
-      // Nurse có quyền xem tất cả blogs, không chỉ blogs của mình
-      const response = await getBlogs(params);
-      setBlogs(response.content || []);
+      console.log("API params:", params);
+      
+      // Nurse chỉ xem blogs của mình
+      const response = await getMyBlogs(params);
+      console.log("API Response:", response);
+      console.log("Blogs data:", response.content);
+      
+      const allBlogs = response.content || [];
+      
+      // Filter ở frontend nếu backend không hỗ trợ
+      let filteredBlogs = allBlogs;
+      
+      // Filter theo status
+      if (filters.status) {
+        // Map English status to Vietnamese status
+        const statusMapping = {
+          'PRIVATE': 'Riêng tư',
+          'PUBLIC': 'Công khai',
+          'DRAFT': 'Bản nháp'
+        };
+        
+        const targetStatus = statusMapping[filters.status] || filters.status;
+        console.log(`Mapping filter status: ${filters.status} -> ${targetStatus}`);
+        
+        filteredBlogs = filteredBlogs.filter(blog => blog.status === targetStatus);
+        console.log(`Filtered ${filteredBlogs.length} blogs with status: ${targetStatus}`);
+      }
+      
+      // Filter theo category
+      if (filters.category) {
+        console.log(`Filtering by category: ${filters.category}`);
+        filteredBlogs = filteredBlogs.filter(blog => {
+          // Kiểm tra cả displayName và value của category
+          const blogCategory = blog.category?.displayName || blog.category?.value || blog.category;
+          const filterCategory = filters.category;
+          console.log(`Blog category: ${blogCategory}, Filter category: ${filterCategory}`);
+          return blogCategory === filterCategory;
+        });
+        console.log(`Filtered ${filteredBlogs.length} blogs with category: ${filters.category}`);
+      }
+      
+      // Filter theo search
+      if (filters.search) {
+        console.log(`Filtering by search: ${filters.search}`);
+        const searchTerm = filters.search.toLowerCase();
+        filteredBlogs = filteredBlogs.filter(blog => {
+          const title = blog.title?.toLowerCase() || '';
+          const description = blog.description?.toLowerCase() || '';
+          const content = blog.content?.toLowerCase() || '';
+          
+          const matches = title.includes(searchTerm) || 
+                         description.includes(searchTerm) || 
+                         content.includes(searchTerm);
+          
+          console.log(`Blog "${blog.title}": title="${title}", search="${searchTerm}", matches=${matches}`);
+          return matches;
+        });
+        console.log(`Filtered ${filteredBlogs.length} blogs with search: ${filters.search}`);
+      }
+      
+      setBlogs(filteredBlogs);
       setPagination(prev => ({
         ...prev,
-        total: response.totalElements || 0,
+        total: filteredBlogs.length,
       }));
-      const allBlogs = response.content || [];
+      
+      // Debug: Log status và category của từng blog
+      allBlogs.forEach((blog, index) => {
+        console.log(`Blog ${index + 1}:`, {
+          id: blog.id,
+          title: blog.title,
+          status: blog.status,
+          statusType: typeof blog.status,
+          category: blog.category,
+          categoryType: typeof blog.category
+        });
+      });
+      
       setStats({
-        total: allBlogs.length,
+        total: allBlogs.length, // Tổng số blog (không filter)
         published: allBlogs.filter(b => b.status === "Công khai").length,
         draft: allBlogs.filter(b => b.status === "Riêng tư").length,
       });
@@ -160,17 +237,43 @@ const ManageBlogsNurse = () => {
   };
 
   const handleSearch = (value) => {
-    setFilters(prev => ({ ...prev, search: value }));
+    console.log("Search filter changed to:", value);
+    setFilters(prev => {
+      const newFilters = { ...prev, search: value };
+      console.log("New filters:", newFilters);
+      return newFilters;
+    });
+    setPagination(prev => ({ ...prev, current: 1 }));
+  };
+
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    console.log("Search input changed to:", value);
+    setFilters(prev => {
+      const newFilters = { ...prev, search: value };
+      console.log("New filters:", newFilters);
+      return newFilters;
+    });
     setPagination(prev => ({ ...prev, current: 1 }));
   };
 
   const handleCategoryChange = (value) => {
-    setFilters(prev => ({ ...prev, category: value }));
+    console.log("Category filter changed to:", value);
+    setFilters(prev => {
+      const newFilters = { ...prev, category: value };
+      console.log("New filters:", newFilters);
+      return newFilters;
+    });
     setPagination(prev => ({ ...prev, current: 1 }));
   };
 
   const handleStatusFilter = (value) => {
-    setFilters(prev => ({ ...prev, status: value }));
+    console.log("Status filter changed to:", value);
+    setFilters(prev => {
+      const newFilters = { ...prev, status: value };
+      console.log("New filters:", newFilters);
+      return newFilters;
+    });
     setPagination(prev => ({ ...prev, current: 1 }));
   };
 
@@ -344,6 +447,8 @@ const ManageBlogsNurse = () => {
               allowClear
               onSearch={handleSearch}
               style={{ width: "100%" }}
+              value={filters.search}
+              onChange={handleSearchChange}
             />
           </Col>
           <Col span={4}>
@@ -353,9 +458,10 @@ const ManageBlogsNurse = () => {
               style={{ width: "100%" }}
               onChange={handleCategoryChange}
               loading={enumsLoading}
+              value={filters.category}
             >
               {categories.map(category => (
-                <Option key={category.value} value={category.value}>
+                <Option key={category.value} value={category.displayName}>
                   <CategoryTag category={category} showIcon={false} />
                 </Option>
               ))}
@@ -368,6 +474,7 @@ const ManageBlogsNurse = () => {
               style={{ width: "100%" }}
               onChange={handleStatusFilter}
               loading={enumsLoading}
+              value={filters.status}
             >
               {statuses.map(status => (
                 <Option key={status.value} value={status.value}>

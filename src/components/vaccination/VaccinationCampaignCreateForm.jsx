@@ -14,7 +14,6 @@ const VaccinationCampaignCreateForm = ({ open, onClose, onSuccess, isEdit = fals
       // Chuyển đổi ngày sang dayjs nếu có
       const values = { ...initialValues };
       if (values.vaccinationDate) values.vaccinationDate = dayjs(values.vaccinationDate);
-      if (values.consentDeadline) values.consentDeadline = dayjs(values.consentDeadline);
       form.setFieldsValue(values);
     } else if (open && !isEdit) {
       form.resetFields();
@@ -36,7 +35,7 @@ const VaccinationCampaignCreateForm = ({ open, onClose, onSuccess, isEdit = fals
         ...(values.notes ? { notes: values.notes } : {}),
         ...(values.healthcareProviderName ? { healthcareProviderName: values.healthcareProviderName } : {}),
         ...(values.healthcareProviderContact ? { healthcareProviderContact: values.healthcareProviderContact } : {}),
-        ...(values.consentDeadline ? { consentDeadline: values.consentDeadline.format("YYYY-MM-DD") } : {}),
+
       };
       if (isEdit && initialValues.campaignId) {
         await updateVaccinationCampaign(initialValues.campaignId, payload);
@@ -114,14 +113,10 @@ const VaccinationCampaignCreateForm = ({ open, onClose, onSuccess, isEdit = fals
             allowClear={false}
             showToday={true}
             inputReadOnly={false}
+
           />
         </Form.Item>
-        <Form.Item
-          label="Hạn chót gửi phiếu đồng ý"
-          name="consentDeadline"
-        >
-          <DatePicker format="DD/MM/YYYY" style={{ width: "100%" }} />
-        </Form.Item>
+
         <Form.Item
           label="Khối lớp học sinh được tiêm"
           name="targetClassGroup"

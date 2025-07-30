@@ -65,12 +65,15 @@ const BlogCreateForm = ({ onSuccess, onCancel, mode = "create", initialData }) =
           getBlogCategories(),
           getBlogStatuses(),
         ]);
+        console.log("Categories data:", categoriesData);
+        console.log("Statuses data:", statusesData);
         setCategories(categoriesData);
         setStatuses(statusesData);
         if (categoriesData.length > 0 && statusesData.length > 0) {
+          console.log("Setting default category:", categoriesData[0]);
           setForm(prev => ({
             ...prev,
-            category: prev.category || categoriesData[0].displayName,
+            category: prev.category || categoriesData[0].value || categoriesData[0].displayName,
             status: prev.status || getDefaultStatus(),
           }));
         }
@@ -222,6 +225,17 @@ const BlogCreateForm = ({ onSuccess, onCancel, mode = "create", initialData }) =
           return;
         }
         // Gọi createBlog
+        console.log("Creating blog with status:", form.status);
+        console.log("Creating blog with category:", form.category);
+        console.log("Form data:", {
+          title: form.title.trim(),
+          thumbnail: form.thumbnail,
+          description: form.description.trim(),
+          content: content,
+          status: form.status,
+          category: form.category
+        });
+        
         createdOrUpdatedBlog = await createBlog({
           title: form.title.trim(),
           thumbnail: form.thumbnail,

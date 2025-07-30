@@ -24,10 +24,7 @@ const HomeFooter = () => {
             <h3 className="text-lg font-semibold mb-6">Dịch vụ</h3>
             <ul className="space-y-3">
               <li><a href="#" className="text-gray-400 hover:text-white transition">Quản lý hồ sơ sức khỏe</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition">Khám sức khỏe định kỳ</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition">Tư vấn dinh dưỡng học đường</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition">Đào tạo y tế học đường</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition">Tích hợp hệ thống</a></li>
+              
             </ul>
           </div>
           <div>

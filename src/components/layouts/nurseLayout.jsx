@@ -42,7 +42,7 @@ const items = [
   getItem('Thông tin tiêm chủng học sinh', 'student-vaccination', <BranchesOutlined />),
   getItem('Thông tin bệnh mãn tính học sinh', 'student-chronic-disease', <InsuranceOutlined />),
   getItem('Quản lý Blog', 'manage-blogs', <FileTextOutlined />),
-  getItem('Tiêm chủng tại trường', 'vaccineAtSchoolN', <SolutionOutlined />),
+  getItem('Theo dõi sau tiêm chủng', 'vaccineAtSchoolN', <SolutionOutlined />),
   getItem(
     <Link to="/">Về trang chủ</Link>,
     "home",

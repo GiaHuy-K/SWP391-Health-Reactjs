@@ -54,14 +54,14 @@ function CreateHealthIncidentModal({
 
   const handleFinish = async (values) => {
     const today = dayjs().startOf("day");
-    const incidentDateTime = today
+    const incidentTime = today
       .hour(values.incidentTime.hour())
       .minute(values.incidentTime.minute())
       .second(0);
 
     const payload = {
       studentId: values.studentId,
-      incidentDateTime: incidentDateTime.toISOString(),
+      incidentTime: incidentTime.toISOString(),
       incidentType: values.incidentType,
       description: values.description,
       actionTaken: values.actionTaken,

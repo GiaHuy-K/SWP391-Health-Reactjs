@@ -80,6 +80,22 @@ const VaccinationCampaignList = ({ onViewDetail, onCreateNew, onEdit }) => {
 
       const response = await getVaccinationCampaigns(params);
       
+      // Debug: Log dates from API
+      if (response.content && response.content.length > 0) {
+        response.content.forEach((campaign, index) => {
+          console.log(`Campaign ${index + 1} dates:`, {
+            id: campaign.campaignId,
+            title: campaign.campaignName,
+            vaccinationDate: campaign.vaccinationDate,
+            consentDeadline: campaign.consentDeadline,
+            vaccinationDateFormatted: campaign.vaccinationDate ? dayjs(campaign.vaccinationDate).format("DD/MM/YYYY") : null,
+            consentDeadlineFormatted: campaign.consentDeadline ? dayjs(campaign.consentDeadline).format("DD/MM/YYYY") : null,
+            isConsentDeadlinePast: campaign.consentDeadline ? dayjs(campaign.consentDeadline).isBefore(dayjs()) : false,
+            currentDate: dayjs().format("DD/MM/YYYY")
+          });
+        });
+      }
+      
       setCampaigns(response.content || []);
       setPagination(prev => ({
         ...prev,
@@ -209,6 +225,9 @@ const VaccinationCampaignList = ({ onViewDetail, onCreateNew, onEdit }) => {
           {record.consentDeadline && (
             <Text type="secondary" style={{ fontSize: "12px" }}>
               Hạn chót xác nhận: {dayjs(record.consentDeadline).format("DD/MM/YYYY")}
+              {dayjs(record.consentDeadline).isBefore(dayjs()) && (
+                <span style={{ color: '#ff4d4f', marginLeft: 4 }}>⚠️ Quá hạn</span>
+              )}
             </Text>
           )}
         </div>

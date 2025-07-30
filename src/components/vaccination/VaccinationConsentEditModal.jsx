@@ -55,7 +55,6 @@ const VaccinationConsentEditModal = ({ open, onClose, consent, onSuccess }) => {
           <Select>
             <Option value="Đồng ý">Đồng ý</Option>
             <Option value="Từ chối">Từ chối</Option>
-            <Option value="Chưa phản hồi">Chưa phản hồi</Option>
           </Select>
         </Form.Item>
         <Form.Item name="staffNote" label="Ghi chú nhân viên">

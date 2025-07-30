@@ -75,7 +75,7 @@ const VaccinationConsentList = ({ campaignId, onConsentClick }) => {
       dataIndex: "status",
       key: "status",
       render: (status) => <Tag color={statusColors[status] || "default"}>{status}</Tag>
-    },
+    },  
   ];
 
   return (

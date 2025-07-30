@@ -57,20 +57,20 @@ const VaccinationCampaignDetail = () => {
   const [rescheduleForm] = Form.useForm();
   const [cancelForm] = Form.useForm();
 
-  const fetchCampaignDetail = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const campaignData = await getVaccinationCampaignById(campaignId);
-      setCampaign(campaignData);
-      const consentsData = await getCampaignConsents(campaignId);
-      setConsents(consentsData.content || []);
-    } catch (err) {
-      setError(err.message || "Không thể tải thông tin chiến dịch");
-    } finally {
-      setLoading(false);
-    }
-  };
+    const fetchCampaignDetail = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const campaignData = await getVaccinationCampaignById(campaignId);
+        setCampaign(campaignData);
+        const consentsData = await getCampaignConsents(campaignId);
+        setConsents(consentsData.content || []);
+      } catch (err) {
+        setError(err.message || "Không thể tải thông tin chiến dịch");
+      } finally {
+        setLoading(false);
+      }
+    };
 
   useEffect(() => {
     if (!campaignId) return;
@@ -193,15 +193,6 @@ const VaccinationCampaignDetail = () => {
             </Title>
           </Space>
           <Space>
-            {campaign.status === CAMPAIGN_STATUS.DRAFT && (
-              <Button icon={<EditOutlined />}>Chỉnh sửa</Button>
-            )}
-            {campaign.status === CAMPAIGN_STATUS.PREPARING && (
-              <Button type="primary" icon={<PlayCircleOutlined />}>Bắt đầu chiến dịch</Button>
-            )}
-            {campaign.status === CAMPAIGN_STATUS.IN_PROGRESS && (
-              <Button type="primary" icon={<CheckCircleOutlined />}>Hoàn thành chiến dịch</Button>
-            )}
             {campaign.status === CAMPAIGN_STATUS.DRAFT && (
               <Button 
                 type="primary" 
