@@ -37,8 +37,8 @@ function getItem(label, key, icon, children) {
 }
 const items = [
   getItem("Dashboard", "DashboardN", <DashboardOutlined />),
-  getItem("Sự kiện y tế", "event-Nurse", <PieChartOutlined />),
-  getItem("Vật tư", "medicalSupply-Nurse", <DesktopOutlined />),
+  getItem("Quản lý sự cố y tế", "event-Nurse", <PieChartOutlined />),
+  getItem("Vật tư y tế", "medicalSupply-Nurse", <DesktopOutlined />),
   getItem('Thông tin tiêm chủng học sinh', 'student-vaccination', <BranchesOutlined />),
   getItem('Thông tin bệnh mãn tính học sinh', 'student-chronic-disease', <InsuranceOutlined />),
   getItem('Quản lý Blog', 'manage-blogs', <FileTextOutlined />),

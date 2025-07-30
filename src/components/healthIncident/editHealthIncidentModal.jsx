@@ -74,7 +74,14 @@ function EditHealthIncidentModal({
           <DatePicker
             showTime
             style={{ width: "100%" }}
-            disabledDate={(current) => current && current > dayjs()}
+            disabledDate={(current) => {
+              const today = dayjs();
+              return (
+                current &&
+                (current.startOf("day").isBefore(today.startOf("day")) || // quá khứ
+                  current.startOf("day").isAfter(today.startOf("day"))) // tương lai
+              );
+            }}
           />
         </Form.Item>
 

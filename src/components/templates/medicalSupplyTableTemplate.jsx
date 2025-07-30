@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Table, Button, Tag, Space, Popconfirm } from "antd";
 import MedicalSupplyDrawer from "../medicalSupply/medicalSupplyDrawer";
 import EditMedicalSupplyModal from "../medicalSupply/medicalSupplyEditModal";
@@ -30,12 +30,13 @@ const MedicalSupplyTableTemplate = ({
 }) => {
   const [selectedId, setSelectedId] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
-
   const [editingSupply, setEditingSupply] = useState(null);
   const [editModalOpen, setEditModalOpen] = useState(false);
-
   const [adjustModalOpen, setAdjustModalOpen] = useState(false);
   const [adjustingSupply, setAdjustingSupply] = useState(null);
+
+  // Cờ để chặn onRow click khi vừa confirm Popconfirm
+  const suppressRowClickRef = useRef(false);
 
   const handleView = (id) => {
     setSelectedId(id);
@@ -153,7 +154,10 @@ const MedicalSupplyTableTemplate = ({
               description="Bạn có chắc chắn muốn ngưng sử dụng vật tư này không?"
               okText="Đồng ý"
               cancelText="Huỷ"
-              onConfirm={() => onDelete?.(record.supplyId)}
+              onConfirm={() => {
+                suppressRowClickRef.current = true;
+                onDelete?.(record.supplyId);
+              }}
               onCancel={(e) => e.stopPropagation()}
             >
               <Button
@@ -196,7 +200,13 @@ const MedicalSupplyTableTemplate = ({
           pageSizeOptions: pagination.pageSizeOptions,
         }}
         onRow={(record) => ({
-          onClick: () => handleView(record.supplyId),
+          onClick: () => {
+            if (suppressRowClickRef.current) {
+              suppressRowClickRef.current = false; // reset cờ
+              return;
+            }
+            handleView(record.supplyId);
+          },
         })}
         onChange={(paginationInfo, filters) => {
           const statusValue = filters.status?.[0] || null;

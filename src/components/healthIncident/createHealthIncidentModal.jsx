@@ -61,7 +61,8 @@ function CreateHealthIncidentModal({
 
     const payload = {
       studentId: values.studentId,
-      incidentTime: incidentTime.toISOString(),
+ 
+      incidentTime: incidentTime.format("YYYY-MM-DDTHH:mm:ss"),
       incidentType: values.incidentType,
       description: values.description,
       actionTaken: values.actionTaken,
@@ -73,6 +74,7 @@ function CreateHealthIncidentModal({
           note: item.note,
         })) || [],
     };
+
     try {
       await createHealthIncident(payload);
       toast.success("Tạo sự cố thành công");

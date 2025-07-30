@@ -413,9 +413,12 @@ function ManageStudent() {
               format="YYYY-MM-DD"
               style={{ width: "100%" }}
               inputReadOnly={false}
-              disabledDate={(current) =>
-                current && current > dayjs().endOf("day")
-              }
+              disabledDate={(current) => {
+                const today = dayjs();
+                const minDate = today.subtract(6, "year").startOf("day");
+                const maxDate = today.subtract(1, "year").endOf("day");
+                return !current || current < minDate || current > maxDate;
+              }}
             />
           </Form.Item>
 
