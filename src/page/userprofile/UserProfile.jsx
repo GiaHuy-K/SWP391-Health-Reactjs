@@ -28,7 +28,6 @@ const UserProfile = () => {
   });
   const [linkForm, setLinkForm] = useState({
     invitationCode: "",
-    relationshipType: "",
   });
   const [vaccineForm, setVaccineForm] = useState({
     vaccineName: "",
@@ -163,15 +162,15 @@ const UserProfile = () => {
 
   const handleLinkSubmit = async (e) => {
     e.preventDefault();
-    if (!linkForm.invitationCode || !linkForm.relationshipType) {
-      toast.error("Vui lòng nhập đầy đủ thông tin");
+    if (!linkForm.invitationCode) {
+      toast.error("Vui lòng nhập mã mời");
       return;
     }
     setSubmitting(true);
     try {
-      await api.post("/parent/link-student", linkForm);
+      await api.post("/parent/link-student", { invitationCode: linkForm.invitationCode });
       toast.success("Liên kết học sinh thành công!");
-      setLinkForm({ invitationCode: "", relationshipType: "" });
+      setLinkForm({ invitationCode: "" });
       fetchUserProfile();
     } catch (err) {
       toast.error(err.response?.data?.message || "Liên kết thất bại");
@@ -217,7 +216,7 @@ const UserProfile = () => {
       (s) => String(s.id) === String(studentIdToUse)
     );
 
-    // Debug logging
+   
     console.log("studentIdToUse:", studentIdToUse, typeof studentIdToUse);
     console.log("Selected student:", selectedStudent);
     console.log("Student dateOfBirth:", selectedStudent?.dateOfBirth);
@@ -304,7 +303,7 @@ const UserProfile = () => {
         navigate("/dashboardNurse/event-Nurse");
         break;
       default:
-        // Parent không có dashboard riêng
+
         break;
     }
   };
@@ -312,7 +311,7 @@ const UserProfile = () => {
   // Kiểm tra xem user có phải là Parent không
   const isParent = isParentRole(user);
 
-  // Debug log để kiểm tra role
+  //Log để kiểm tra role
   console.log("User role:", user?.role);
   console.log("LocalStorage userRole:", localStorage.getItem("userRole"));
   console.log("Is Parent:", isParent);
@@ -1020,38 +1019,19 @@ const UserProfile = () => {
               </div>
               <form onSubmit={handleLinkSubmit} className={styles.modalForm}>
                 <div className={styles.formGroup}>
-                  <label className={styles.formLabel}>Mã liên kết</label>
+                  <label className={styles.formLabel}>Mã mời</label>
                   <input
                     className={styles.formInput}
                     type="text"
                     name="invitationCode"
                     value={linkForm.invitationCode}
                     onChange={handleLinkChange}
-                    placeholder="Nhập mã liên kết"
+                    placeholder="Nhập mã mời của học sinh"
                     maxLength={20}
                     required
                   />
                 </div>
-                <div className={styles.formGroup}>
-                  <label className={styles.formLabel}>
-                    Quan hệ với học sinh
-                  </label>
-                  <select
-                    className={styles.formInput}
-                    name="relationshipType"
-                    value={linkForm.relationshipType}
-                    onChange={handleLinkChange}
-                    required
-                  >
-                    <option value="">Chọn quan hệ</option>
-                    <option value="FATHER">Cha</option>
-                    <option value="MOTHER">Mẹ</option>
-                    <option value="GUARDIAN">Người giám hộ</option>
-                    <option value="GRANDFATHER">Ông nội</option>
-                    <option value="GRANDMOTHER">Bà nội</option>
-                    <option value="OTHER">Khác</option>
-                  </select>
-                </div>
+
                 <div className={styles.modalActions}>
                   <button
                     type="submit"
