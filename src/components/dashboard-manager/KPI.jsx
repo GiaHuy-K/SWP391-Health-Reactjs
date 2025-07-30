@@ -5,7 +5,7 @@ import CountUp from "react-countup";
 import dayjs from "dayjs";
 import api from "../../config/axios";
 
-const { Text, Title } = Typography;
+const { Text } = Typography;
 
 const DashboardKPI = () => {
   const [totalSupplies, setTotalSupplies] = useState(0);
@@ -14,9 +14,13 @@ const DashboardKPI = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res1 = await api.get("/medical-supplies");
-        const supplies = res1.data.content || [];
-        setTotalSupplies(supplies.length);
+        const res1 = await api.get("/medical-supplies", {
+          params: {
+            page: 0,
+            size: 1,
+          },
+        });
+        setTotalSupplies(res1.data.totalElements || 0);
 
         const res2 = await api.get("/health-incidents");
         const today = dayjs().format("YYYY-MM-DD");
@@ -48,9 +52,9 @@ const DashboardKPI = () => {
 
   return (
     <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
-      {/* Tổng số vật tư */}
+      {/* Tổng số vật tư y tế */}
       <Col xs={24} md={12}>
-        <Card styles={{ body: kpiCardStyle }}>
+        <Card style={kpiCardStyle}>
           <HddOutlined style={{ ...iconStyle, color: "#1890ff" }} />
           <div
             style={{

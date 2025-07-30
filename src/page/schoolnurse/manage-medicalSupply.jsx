@@ -6,16 +6,22 @@ import { toast } from "react-toastify";
 function ManageMedicalSupply() {
   const [medicalList, setMedicalList] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState(null); //  Trạng thái lọc
+  const [status, setStatus] = useState(null);
+  const [page, setPage] = useState(0);
+  const [size, setSize] = useState(10);
+  const [totalElements, setTotalElements] = useState(0);
 
   const fetchSupply = async () => {
     setLoading(true);
     try {
       const response = await getMedicalSupplies({
-        status, //  gửi filter vào BE
+        status,
         sort: "name,ASC",
+        page,
+        size,
       });
       setMedicalList(response.content || []);
+      setTotalElements(response.totalElements || 0);
     } catch (error) {
       console.log(error);
       toast.error("Lỗi API");
@@ -26,7 +32,7 @@ function ManageMedicalSupply() {
 
   useEffect(() => {
     fetchSupply();
-  }, [status]); //  load lại khi đổi trạng thái
+  }, [status, page, size]);
 
   return (
     <MedicalSupplyTableTemplate
@@ -39,7 +45,21 @@ function ManageMedicalSupply() {
         canDelete: false,
         canAdjustStock: false,
       }}
-      onStatusFilterChange={setStatus} //  truyền hàm để nhận filter từ table
+      onStatusFilterChange={(newStatus) => {
+        setPage(0); // reset về trang đầu khi đổi filter
+        setStatus(newStatus);
+      }}
+      pagination={{
+        current: page + 1, // Ant Design pagination starts from 1
+        pageSize: size,
+        total: totalElements,
+        showSizeChanger: true,
+        pageSizeOptions: ["5", "10"],
+        onChange: (newPage, newSize) => {
+          setPage(newPage - 1); 
+          setSize(newSize);
+        },
+      }}
     />
   );
 }
